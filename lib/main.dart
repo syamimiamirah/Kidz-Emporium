@@ -73,15 +73,15 @@ class WelcomeScreen extends StatelessWidget{
                   borderRadius: BorderRadius.circular(15),
                   color: Colors.pink,
                 ),
-
-                child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text( "Go to Sign In", style: TextStyle(color: Colors.white), textAlign: TextAlign.right,),
+                      Text("Go to", style: TextStyle(color: Colors.white), textAlign: TextAlign.right),
+                      Text(" Sign In", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,), textAlign: TextAlign.right),
                     ]
                 ),
               ),
             )
-
           ),
 
           FittedBox(
@@ -99,18 +99,17 @@ class WelcomeScreen extends StatelessWidget{
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color: Colors.orange,
-
                   ),
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("No account yet? Sign Up"),
+                        Text("No account yet?"),
+                        Text(" Sign Up", style: TextStyle(fontWeight: FontWeight.bold,),),
                       ]
                   )
               ),
               ),
           ),
-
                 ],
             ),
 
