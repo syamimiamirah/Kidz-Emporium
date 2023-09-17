@@ -22,7 +22,7 @@ class SignInScreen extends StatelessWidget{
           ),
           Text(
             "Welcome Back!",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20,),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25,),
           ),
           Expanded(
             flex: 2,
@@ -30,8 +30,9 @@ class SignInScreen extends StatelessWidget{
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Column(
                   children: <Widget>[
-                    Padding(padding: const EdgeInsets.only(bottom: 20),
-                    child: Row(
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Padding(
@@ -51,29 +52,29 @@ class SignInScreen extends StatelessWidget{
                       ],
                     ),
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: Icon(
-                            Icons.lock,
-                            color: kSecondaryColor,
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 30),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(right: 16),
+                            child: Icon(
+                              Icons.lock,
+                              color: kSecondaryColor,
+                            ),
                           ),
-                        ),
-                        Expanded(
+                          Expanded(
                             child: TextField(
                               obscureText: true,
-                                decoration: InputDecoration(
-                                    hintText: "Enter Your Password",
+                              decoration: InputDecoration(
+                                  hintText: "Enter Your Password",
                                   suffixIcon: Icon(Icons.visibility, color: kSecondaryColor)
-                                ),
+                              ),
                             ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
+                          ),
+                        ],
+                      ),
                     ),
                     FittedBox(
                         child: GestureDetector(

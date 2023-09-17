@@ -48,7 +48,6 @@ class WelcomeScreen extends StatelessWidget{
                           TextSpan(
                             text: "Welcome!\n",
                             style: TextStyle(color: Colors.black, fontSize: 25, fontWeight: FontWeight.bold,),
-
                           ),
                           TextSpan(
                             text: "Sign in or create a new account\n",
@@ -104,7 +103,8 @@ class WelcomeScreen extends StatelessWidget{
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text("No account yet?"),
-                        Text(" Sign Up", style: TextStyle(fontWeight: FontWeight.bold,),),
+                        Text(" Sign Up", style: TextStyle(fontWeight: FontWeight.bold,),
+                        ),
                       ]
                   )
               ),
