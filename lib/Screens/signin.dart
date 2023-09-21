@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kidz_emporium/Screens/home.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/signup.dart';
 
@@ -80,7 +81,7 @@ class SignInScreen extends StatelessWidget{
                         child: GestureDetector(
                           onTap:() {Navigator.push(context, MaterialPageRoute(
                             builder: (context) {
-                              return SignInScreen();
+                              return HomePage();
                             },
                           ));
                           },
