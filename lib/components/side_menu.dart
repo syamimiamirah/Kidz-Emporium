@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/signin.dart';
+import 'package:kidz_emporium/admin/create_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/signin.dart';
+import 'package:kidz_emporium/Screens/home.dart';
 
 class NavBar extends StatelessWidget{
   const NavBar({super.key});
@@ -30,6 +32,15 @@ class NavBar extends StatelessWidget{
           ),
           ListTile(
             leading: Icon(Icons.library_books),
+            title: Text("Home"),
+            onTap: () => {
+            Navigator.push(context, MaterialPageRoute(
+            builder: (context) => HomePage()),
+            ),
+          },
+          ),
+          ListTile(
+            leading: Icon(Icons.library_books),
             title: Text("Booking"),
             onTap: () => null,
           ),
@@ -51,7 +62,11 @@ class NavBar extends StatelessWidget{
           ListTile(
             leading: Icon(Icons.people),
             title: Text("Therapist"),
-            onTap: () => null,
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => CreateTherapist()),
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.child_care),

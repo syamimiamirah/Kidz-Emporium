@@ -39,7 +39,7 @@ class SignUpScreen extends StatelessWidget{
                         ),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 13),
-                          child:Row(
+                          child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                               Padding(
@@ -151,7 +151,8 @@ class SignUpScreen extends StatelessWidget{
                         ),
                         FittedBox(
                           child: GestureDetector(
-                            onTap:() {Navigator.push(context, MaterialPageRoute(
+                            onTap:() {
+                              Navigator.push(context, MaterialPageRoute(
                               builder: (context) {
                                 return SignUpScreen();
                               },
