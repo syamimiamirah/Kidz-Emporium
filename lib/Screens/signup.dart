@@ -1,8 +1,43 @@
-import 'package:flutter/material.dart';
-import 'package:kidz_emporium/contants.dart';
-import 'package:kidz_emporium/Screens/signin.dart';
+import 'dart:convert';
 
-class SignUpScreen extends StatelessWidget{
+import 'package:flutter/material.dart';
+import 'package:kidz_emporium/Screens/home.dart';
+import 'package:kidz_emporium/contants.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kidz_emporium/Screens/signin.dart';
+import 'package:http/http.dart' as http;
+
+class SignUpScreen extends StatefulWidget{
+  @override
+  _SignUpState createState() => _SignUpState();
+}
+
+class _SignUpState extends State<SignUpScreen>{
+
+  TextEditingController name = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
+  TextEditingController phone = TextEditingController();
+  TextEditingController role = TextEditingController();
+
+  Future register(BuildContext cont) async{
+    var url = Uri.http("192.168.0.111", '/kidz_emporium/register.php', {'q': '{http}'});
+    var response = await http.post(url ,body: {
+      "name": name.text,
+      "email" : email.text,
+      "password": password.text,
+      "phone": phone.text,
+      "role": role.text,
+    });
+    var data = json.decode(response.body);
+    if(data == "Success"){
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> HomePage(),),);
+    }else{
+      Fluttertoast.showToast(
+          msg: 'User already exist');
+    }
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -51,6 +86,7 @@ class SignUpScreen extends StatelessWidget{
                               ),
                               Expanded(
                                 child: TextField(
+                                  controller: name,
                                   decoration: InputDecoration(
                                     hintText: "Enter Your Full Name",
                                   ),
@@ -73,6 +109,7 @@ class SignUpScreen extends StatelessWidget{
                         ),
                           Expanded(
                               child: TextField(
+                                  controller: email,
                                   decoration: InputDecoration(
                                       hintText: "Enter Your Email Address"
                                   )
@@ -95,6 +132,7 @@ class SignUpScreen extends StatelessWidget{
                               ),
                               Expanded(
                                   child: TextField(
+                                      controller: phone,
                                       decoration: InputDecoration(
                                           hintText: "Enter Your Phone Number"
                                       )
@@ -117,6 +155,7 @@ class SignUpScreen extends StatelessWidget{
                               ),
                               Expanded(
                                   child: TextField(
+                                      controller: role,
                                       decoration: InputDecoration(
                                           hintText: "Enter Your Role"
                                       )
@@ -139,6 +178,7 @@ class SignUpScreen extends StatelessWidget{
                               ),
                               Expanded(
                                   child: TextField(
+                                    controller: password,
                                       obscureText: true,
                                       decoration: InputDecoration(
                                           hintText: "Enter Your Password",
@@ -152,11 +192,7 @@ class SignUpScreen extends StatelessWidget{
                         FittedBox(
                           child: GestureDetector(
                             onTap:() {
-                              Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return SignUpScreen();
-                              },
-                            ));
+                              register(context);
                             },
                             child: Container(
                               margin: EdgeInsets.only(bottom: 5),
@@ -181,7 +217,8 @@ class SignUpScreen extends StatelessWidget{
                             Text("Already Have an Account?", style: TextStyle(color: Colors.black),
                             ),
                             GestureDetector(
-                              onTap: () {Navigator.push(context, MaterialPageRoute(
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(
                                 builder: (context){
                                   return SignInScreen();
                                 },
