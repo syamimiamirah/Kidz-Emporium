@@ -13,12 +13,18 @@ class SignUpScreen extends StatefulWidget{
 }
 
 class _SignUpState extends State<SignUpScreen>{
+  var options= [
+  'Admin',
+  'Parent',
+  ];
+  var currentItemSelected = "Admin";
+  var role = "Admin";
 
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController phone = TextEditingController();
-  TextEditingController role = TextEditingController();
+  //TextEditingController role = TextEditingController();
 
   Future register(BuildContext cont) async{
     var url = Uri.http("192.168.0.111", '/kidz_emporium/register.php', {'q': '{http}'});
@@ -27,14 +33,24 @@ class _SignUpState extends State<SignUpScreen>{
       "email" : email.text,
       "password": password.text,
       "phone": phone.text,
-      "role": role.text,
+      "role": role,
     });
     var data = json.decode(response.body);
     if(data == "Success"){
+      Fluttertoast.showToast(
+        msg: 'Registration Successful',
+        backgroundColor: kPrimaryColor,
+        textColor: Colors.black,
+        toastLength: Toast.LENGTH_SHORT,
+      );
       Navigator.push(context, MaterialPageRoute(builder: (context)=> HomePage(),),);
     }else{
       Fluttertoast.showToast(
-          msg: 'User already exist');
+        msg: 'User already exist',
+        backgroundColor: Colors.red,
+        textColor: Colors.black,
+        toastLength: Toast.LENGTH_SHORT,
+      );
     }
   }
 
@@ -149,29 +165,6 @@ class _SignUpState extends State<SignUpScreen>{
                               Padding(
                                 padding: const EdgeInsets.only(right: 16),
                                 child: Icon(
-                                  Icons.admin_panel_settings,
-                                  color: kPrimaryColor,
-                                ),
-                              ),
-                              Expanded(
-                                  child: TextField(
-                                      controller: role,
-                                      decoration: InputDecoration(
-                                          hintText: "Enter Your Role"
-                                      )
-                                  )
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 13),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(right: 16),
-                                child: Icon(
                                   Icons.lock,
                                   color: kPrimaryColor,
                                 ),
@@ -185,6 +178,48 @@ class _SignUpState extends State<SignUpScreen>{
                                               suffixIcon: Icon(Icons.visibility, color: kPrimaryColor)
                                       ),
                                   ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 13),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(right: 16),
+                                child: Icon(
+                                  Icons.admin_panel_settings,
+                                  color: kPrimaryColor,
+                                ),
+                              ),
+                              Text("Choose Your Role", style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black54,
+                              ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(right: 10),
+                              ),
+                              Expanded(
+                                child: DropdownButton(
+                                  isExpanded: false,
+                                  //hint: const Text("Choose your role"),
+                                  items: options.map((String dropDownStringItem){
+                                    return DropdownMenuItem(
+                                      value: dropDownStringItem,
+                                      child: Text(dropDownStringItem),
+                                    );
+                                  }).toList(),
+                                  onChanged: (newValueSelected){
+                                    setState((){
+                                      currentItemSelected = newValueSelected!;
+                                      role = newValueSelected;
+                                    });
+                                  },
+                                  value: currentItemSelected,
+                                ),
                               ),
                             ],
                           ),
