@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
 import 'package:kidz_emporium/contants.dart';
-import 'package:kidz_emporium/Screens/signin.dart';
+import 'package:kidz_emporium/Screens/login_page.dart';
 
 
 class CreateTherapist extends StatelessWidget{
@@ -15,7 +15,7 @@ class CreateTherapist extends StatelessWidget{
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () => SignInScreen(),
+            onPressed: () => LoginPage(),
           ),
         ],
       ),

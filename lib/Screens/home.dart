@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kidz_emporium/Screens/signin.dart';
+import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/contants.dart';
-import 'package:kidz_emporium/Screens/signin.dart';
+import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
+
+import '../main.dart';
 
 class HomePage extends StatelessWidget{
 
@@ -48,7 +50,8 @@ class HomePage extends StatelessWidget{
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed: () => SignInScreen(),
+            onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil("/login", (route) => false,
+            )
           ),
         ],
       ),
