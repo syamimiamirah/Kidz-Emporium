@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kidz_emporium/Screens/home.dart';
 import 'package:kidz_emporium/contants.dart';
-import 'package:kidz_emporium/Screens/signin.dart';
-import 'package:kidz_emporium/Screens/signup.dart';
+import 'package:kidz_emporium/Screens/login_page.dart';
+import 'package:kidz_emporium/Screens/register_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,6 +19,11 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: kBackgroundColor,
 
       ),
+      routes: {
+        '/login': (context) =>const LoginPage(),
+        '/register': (context) => const RegisterPage(),
+        '/home': (context) => HomePage(),
+      },
       home: WelcomeScreen(),
     );
   }
@@ -60,7 +66,7 @@ class WelcomeScreen extends StatelessWidget{
             child: GestureDetector(
               onTap:() {Navigator.push(context, MaterialPageRoute(
               builder: (context) {
-                return SignInScreen();
+                return LoginPage();
               },
               ));
                 },
@@ -87,7 +93,7 @@ class WelcomeScreen extends StatelessWidget{
               child: GestureDetector(
                 onTap:() {Navigator.push(context, MaterialPageRoute(
               builder: (context){
-              return SignUpScreen();
+              return RegisterPage();
               },
                 ));
                   },
