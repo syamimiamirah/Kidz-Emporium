@@ -3,11 +3,17 @@ import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
-
+import '../config.dart';
 import '../main.dart';
 
-class HomePage extends StatelessWidget{
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
+  @override
+  _homePageState createState() =>_homePageState();
+}
+
+class _homePageState extends State<HomePage>{
   //Creating static data in lists
   List catNames = [
     "Booking",

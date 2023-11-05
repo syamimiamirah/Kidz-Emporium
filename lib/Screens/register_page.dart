@@ -36,8 +36,7 @@ class _registerPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         body: ProgressHUD(
           child: Form(
             key: globalFormKey,
@@ -45,8 +44,7 @@ class _registerPageState extends State<RegisterPage> {
           ),
           //inAsyncCall: isAPICallProcess, // Use this property to control the progress indicator
         ),
-      ),
-    );
+      );
   }
 
   Widget _registerUI(BuildContext context){

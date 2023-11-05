@@ -9,17 +9,17 @@ class LoginResponseModel {
     required this.data,
   });
   late final String message;
-  late final Data data;
+  late final Data? data;
 
   LoginResponseModel.fromJson(Map<String, dynamic> json){
     message = json['message'];
-    data = Data.fromJson(json['data']);
+    data = json['data'] != null ? Data.fromJson(json['data']) : null; // Handle null 'data'
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['message'] = message;
-    _data['data'] = data.toJson();
+    _data['data'] = data?.toJson(); // Use the safe navigation operator '?'
     return _data;
   }
 }
@@ -27,18 +27,18 @@ class LoginResponseModel {
 class Data {
   Data({
     required this.email,
-    required this.date,
+    required this.name,
     required this.id,
     required this.token,
   });
-  late final String email;
-  late final String date;
-  late final String id;
-  late final String token;
+  late final String? email;
+  late final String? name;
+  late final String? id;
+  late final String? token;
 
   Data.fromJson(Map<String, dynamic> json){
     email = json['email'];
-    date = json['date'];
+    name = json['name'];
     id = json['id'];
     token = json['token'];
   }
@@ -46,7 +46,7 @@ class Data {
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['email'] = email;
-    _data['date'] = date;
+    _data['name'] = name;
     _data['id'] = id;
     _data['token'] = token;
     return _data;
