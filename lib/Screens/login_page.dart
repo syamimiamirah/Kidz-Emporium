@@ -26,16 +26,14 @@ class _loginPageState extends State<LoginPage>{
 
   @override
   Widget build(BuildContext context){
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         body: ProgressHUD(
           child: Form(
             key: globalFormKey,
             child: _loginUI(context),
           ),
         ),
-      ),
-    );
+      );
   }
   Widget _loginUI(BuildContext context){
     return SingleChildScrollView(
