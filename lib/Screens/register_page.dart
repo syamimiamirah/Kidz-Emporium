@@ -169,41 +169,41 @@ class _registerPageState extends State<RegisterPage> {
                         color: kPrimaryColor, // Icon color
                       ),
                     ),
-              Expanded(
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: currentRole,
-                    hint: const Text("Role"),
-                    items: [
-                      DropdownMenuItem<String>(
-                        value: null,
-                        child: Text("Role",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                      ),
-                      // Other role options
-                      DropdownMenuItem<String>(
-                        value: "Admin",
-                        child: Text("Admin",style: TextStyle(fontSize: 15,),),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: "Parent",
-                        child: Text("Parent",style: TextStyle(fontSize: 15,),),
-                      ),
-                      DropdownMenuItem<String>(
-                        value: "Therapist",
-                        child: Text("Therapist",style: TextStyle(fontSize: 15,),),
-                      ),
-                    ],// The first item is the hint, set its value to null
-                    isExpanded: true,
-                    icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
-                    onChanged: (String? newValue){
-                      //Your code to execute, when a menu item is selected from dropdown
-                      //dropDownStringItem = value;
-                      setState(() {
-                        this.currentRole = newValue!;
-                      });
-                    },
+                Expanded(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: currentRole,
+                      hint: const Text("Role"),
+                      items: [
+                        DropdownMenuItem<String>(
+                          value: null,
+                          child: Text("Role",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                        ),
+                        // Other role options
+                        DropdownMenuItem<String>(
+                          value: "Admin",
+                          child: Text("Admin",style: TextStyle(fontSize: 15,),),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: "Parent",
+                          child: Text("Parent",style: TextStyle(fontSize: 15,),),
+                        ),
+                        DropdownMenuItem<String>(
+                          value: "Therapist",
+                          child: Text("Therapist",style: TextStyle(fontSize: 15,),),
+                        ),
+                      ],// The first item is the hint, set its value to null
+                      isExpanded: true,
+                      icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                      onChanged: (String? newValue){
+                        //Your code to execute, when a menu item is selected from dropdown
+                        //dropDownStringItem = value;
+                        setState(() {
+                          this.currentRole = newValue!;
+                        });
+                      },
+                    ),
                   ),
-                ),
                 ),
                 ],
               ),

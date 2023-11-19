@@ -4,6 +4,9 @@ import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/register_page.dart';
 
+import 'Screens/parent/create_reminder_parent.dart';
+import 'Screens/parent/view_reminder_parent.dart';
+
 void main() => runApp(MyApp());
 
 
@@ -23,6 +26,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) =>const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/home': (context) => HomePage(),
+        '/view_reminder_parent': (context) => ViewReminderParentPage(),
+        '/create_reminder_parent': (context) => CreateReminderParentPage(),
       },
       home: WelcomeScreen(),
     );
