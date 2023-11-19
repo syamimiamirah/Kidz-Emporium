@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
+import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
+import '../admin/create_therapist.dart';
 import '../config.dart';
 import '../main.dart';
 
@@ -98,7 +100,59 @@ class _homePageState extends State<HomePage>{
                 childAspectRatio: 1.1,
                 ),
                 itemBuilder: (context, index){
-                  return Column(
+                  return InkWell( // Wrap the container with InkWell for clickability
+                      onTap: () {
+                    // Handle the click event for the calendar
+                    if (catNames[index] == "Booking") {
+                      // Add your code here to navigate or perform an action
+                      // when the calendar is clicked
+                      print("Booking clicked!");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => ViewReminderParentPage()),
+                      );
+                    }
+                    if (catNames[index] == "Therapist") {
+                      // Add your code here to navigate or perform an action
+                      // when the calendar is clicked
+                      print("Therapist clicked!");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => CreateTherapist()),
+                      );
+                    }
+                    if (catNames[index] == "Report") {
+                      // Add your code here to navigate or perform an action
+                      // when the calendar is clicked
+                      print("Report clicked!");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => ViewReminderParentPage()),
+                      );
+                    }
+                    if (catNames[index] == "Video") {
+                      // Add your code here to navigate or perform an action
+                      // when the calendar is clicked
+                      print("Video clicked!");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => ViewReminderParentPage()),
+                      );
+                    }
+                    if (catNames[index] == "Calendar") {
+                      // Add your code here to navigate or perform an action
+                      // when the calendar is clicked
+                      print("Calendar clicked!");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => ViewReminderParentPage()),
+                      );
+                    }
+                    if (catNames[index] == "Child") {
+                      // Add your code here to navigate or perform an action
+                      // when the calendar is clicked
+                      print("Child clicked!");
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => ViewReminderParentPage()),
+                      );
+                    }
+                  },
+                  child: Column(
                     children: [
                       Container(
                         height: 60,
@@ -118,6 +172,7 @@ class _homePageState extends State<HomePage>{
                       ),
                       ),
                     ],
+                  ),
                   );
                 },
               ),

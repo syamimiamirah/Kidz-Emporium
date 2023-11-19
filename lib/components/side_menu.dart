@@ -5,6 +5,8 @@ import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
 
+import '../Screens/parent/view_reminder_parent.dart';
+
 class NavBar extends StatelessWidget{
   const NavBar({key});
 
@@ -76,7 +78,9 @@ class NavBar extends StatelessWidget{
           ListTile(
             leading: Icon(Icons.calendar_month),
             title: Text("Calendar"),
-            onTap: () => null,
+            onTap: () => Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => ViewReminderParentPage()),
+            ),
           ),
           Divider(),
           ListTile(
