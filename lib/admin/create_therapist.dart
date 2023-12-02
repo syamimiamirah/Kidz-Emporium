@@ -3,12 +3,22 @@ import 'package:kidz_emporium/components/side_menu.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 
+import '../models/login_response_model.dart';
 
-class CreateTherapist extends StatelessWidget{
+
+class CreateTherapistPage extends StatefulWidget{
+  final LoginResponseModel userData;
+  const CreateTherapistPage({Key? key, required this.userData}) : super(key: key);
+
+  @override
+  _createTherapistPageState createState() =>_createTherapistPageState();
+}
+
+class _createTherapistPageState extends State<CreateTherapistPage>{
   @override
   Widget build(BuildContext context){
     return Scaffold(
-        drawer: NavBar(),
+        drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         centerTitle: true,
@@ -133,11 +143,11 @@ class CreateTherapist extends StatelessWidget{
             child: FittedBox(
               child: GestureDetector(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(
+                  /*Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
                       return CreateTherapist();
                     },
-                  ));
+                  ));*/
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 5),

@@ -6,10 +6,17 @@ import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
 
 import '../Screens/parent/view_reminder_parent.dart';
+import '../models/login_response_model.dart';
 
-class NavBar extends StatelessWidget{
-  const NavBar({key});
+class NavBar extends StatefulWidget{
+  final LoginResponseModel userData;
+  const NavBar({Key? key, required this.userData}) : super(key: key);
 
+  @override
+  _navBarState createState() =>_navBarState();
+}
+
+class _navBarState extends State<NavBar>{
   @override
   Widget build(BuildContext context){
     return Drawer(
@@ -17,17 +24,8 @@ class NavBar extends StatelessWidget{
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-              accountName: Text("Name"),
-              accountEmail: Text('email@gmail.com'),
-            currentAccountPicture: CircleAvatar(
-              child: ClipOval(
-                child: Image.network("https://oflutter.com/wp-content/uploads/2021/02/girl-profile.png",
-                width: 90,
-                  height: 90,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+              accountName: Text("${widget.userData.data?.name ?? 'User'}"),
+              accountEmail: Text("${widget.userData.data?.email ?? 'User'}"),
             decoration: BoxDecoration(
               color: kPrimaryColor,
             ),
@@ -35,11 +33,11 @@ class NavBar extends StatelessWidget{
           ListTile(
             leading: Icon(Icons.library_books),
             title: Text("Home"),
-            onTap: () => {
-            Navigator.push(context, MaterialPageRoute(
-            builder: (context) => HomePage()),
-            ),
-          },
+            onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                builder: (context) => HomePage(userData: widget.userData),
+                ));
+                },
           ),
           ListTile(
             leading: Icon(Icons.library_books),
@@ -66,7 +64,7 @@ class NavBar extends StatelessWidget{
             title: Text("Therapist"),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => CreateTherapist()),
+                  builder: (context) => CreateTherapistPage(userData:widget.userData)),//CreateTherapist()),
               );
             },
           ),
@@ -79,7 +77,7 @@ class NavBar extends StatelessWidget{
             leading: Icon(Icons.calendar_month),
             title: Text("Calendar"),
             onTap: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => ViewReminderParentPage()),
+                    builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
             ),
           ),
           Divider(),

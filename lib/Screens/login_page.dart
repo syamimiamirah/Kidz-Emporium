@@ -9,6 +9,7 @@ import 'package:kidz_emporium/services/api_service.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../config.dart';
+import '../services/shared_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -23,6 +24,25 @@ class _loginPageState extends State<LoginPage>{
   static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   String? email;
   String? password;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeLoginStatus();
+  }
+
+  Future<void> _initializeLoginStatus() async {
+    if (await SharedService.isLoggedIn()) {
+      // User is logged in, retrieve cached login details
+      var cachedLoginDetails = await SharedService.loginDetails();
+
+      // Now you can use 'cachedLoginDetails' to initialize the page or update the UI
+      // based on the user's login status.
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context){
@@ -148,9 +168,15 @@ class _loginPageState extends State<LoginPage>{
                               Config.appName,
                               "User Logged-In Successfully",
                               "OK",
-                                  () {
-                                Navigator.of(context).pop();
-                                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                                  () async {
+                                    Navigator.of(context).pop();
+                                    var cachedLoginDetails = await SharedService.loginDetails();
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomePage(userData: cachedLoginDetails),
+                                      ),
+                                    );
                               },
                           );
                         }else{

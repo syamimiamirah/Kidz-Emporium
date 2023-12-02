@@ -13,15 +13,16 @@ class SharedService{
     return isKeyExist;
   }
 
-  static Future<LoginResponseModel?> loginDetails() async{
-      var isKeyExist =
-      await APICacheManager().isAPICacheKeyExist("login_details");
+  static Future<LoginResponseModel> loginDetails() async {
+    var isKeyExist = await APICacheManager().isAPICacheKeyExist("login_details");
 
-      if(isKeyExist){
+    if (isKeyExist) {
       var cacheData = await APICacheManager().getCacheData("login_details");
-
       return loginResponseJson(cacheData.syncData);
-      }
+    } else {
+      // Return a default LoginResponseModel if the cache key doesn't exist
+      return LoginResponseModel(message: "", data: Data(email: "", name: "", id: "", token: "secretkey"));
+    }
   }
   static Future<void> setLoginDetails(
       LoginResponseModel model,
