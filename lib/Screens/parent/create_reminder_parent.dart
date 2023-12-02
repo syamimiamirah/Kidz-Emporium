@@ -1,42 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
+/*import 'package:jwt_decoder/jwt_decoder.dart';*/
+import 'package:kidz_emporium/models/reminder_model.dart';
+import 'package:kidz_emporium/services/api_service.dart';
+import 'package:provider/provider.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
-
 import '../../components/side_menu.dart';
+import '../../config.dart';
 import '../../contants.dart';
+import '../../models/login_response_model.dart';
+import '../../provider/user_provider.dart';
 import '../../utils.dart';
 //import 'package:events_calendar_example/utils.dart';
 
 class CreateReminderParentPage extends StatefulWidget{
+  final LoginResponseModel userData;
+  final DateTime? selectedDate;
+  //final token;
+
+  const CreateReminderParentPage({Key? key, this.selectedDate, required this.userData}) : super(key: key);
+
   @override
   _createReminderParentPageState createState() => _createReminderParentPageState();
 
 }
 class _createReminderParentPageState extends State<CreateReminderParentPage>{
   static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
+  bool isAPICallProcess =  false;
   String? eventName;
   String? details;
   late DateTime fromDate;
   late DateTime toDate;
+  late String userId;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    fromDate = DateTime.now();
-    toDate = DateTime.now().add(Duration(hours: 2));
+    // Check if widget.userData and widget.userData.data are not null
+    if (widget.userData != null && widget.userData.data != null) {
+      print("userData: ${widget.userData.data!.id}");
+      fromDate = widget.selectedDate ?? DateTime.now();
+      toDate = widget.selectedDate ?? DateTime.now().add(Duration(hours: 2));
+      userId = widget.userData.data!.id;
+    } else {
+      // Handle the case where userData or userData.data is null
+      print("Error: userData or userData.data is null");
+    }
   }
 
   @override
   Widget build(BuildContext context){
+    // Retrieve the selected date from the arguments
+    DateTime? selectedDate = ModalRoute.of(context)?.settings.arguments as DateTime?;
+    // Use the selected date in your UI, for example, set it as the initial date
+    fromDate = selectedDate ?? DateTime.now();
     return Scaffold(
-      drawer: NavBar(),
+      //drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text("Create Reminder"),
+        title: Text("Create Reminder ${widget.userData.data?.name }"),
         centerTitle: true,
       ),
       body: ProgressHUD(
         child: Form(
+          key: _createReminderParentPageState.globalFormKey,
           child: _createReminderParentUI(context),
         )
       ),
@@ -205,6 +233,9 @@ Widget _createReminderParentUI(BuildContext context){
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   FormHelper.submitButton("Cancel", (){
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
+                    );
                   },
                     btnColor: Colors.grey,
                     txtColor: Colors.black,
@@ -212,8 +243,50 @@ Widget _createReminderParentUI(BuildContext context){
                     borderColor: Colors.grey,
                   ),
                   SizedBox(width: 20),
-                  FormHelper.submitButton("Save", (){
-                  },
+                  FormHelper.submitButton(
+                    "Save", (){
+                    if(validateAndSave()){
+                      setState((){
+                          isAPICallProcess = true; //API
+                      });
+                      ReminderModel model = ReminderModel(
+                          eventName: eventName!,
+                          details: details!,
+                          fromDate: Utils.formatDateTimeToString(fromDate),
+                          toDate: Utils.formatDateTimeToString(toDate),
+                          userId: userId,
+                      );
+                      APIService.createReminder(model).then((response) {
+                        print(response); // Add this line to print the response
+                        setState(() {
+                          isAPICallProcess = false; //API
+                        });
+
+                        if(response){
+                          FormHelper.showSimpleAlertDialog(
+                            context,
+                            Config.appName,
+                            "Reminder created.",
+                            "OK", (){
+                            Navigator.pushReplacement(context, MaterialPageRoute(
+                                builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
+                            );
+                          },
+                          );
+                        }else{
+                          FormHelper.showSimpleAlertDialog(
+                            context,
+                            Config.appName,
+                            "Reminder failed to create",
+                            "OK",(){
+                            Navigator.of(context).pop();
+                          },
+                          );
+                        }
+                      },
+                      );
+                    }},
+
                     btnColor: Colors.orange,
                     txtColor: Colors.black,
                     borderRadius: 10,
@@ -238,7 +311,8 @@ Widget _createReminderParentUI(BuildContext context){
       toDate = DateTime(date.year, date.month, date.day, toDate.hour, toDate.minute);
     }
     setState(()
-        => fromDate = date);
+        => fromDate = date
+    );
   }
 
   Future pickToDateTime({required bool pickDate}) async{
@@ -283,14 +357,17 @@ Widget _createReminderParentUI(BuildContext context){
       return date.add(time);
     }
   }
-  bool validateAndSave(){
+  bool validateAndSave() {
+    print("Validate and Save method is called");
     final form = globalFormKey.currentState;
-    if(form!.validate()){
+    if (form != null && form.validate()) {
+      print("Save method is called");
       form.save();
       return true;
-    }else{
+    } else {
       return false;
     }
   }
+
 
 }

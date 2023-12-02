@@ -4,6 +4,7 @@ LoginResponseModel loginResponseJson(String str) =>
     LoginResponseModel.fromJson(json.decode(str));
 
 class LoginResponseModel {
+
   LoginResponseModel({
     required this.message,
     required this.data,
@@ -15,6 +16,7 @@ class LoginResponseModel {
     message = json['message'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null; // Handle null 'data'
   }
+
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
@@ -31,15 +33,15 @@ class Data {
     required this.id,
     required this.token,
   });
-  late final String? email;
-  late final String? name;
-  late final String? id;
+  late final String email;
+  late final String name;
+  late final String id;
   late final String? token;
 
   Data.fromJson(Map<String, dynamic> json){
     email = json['email'];
     name = json['name'];
-    id = json['id'];
+    id = json['_id'];
     token = json['token'];
   }
 
@@ -47,7 +49,7 @@ class Data {
     final _data = <String, dynamic>{};
     _data['email'] = email;
     _data['name'] = name;
-    _data['id'] = id;
+    _data['_id'] = id;
     _data['token'] = token;
     return _data;
   }

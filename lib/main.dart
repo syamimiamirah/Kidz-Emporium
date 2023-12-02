@@ -3,11 +3,17 @@ import 'package:kidz_emporium/Screens/home.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/register_page.dart';
-
+import 'package:kidz_emporium/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'Screens/parent/create_reminder_parent.dart';
 import 'Screens/parent/view_reminder_parent.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(
+  ChangeNotifierProvider(
+    create: (context) => UserProvider(),
+    child: MyApp(),
+  ),
+);
 
 
 class MyApp extends StatelessWidget {
@@ -25,9 +31,16 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) =>const LoginPage(),
         '/register': (context) => const RegisterPage(),
-        '/home': (context) => HomePage(),
-        '/view_reminder_parent': (context) => ViewReminderParentPage(),
-        '/create_reminder_parent': (context) => CreateReminderParentPage(),
+        //'/home': (context) => HomePage(userData: ,),
+        //'/view_reminder_parent': (context) => ViewReminderParentPage(userData:widget.userData)),
+        '/create_reminder_parent': (context) {
+          final userProvider = Provider.of<UserProvider>(context, listen: false);
+          final selectedDate = ModalRoute.of(context)?.settings.arguments as DateTime?;
+          return CreateReminderParentPage(
+            selectedDate: selectedDate, // Pass your selected date here
+            userData: userProvider.userData,
+          );
+        },
       },
       home: WelcomeScreen(),
     );

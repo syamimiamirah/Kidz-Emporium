@@ -302,7 +302,8 @@ class _registerPageState extends State<RegisterPage> {
                           },
                         );
                       }
-                    },);// Proceed with your API call
+                    },
+                    );// Proceed with your API call
                   }
                 }
               },

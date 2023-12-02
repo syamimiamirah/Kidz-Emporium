@@ -4,18 +4,22 @@ import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
+import 'package:kidz_emporium/models/login_response_model.dart';
 import '../admin/create_therapist.dart';
 import '../config.dart';
 import '../main.dart';
+import '../services/shared_service.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final LoginResponseModel userData;
+  const HomePage({Key? key, required this.userData}) : super(key: key);
 
   @override
   _homePageState createState() =>_homePageState();
 }
 
 class _homePageState extends State<HomePage>{
+
   //Creating static data in lists
   List catNames = [
     "Booking",
@@ -49,8 +53,9 @@ class _homePageState extends State<HomePage>{
 
   @override
   Widget build(BuildContext context){
+
     return Scaffold(
-      drawer: NavBar(),
+      drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         title: Text("Home"),
@@ -81,7 +86,7 @@ class _homePageState extends State<HomePage>{
                   padding: EdgeInsets.only(left: 3, bottom: 15),
                   child: Row(
                     children: <Widget>[
-                      Text("Hi! Admin", style: TextStyle(fontSize: 25,color: Colors.white, decoration: TextDecoration.none)),
+                      Text("Hi, ${widget.userData.data?.name ?? 'User'}!", style: TextStyle(fontSize: 25,color: Colors.white, decoration: TextDecoration.none)),
                     ],
                   ),
                 )
@@ -108,7 +113,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Booking clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewReminderParentPage()),
+                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
                       );
                     }
                     if (catNames[index] == "Therapist") {
@@ -116,7 +121,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Therapist clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => CreateTherapist()),
+                          builder: (context) => CreateTherapistPage(userData:widget.userData)),//CreateTherapist()),
                       );
                     }
                     if (catNames[index] == "Report") {
@@ -124,7 +129,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Report clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewReminderParentPage()),
+                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
                       );
                     }
                     if (catNames[index] == "Video") {
@@ -132,7 +137,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Video clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewReminderParentPage()),
+                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
                       );
                     }
                     if (catNames[index] == "Calendar") {
@@ -140,7 +145,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Calendar clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewReminderParentPage()),
+                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
                       );
                     }
                     if (catNames[index] == "Child") {
@@ -148,7 +153,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Child clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewReminderParentPage()),
+                          builder: (context) => ViewReminderParentPage(userData:widget.userData)),
                       );
                     }
                   },

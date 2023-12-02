@@ -22,4 +22,8 @@ class Utils{
 
   static DateTime removeTime(DateTime dateTime) =>
       DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+  static String formatDateTimeToString(DateTime dateTime) {
+    return dateTime.toIso8601String();
+  }
 }
