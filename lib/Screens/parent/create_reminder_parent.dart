@@ -40,8 +40,8 @@ class _createReminderParentPageState extends State<CreateReminderParentPage>{
     // Check if widget.userData and widget.userData.data are not null
     if (widget.userData != null && widget.userData.data != null) {
       print("userData: ${widget.userData.data!.id}");
-      fromDate = widget.selectedDate ?? DateTime.now();
-      toDate = widget.selectedDate ?? DateTime.now().add(Duration(hours: 2));
+      fromDate = widget.selectedDate ?? DateTime.now().add(Duration(days: 7));
+      toDate = widget.selectedDate ?? DateTime.now().add(Duration(days: 7, hours: 2));
       userId = widget.userData.data!.id;
     } else {
       // Handle the case where userData or userData.data is null
@@ -54,12 +54,12 @@ class _createReminderParentPageState extends State<CreateReminderParentPage>{
     // Retrieve the selected date from the arguments
     DateTime? selectedDate = ModalRoute.of(context)?.settings.arguments as DateTime?;
     // Use the selected date in your UI, for example, set it as the initial date
-    fromDate = selectedDate ?? DateTime.now();
+    fromDate = selectedDate ?? DateTime.now().add(Duration(days: 7));
     return Scaffold(
       //drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
-        title: Text("Create Reminder ${widget.userData.data?.name }"),
+        title: Text("Create Reminder"),
         centerTitle: true,
       ),
       body: ProgressHUD(
