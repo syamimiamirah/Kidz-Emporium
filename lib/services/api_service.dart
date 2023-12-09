@@ -86,4 +86,38 @@ class APIService{
       return false;
     }
   }
+
+  static Future<List<ReminderModel>> getReminder(String userId) async {
+    var url = Uri.http(Config.apiURL, Config.getReminderAPI, {'userId': userId});
+    print("Request URL: $url");
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true && responseData.containsKey('success')) {
+          List<ReminderModel> reminders = (responseData['success'] as List)
+              .map((json) => ReminderModel.fromJson(json))
+              .toList();
+
+          return reminders;
+        } else {
+          print("Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print("Failed to fetch reminders. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching reminders: $error");
+      return [];
+    }
+  }
+
 }
