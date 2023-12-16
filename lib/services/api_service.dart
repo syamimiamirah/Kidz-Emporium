@@ -63,7 +63,7 @@ class APIService{
   }
 
 
-  static Future<bool> createReminder(ReminderModel model) async {
+  static Future<ReminderModel?> createReminder(ReminderModel model) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
@@ -77,13 +77,10 @@ class APIService{
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      // Print or log relevant information
-      print("Response data: $data");
-      //await SharedService.setLoginDetails(loginResponseJson(response.body));
-      return true;
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return ReminderModel.fromJson(responseData);
     } else {
-      return false;
+      throw Exception('Failed to create reminder');
     }
   }
 
@@ -96,6 +93,7 @@ class APIService{
         url,
         headers: {'Content-Type': 'application/json'},
       ).timeout(Duration(seconds: 10));
+
 
       if (response.statusCode == 200) {
         final dynamic responseData = json.decode(response.body);
@@ -117,6 +115,33 @@ class APIService{
     } catch (error) {
       print("Error fetching reminders: $error");
       return [];
+    }
+  }
+
+  static Future<bool> deleteReminder(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.deleteReminderAPI);  // Change '_id' to 'id'
+    print("Request URL: $url");
+
+    try {
+      var response = await client.delete(
+        url,
+        headers: requestHeaders,
+        body: jsonEncode({'id': id}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to delete reminder. Status code: ${response.statusCode}");
+        return false;
+      }
+    } catch (error) {
+      print("Error deleting reminder: $error");
+      return false;
     }
   }
 
