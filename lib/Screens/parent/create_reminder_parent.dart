@@ -257,34 +257,38 @@ Widget _createReminderParentUI(BuildContext context){
                           userId: userId,
                       );
                       APIService.createReminder(model).then((response) {
-                        print(response); // Add this line to print the response
+                        print(response);
                         setState(() {
-                          isAPICallProcess = false; //API
+                          isAPICallProcess = false;
                         });
 
-                        if(response){
+                        if (response != null) {
                           FormHelper.showSimpleAlertDialog(
                             context,
                             Config.appName,
-                            "Reminder created.",
-                            "OK", (){
-                            Navigator.pushReplacement(context, MaterialPageRoute(
-                                builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                            );
-                          },
+                            "Reminder created",
+                            "OK",
+                                () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ViewReminderParentPage(userData: widget.userData),
+                                ),
+                              );
+                            },
                           );
-                        }else{
+                        } else {
                           FormHelper.showSimpleAlertDialog(
                             context,
                             Config.appName,
                             "Reminder failed to create",
-                            "OK",(){
-                            Navigator.of(context).pop();
-                          },
+                            "OK",
+                                () {
+                              Navigator.of(context).pop();
+                            },
                           );
                         }
-                      },
-                      );
+                      });
                     }},
 
                     btnColor: Colors.orange,
