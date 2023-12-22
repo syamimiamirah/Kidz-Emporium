@@ -33,14 +33,14 @@ class MyApp extends StatelessWidget {
         '/register': (context) => const RegisterPage(),
         //'/home': (context) => HomePage(userData: ,),
         //'/view_reminder_parent': (context) => ViewReminderParentPage(userData:widget.userData)),
-        '/create_reminder_parent': (context) {
+        /*'/create_reminder_parent': (context) {
           final userProvider = Provider.of<UserProvider>(context, listen: false);
           final selectedDate = ModalRoute.of(context)?.settings.arguments as DateTime?;
           return CreateReminderParentPage(
             selectedDate: selectedDate, // Pass your selected date here
             userData: userProvider.userData,
           );
-        },
+        },*/
       },
       home: WelcomeScreen(),
     );

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
+import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
-import '../admin/create_therapist.dart';
 import '../config.dart';
 import '../main.dart';
 import '../services/shared_service.dart';
+import 'admin/create_therapist_admin.dart';
 
 class HomePage extends StatefulWidget {
   final LoginResponseModel userData;
@@ -153,7 +154,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Child clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewReminderParentPage(userData:widget.userData)),
+                          builder: (context) => CreateChildParentPage(userData:widget.userData)),
                       );
                     }
                   },

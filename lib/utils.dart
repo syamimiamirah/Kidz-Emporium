@@ -1,20 +1,20 @@
 import 'package:intl/intl.dart';
 
-class Utils{
-  static String toDateTime(DateTime dateTime){
+class Utils {
+  static String toDateTime(DateTime dateTime) {
     final date = DateFormat.yMMMEd().format(dateTime);
     final time = DateFormat.Hm().format(dateTime);
 
     return '$date $time';
   }
 
-  static String toDate(DateTime dateTime){
+  static String toDate(DateTime dateTime) {
     final date = DateFormat.yMMMEd().format(dateTime);
 
     return '$date';
   }
 
-  static String toTime(DateTime dateTime){
+  static String toTime(DateTime dateTime) {
     final time = DateFormat.Hm().format(dateTime);
 
     return '$time';
@@ -24,6 +24,17 @@ class Utils{
       DateTime(dateTime.year, dateTime.month, dateTime.day);
 
   static String formatDateTimeToString(DateTime dateTime) {
-    return dateTime.toIso8601String();
+    return dateTime.toUtc().toIso8601String();
+  }
+
+  static DateTime parseStringToDateTime(String dateString) {
+    try {
+      final DateTime parsedDateTime = DateTime.parse(dateString).toUtc();
+      final DateTime localDateTime = parsedDateTime.toLocal();
+      return localDateTime;
+    } catch (e) {
+      print('Error parsing date string: $dateString');
+      throw e;
+    }
   }
 }

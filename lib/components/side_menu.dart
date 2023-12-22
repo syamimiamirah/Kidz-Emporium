@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
-import 'package:kidz_emporium/admin/create_therapist.dart';
+import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
 
+import '../Screens/admin/create_therapist_admin.dart';
 import '../Screens/parent/view_reminder_parent.dart';
 import '../models/login_response_model.dart';
 
@@ -31,7 +32,7 @@ class _navBarState extends State<NavBar>{
             ),
           ),
           ListTile(
-            leading: Icon(Icons.library_books),
+            leading: Icon(Icons.home),
             title: Text("Home"),
             onTap: () {
                 Navigator.push(context, MaterialPageRoute(
@@ -71,7 +72,9 @@ class _navBarState extends State<NavBar>{
           ListTile(
             leading: Icon(Icons.child_care),
             title: Text("My Child"),
-            onTap: () => null,
+            onTap: () => Navigator.push(context, MaterialPageRoute(
+                builder: (context) =>  CreateChildParentPage(userData:widget.userData)),
+            ),
           ),
           ListTile(
             leading: Icon(Icons.calendar_month),
