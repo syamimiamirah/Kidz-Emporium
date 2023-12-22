@@ -145,4 +145,51 @@ class APIService{
     }
   }
 
+  static Future<ReminderModel?> getReminderDetails(String id) async {
+    try {
+      var url = Uri.http(Config.apiURL, '${Config.getReminderDetailsAPI}/$id');
+      print("Request URL: $url");
+
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+        return responseData != null ? ReminderModel.fromJson(responseData['success']) : null;
+      } else {
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to get reminder details. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error getting reminder details: $error');
+      throw error;
+    }
+  }
+
+  // Add this method to your APIService class
+  static Future<bool> updateReminder(String id, ReminderModel updatedModel) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, '${Config.updateReminderAPI}/$id'); // Adjust the API endpoint
+    print("Request URL: $url");
+    print("id: $id");
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode({'_id': id, 'updatedData': updatedModel.toJson()}),
+    );
+
+    if (response.statusCode == 200) {
+      print("success");
+      return true;
+    } else {
+      print("Failed to update reminder. Status code: ${response.statusCode}");
+      return false;
+    }
+  }
+
 }

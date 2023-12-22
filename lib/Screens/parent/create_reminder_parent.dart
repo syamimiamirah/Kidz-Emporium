@@ -40,8 +40,8 @@ class _createReminderParentPageState extends State<CreateReminderParentPage>{
     // Check if widget.userData and widget.userData.data are not null
     if (widget.userData != null && widget.userData.data != null) {
       print("userData: ${widget.userData.data!.id}");
-      fromDate = widget.selectedDate ?? DateTime.now().add(Duration(days: 7));
-      toDate = widget.selectedDate ?? DateTime.now().add(Duration(days: 7, hours: 2));
+      fromDate = widget.selectedDate ?? DateTime.now();
+      toDate = widget.selectedDate ?? fromDate.add(Duration(hours: 2));
       userId = widget.userData.data!.id;
     } else {
       // Handle the case where userData or userData.data is null
@@ -52,9 +52,10 @@ class _createReminderParentPageState extends State<CreateReminderParentPage>{
   @override
   Widget build(BuildContext context){
     // Retrieve the selected date from the arguments
-    DateTime? selectedDate = ModalRoute.of(context)?.settings.arguments as DateTime?;
+    //DateTime? selectedDate = ModalRoute.of(context)?.settings.arguments as DateTime?;
     // Use the selected date in your UI, for example, set it as the initial date
-    fromDate = selectedDate ?? DateTime.now().add(Duration(days: 7));
+    //fromDate = selectedDate ?? DateTime.now().add(Duration(hours: 2));
+    //toDate = selectedDate ?? DateTime.now().add(Duration(hours: 2));
     return Scaffold(
       //drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
@@ -88,7 +89,7 @@ Widget _createReminderParentUI(BuildContext context){
                 },
                   prefixIconColor: kPrimaryColor,
                   showPrefixIcon: true,
-                  prefixIcon: const Icon(Icons.event_note),
+                  prefixIcon: const Icon(Icons.person),
                   borderRadius: 10,
                   borderColor: Colors.grey,
                   contentPadding: 15,
@@ -312,7 +313,7 @@ Widget _createReminderParentUI(BuildContext context){
     if(date == null) return;
 
     if(date.isAfter(toDate)){
-      toDate = DateTime(date.year, date.month, date.day, toDate.hour, toDate.minute);
+      toDate = date.add(Duration(hours: 2));
     }
     setState(()
         => fromDate = date

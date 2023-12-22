@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kidz_emporium/Screens/parent/create_reminder_parent.dart';
+import 'package:kidz_emporium/Screens/parent/update_reminder_parent.dart';
 import 'package:kidz_emporium/models/reminder_model.dart';
 import 'package:kidz_emporium/services/api_service.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -109,6 +110,7 @@ class _ViewReminderParentPageState extends State<ViewReminderParentPage> {
               itemBuilder: (context, index) {
                 String reminderTitle = _listOfDayEvents(_selectedDate!)[index]['title'];
                 String reminderDetails = _listOfDayEvents(_selectedDate!)[index]['details'];
+                String reminderId = _listOfDayEvents(_selectedDate!)[index]['id']!;
 
                 Color backgroundColor = Colors.grey.withOpacity(0.3);
 
@@ -171,6 +173,17 @@ class _ViewReminderParentPageState extends State<ViewReminderParentPage> {
                           Text('Details: $reminderDetails'),
                         ],
                       ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UpdateReminderParentPage(userData: widget.userData, reminderId: reminderId),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -185,7 +198,7 @@ class _ViewReminderParentPageState extends State<ViewReminderParentPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CreateReminderParentPage(userData: widget.userData),
+              builder: (context) => CreateReminderParentPage(userData: widget.userData,  selectedDate: _selectedDate!,),
             ),
           );
         },
