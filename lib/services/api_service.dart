@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:kidz_emporium/config.dart';
+import 'package:kidz_emporium/models/child_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/register_request_model.dart';
 import 'package:kidz_emporium/models/register_response_model.dart';
@@ -189,6 +190,28 @@ class APIService{
     } else {
       print("Failed to update reminder. Status code: ${response.statusCode}");
       return false;
+    }
+  }
+
+  //child
+  static Future<ChildModel?> createChild(ChildModel model) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.createChildAPI);
+
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return ChildModel.fromJson(responseData);
+    } else {
+      throw Exception('Failed to create child');
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
+import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
@@ -154,7 +155,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Child clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => CreateChildParentPage(userData:widget.userData)),
+                          builder: (context) => ViewChildParentPage(userData:widget.userData)),
                       );
                     }
                   },
