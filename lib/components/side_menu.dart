@@ -6,6 +6,7 @@ import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
 
 import '../Screens/admin/create_therapist_admin.dart';
+import '../Screens/parent/view_child_parent.dart';
 import '../Screens/parent/view_reminder_parent.dart';
 import '../models/login_response_model.dart';
 
@@ -73,7 +74,7 @@ class _navBarState extends State<NavBar>{
             leading: Icon(Icons.child_care),
             title: Text("My Child"),
             onTap: () => Navigator.push(context, MaterialPageRoute(
-                builder: (context) =>  CreateChildParentPage(userData:widget.userData)),
+                builder: (context) =>  ViewChildParentPage(userData:widget.userData)),
             ),
           ),
           ListTile(

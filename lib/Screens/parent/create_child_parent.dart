@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
+import 'package:kidz_emporium/models/child_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
+import 'package:kidz_emporium/services/api_service.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
+import '../../utils.dart';
 
 
 class CreateChildParentPage extends StatefulWidget{
@@ -23,7 +27,20 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
   DateTime? birthDate;
   String? gender;
   String? program;
+  late String userId;
   bool isBirthDateSet = false;
+
+  @override
+  void initState(){
+    super.initState();
+    if(widget.userData != null && widget.userData.data != null){
+      print("userData: ${widget.userData.data!.id}");
+      userId = widget.userData.data!.id;
+    }else {
+      // Handle the case where userData or userData.data is null
+      print("Error: userData or userData.data is null");
+    }
+  }
 
   @override
   Widget build(BuildContext context){
@@ -245,7 +262,7 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                   children: [
                     FormHelper.submitButton("Cancel", (){
                       Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
+                          builder: (context) =>  ViewChildParentPage(userData:widget.userData)),
                       );
                     },
                       btnColor: Colors.grey,
@@ -260,18 +277,42 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                           setState(() {
                             isAPICallProcess = true;
                           });
-                          /*if(response != null){
-                            FormHelper.showSimpleAlertDialog(context, Config.appName, "Child Profile created", "OK", () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ViewReminderParentPage(userData: widget.userData),
-                                ),
-                              );
-                            },
-                            );
-                          }*/
+                          ChildModel model = ChildModel(
+                              childName: childName!,
+                              birthDate: Utils.formatDateTimeToString(birthDate!),
+                              gender: gender!,
+                              program: program!,
+                              userId: userId,
+                          );
 
+                          APIService.createChild(model).then((response){
+                            print(response);
+                            setState(() {
+                              isAPICallProcess = false;
+                            });
+
+                            if(response != null){
+                              FormHelper.showSimpleAlertDialog(context, Config.appName, "Child Profile created", "OK", () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ViewChildParentPage(userData: widget.userData),
+                                  ),
+                                );
+                              },
+                              );
+                            }else{
+                              FormHelper.showSimpleAlertDialog(
+                                context,
+                                Config.appName,
+                                "Child profile failed to create",
+                                "OK",
+                                  () {
+                                    Navigator.of(context).pop();
+                                  },
+                                );
+                              }
+                            });
                         }
                     },
                       btnColor: Colors.orange,
