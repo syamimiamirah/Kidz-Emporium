@@ -169,7 +169,6 @@ class APIService{
     }
   }
 
-  // Add this method to your APIService class
   static Future<bool> updateReminder(String id, ReminderModel updatedModel) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -215,4 +214,112 @@ class APIService{
     }
   }
 
+
+  static Future<List<ChildModel>> getChild(String userId) async {
+    var url = Uri.http(Config.apiURL, Config.getChildAPI, {'userId': userId});
+    print("Request URL: $url");
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true && responseData.containsKey('success')) {
+          List<ChildModel> children = (responseData['success'] as List)
+              .map((json) => ChildModel.fromJson(json))
+              .toList();
+
+          return children;
+        } else {
+          print("Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print("Failed to fetch children. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching children: $error");
+      return [];
+    }
+  }
+
+  static Future<bool> deleteChild(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.deleteChildAPI);  // Change '_id' to 'id'
+    print("Request URL: $url");
+
+    try {
+      var response = await client.delete(
+        url,
+        headers: requestHeaders,
+        body: jsonEncode({'id': id}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to delete child. Status code: ${response.statusCode}");
+        return false;
+      }
+    } catch (error) {
+      print("Error deleting child: $error");
+      return false;
+    }
+  }
+
+  static Future<ChildModel?> getChildDetails(String id) async {
+    try {
+      var url = Uri.http(Config.apiURL, '${Config.getChildDetailsAPI}/$id');
+      print("Request URL: $url");
+
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+        return responseData != null ? ChildModel.fromJson(responseData['success']) : null;
+      } else {
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to get child details. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error getting child details: $error');
+      throw error;
+    }
+  }
+
+  // Add this method to your APIService class
+  static Future<bool> updateChild(String id, ChildModel updatedModel) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, '${Config.updateChildAPI}/$id'); // Adjust the API endpoint
+    print("Request URL: $url");
+    print("id: $id");
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode({'_id': id, 'updatedData': updatedModel.toJson()}),
+    );
+
+    if (response.statusCode == 200) {
+      print("success");
+      return true;
+    } else {
+      print("Failed to update child. Status code: ${response.statusCode}");
+      return false;
+    }
+  }
 }

@@ -33,12 +33,12 @@ class _homePageState extends State<HomePage>{
   ];
 
   List<Color> catColors= [
-    kSecondaryColor,
     kPrimaryColor,
     kSecondaryColor,
     kPrimaryColor,
     kSecondaryColor,
     kPrimaryColor,
+    kSecondaryColor,
   ];
 
   List<Icon> catIcons = [

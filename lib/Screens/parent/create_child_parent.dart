@@ -46,7 +46,7 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
         title: Text("Create Child Profile"),
         centerTitle: true,
       ),
@@ -74,7 +74,7 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
             }, (onSavedVal){
               childName = onSavedVal.toString().trim();
             },
-              prefixIconColor: kPrimaryColor,
+              prefixIconColor: kSecondaryColor,
               showPrefixIcon: true,
               prefixIcon: const Icon(Icons.event_note),
               borderRadius: 10,
@@ -99,7 +99,7 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                     padding: const EdgeInsets.all(10),
                     child: Icon(
                       Icons.calendar_today, // Your desired icon for date picker
-                      color: kPrimaryColor, // Icon color
+                      color: kSecondaryColor, // Icon color
                     ),
                   ),
                   Expanded(
@@ -151,7 +151,7 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                     padding: const EdgeInsets.all(10),
                     child: Icon(
                       Icons.transgender, // Your desired icon
-                      color: kPrimaryColor, // Icon color
+                      color: kSecondaryColor, // Icon color
                     ),
                   ),
                   Expanded(
@@ -208,7 +208,7 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                     padding: const EdgeInsets.all(10),
                     child: Icon(
                       Icons.school, // Your desired icon
-                      color: kPrimaryColor, // Icon color
+                      color: kSecondaryColor, // Icon color
                     ),
                   ),
                   Expanded(
@@ -315,10 +315,10 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                             });
                         }
                     },
-                      btnColor: Colors.orange,
-                      txtColor: Colors.black,
+                      btnColor: kSecondaryColor,
+                      txtColor: Colors.white,
                       borderRadius: 10,
-                      borderColor: Colors.orange,
+                      borderColor: kSecondaryColor,
                     ),
                   ],
               )
