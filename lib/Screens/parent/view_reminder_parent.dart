@@ -119,6 +119,7 @@ class _ViewReminderParentPageState extends State<ViewReminderParentPage> {
                   background: Container(
                     color: Colors.red,
                     alignment: AlignmentDirectional.centerEnd,
+                    padding: EdgeInsets.only(right: 20),
                     child: Padding(
                       padding: EdgeInsets.only(right: 16.0),
                       child: Row(
@@ -164,17 +165,22 @@ class _ViewReminderParentPageState extends State<ViewReminderParentPage> {
                     }
                   },
                   child: Card(
-                    color: backgroundColor,
+                    color: kPrimaryColor.withOpacity(0.8),
+                    elevation: 2,
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                     child: ListTile(
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Event Name: $reminderTitle'),
+                          Text('$reminderTitle', style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),),
                           Text('Details: $reminderDetails'),
                         ],
                       ),
                       trailing: IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: Icon(Icons.edit, color: Colors.black),
                         onPressed: () {
                           Navigator.push(
                             context,

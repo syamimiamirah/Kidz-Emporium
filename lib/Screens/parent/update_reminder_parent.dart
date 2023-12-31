@@ -319,9 +319,9 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
                             "Failed to update reminder",
                             "OK",
                           () {
-                          Navigator.of(context).pop();
-                          },
-                          );
+                              Navigator.of(context).pop();
+                              },
+                            );
                           }
                           }
                           },
