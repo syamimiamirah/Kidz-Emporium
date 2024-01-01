@@ -17,4 +17,11 @@ class Config{
   static const String deleteChildAPI = "api/delete-child";
   static const String getChildDetailsAPI = "api/get-child-details";
   static const String updateChildAPI = "api/update-child";
+
+  //therapist
+  static const String createTherapistAPI = "api/therapist";
+  static const String getTherapistAPI = "api/get-therapist";
+  static const String deleteTherapistAPI = "api/delete-therapist";
+  static const String getTherapistDetailsAPI = "api/get-therapist-details";
+  static const String updateTherapistAPI = "api/update-therapist";
 }
