@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kidz_emporium/Screens/admin/view_therapist_admin.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
@@ -123,7 +124,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Therapist clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => CreateTherapistPage(userData:widget.userData)),//CreateTherapist()),
+                          builder: (context) => ViewTherapistAdminPage(userData:widget.userData)),//CreateTherapist()),
                       );
                     }
                     if (catNames[index] == "Report") {

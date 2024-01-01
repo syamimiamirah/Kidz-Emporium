@@ -31,7 +31,7 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
   late String userId;
   bool isBirthDateSet = false;
 
-  late TextEditingController childNameController;
+  //late TextEditingController childNameController;
 
   @override
   void initState(){
@@ -191,6 +191,10 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                           value: gender.isNotEmpty ? gender : null,
                           hint: const Text("Gender"),
                           items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text("Gender",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                            ),
                             // Other role options
                             DropdownMenuItem<String>(
                               value: "Male",
@@ -205,7 +209,7 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                           icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
                           onChanged: (String? newValue) {
                             setState(() {
-                              this.gender = newValue ?? ""; // Ensure a non-null value
+                              this.gender = newValue!; // Ensure a non-null value
                             });
                           },
                         ),
@@ -242,6 +246,10 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                           value: program.isNotEmpty ? program : null,
                           hint: const Text("Program"),
                           items: [
+                            DropdownMenuItem<String>(
+                              value: null,
+                              child: Text("Program",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                            ),
                             // Other role options
                             DropdownMenuItem<String>(
                               value: "Early Intervention Program (EIP)",
@@ -260,7 +268,7 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                           icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
                           onChanged: (String? newValue) {
                             setState(() {
-                              this.program = newValue ?? ""; // Ensure a non-null value
+                              this.program = newValue!; // Ensure a non-null value
                             });
                           },
                         ),
