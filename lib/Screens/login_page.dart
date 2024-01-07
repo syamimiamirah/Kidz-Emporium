@@ -5,6 +5,8 @@ import 'package:kidz_emporium/Screens/home.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/register_page.dart';
 import 'package:kidz_emporium/models/login_request_model.dart';
+import 'package:kidz_emporium/models/login_response_model.dart';
+import 'package:kidz_emporium/models/register_response_model.dart';
 import 'package:kidz_emporium/services/api_service.dart';
 import 'package:snippet_coder_utils/FormHelper.dart';
 
@@ -13,6 +15,8 @@ import '../services/shared_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
+  //final RegisterResponseModel registerResponse;
+  //inal RegisterResponseModel userData;
 
   @override
   _loginPageState createState() => _loginPageState();
@@ -21,9 +25,10 @@ class LoginPage extends StatefulWidget {
 class _loginPageState extends State<LoginPage>{
   bool isAPICallProcess =  false;
   bool hidePassword = true;
-  static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
+  static final GlobalKey<FormState> loginFormKey  = GlobalKey<FormState>();
   String? email;
   String? password;
+
 
 
   @override
@@ -49,7 +54,7 @@ class _loginPageState extends State<LoginPage>{
     return Scaffold(
         body: ProgressHUD(
           child: Form(
-            key: globalFormKey,
+            key: loginFormKey ,
             child: _loginUI(context),
           ),
         ),
@@ -171,13 +176,30 @@ class _loginPageState extends State<LoginPage>{
                                   () async {
                                     Navigator.of(context).pop();
                                     var cachedLoginDetails = await SharedService.loginDetails();
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => HomePage(userData: cachedLoginDetails),
-                                      ),
-                                    );
-                              },
+                                    if(cachedLoginDetails.data?.role == "Parent"){
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => HomePage(userData: cachedLoginDetails),
+                                        ),
+                                      );
+                                    }else if(cachedLoginDetails.data?.role == "Admin"){
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => AdminHomePage(userData: cachedLoginDetails),
+                                        ),
+                                      );
+                                    }else{
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => TherapistHomePage(userData: cachedLoginDetails),
+                                        ),
+                                      );
+                                    }
+                                },
+
                           );
                         }else{
                           FormHelper.showSimpleAlertDialog(
@@ -190,7 +212,8 @@ class _loginPageState extends State<LoginPage>{
                             },
                           );
                         }
-                      });
+                      }
+                      );
                     }
                   },
               btnColor: Colors.pink,
@@ -233,7 +256,7 @@ class _loginPageState extends State<LoginPage>{
 
 
   bool validateAndSave(){
-    final form = globalFormKey.currentState;
+    final form = loginFormKey.currentState;
     if(form!.validate()){
       form.save();
       return true;

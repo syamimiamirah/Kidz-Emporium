@@ -251,6 +251,43 @@ class APIService{
     }
   }
 
+  static Future<List<ChildModel>> getAllChildren() async {
+    var url = await Uri.http(
+        Config.apiURL, Config.getAllChildrenAPI); // Adjust the endpoint
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true &&
+            responseData.containsKey('success')) {
+          List<ChildModel> children = (responseData['success'] as List)
+              .map((json) => ChildModel.fromJson(json))
+              .toList();
+
+          return children;
+        } else {
+          print(
+              "Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print(
+            "Failed to fetch all children. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching all children: $error");
+      return [];
+    }
+  }
+
   static Future<bool> deleteChild(String id) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -381,6 +418,44 @@ class APIService{
       return [];
     }
   }
+
+  static Future<List<TherapistModel>> getAllTherapists() async {
+    var url = await Uri.http(
+        Config.apiURL, Config.getAllTherapistsAPI); // Adjust the endpoint
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true &&
+            responseData.containsKey('success')) {
+          List<TherapistModel> therapists = (responseData['success'] as List)
+              .map((json) => TherapistModel.fromJson(json))
+              .toList();
+
+          return therapists;
+        } else {
+          print(
+              "Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print(
+            "Failed to fetch all therapists. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching all therapists: $error");
+      return [];
+    }
+  }
+
 
   static Future<bool> deleteTherapist(String id) async {
     Map<String, String> requestHeaders = {

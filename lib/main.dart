@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
 
       ),
       routes: {
-        '/login': (context) =>const LoginPage(),
-        '/register': (context) => const RegisterPage(),
+        '/login': (context) => LoginPage(),
+        '/register': (context) => RegisterPage(),
         //'/home': (context) => HomePage(userData: ,),
         //'/view_reminder_parent': (context) => ViewReminderParentPage(userData:widget.userData)),
         /*'/create_reminder_parent': (context) {

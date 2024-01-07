@@ -52,7 +52,7 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBar(userData: widget.userData),
+      drawer: AdminNavBar(userData: widget.userData),
       appBar: AppBar(
         backgroundColor: kPrimaryColor,
         title: Text("View Therapist Profile"),
