@@ -21,7 +21,7 @@ class SharedService{
       return loginResponseJson(cacheData.syncData);
     } else {
       // Return a default LoginResponseModel if the cache key doesn't exist
-      return LoginResponseModel(message: "", data: Data(email: "", name: "", id: "", token: "secretkey"));
+      return LoginResponseModel(message: "", data: Data(email: "", name: "", id: "", token: "secretkey", role: ""));
     }
   }
   static Future<void> setLoginDetails(

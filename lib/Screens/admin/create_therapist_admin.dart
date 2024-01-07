@@ -245,7 +245,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                     children: [
                       FormHelper.submitButton("Cancel", (){
                         Navigator.pushReplacement(context, MaterialPageRoute(
-                            builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
+                            builder: (context) =>  ViewTherapistAdminPage(userData:widget.userData)),
                         );
                       },
                         btnColor: Colors.grey,
