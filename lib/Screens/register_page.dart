@@ -87,8 +87,9 @@ class _registerPageState extends State<RegisterPage> {
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 15,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
+                hintFontSize: 16,
               ),
             ),
 
@@ -119,8 +120,9 @@ class _registerPageState extends State<RegisterPage> {
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 15,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
+                hintFontSize: 16,
               ),
             ),
 
@@ -146,8 +148,9 @@ class _registerPageState extends State<RegisterPage> {
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 15,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
+                hintFontSize: 16,
               ),
             ),
 
@@ -173,24 +176,24 @@ class _registerPageState extends State<RegisterPage> {
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
                       value: currentRole,
-                      hint: const Text("Role"),
+                      hint: const Text("Role",style: TextStyle(fontSize: 16,)),
                       items: [
                         DropdownMenuItem<String>(
                           value: null,
-                          child: Text("Role",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                          child: Text("Role",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                         ),
                         // Other role options
                         DropdownMenuItem<String>(
                           value: "Admin",
-                          child: Text("Admin",style: TextStyle(fontSize: 15,),),
+                          child: Text("Admin",style: TextStyle(fontSize: 16,),),
                         ),
                         DropdownMenuItem<String>(
                           value: "Parent",
-                          child: Text("Parent",style: TextStyle(fontSize: 15,),),
+                          child: Text("Parent",style: TextStyle(fontSize: 16,),),
                         ),
                         DropdownMenuItem<String>(
                           value: "Therapist",
-                          child: Text("Therapist",style: TextStyle(fontSize: 15,),),
+                          child: Text("Therapist",style: TextStyle(fontSize: 16,),),
                         ),
                       ],// The first item is the hint, set its value to null
                       isExpanded: true,
@@ -238,9 +241,10 @@ class _registerPageState extends State<RegisterPage> {
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 15,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
                 obscureText: hidePassword,
+                hintFontSize: 16,
                 suffixIcon: IconButton(
                     onPressed: (){
                       hidePassword = !hidePassword;
@@ -309,6 +313,7 @@ class _registerPageState extends State<RegisterPage> {
               },
                 btnColor: Colors.orange,
                 txtColor: Colors.black,
+                fontSize: 16,
                 borderRadius: 10,
                 borderColor: Colors.orange,
               ),
@@ -321,13 +326,14 @@ class _registerPageState extends State<RegisterPage> {
                       text: "Already have an account?",
                       style: TextStyle(
                         color: Colors.black,
+                        fontSize: 16,
                       ),
                     ),
                     TextSpan(
                       text: "Sign In",
                       style: TextStyle(
                         color: Colors.pink,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.bold,fontSize: 16,
                       ),
                       recognizer: TapGestureRecognizer()..onTap = (){
                         Navigator.of(context).pushNamedAndRemoveUntil("/login", (route) => false,

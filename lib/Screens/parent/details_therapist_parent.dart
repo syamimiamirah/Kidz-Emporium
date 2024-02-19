@@ -67,7 +67,7 @@ class _TherapistDetailParentPageState extends State<TherapistDetailParentPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Therapist Details'),
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

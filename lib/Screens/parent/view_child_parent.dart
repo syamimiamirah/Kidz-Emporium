@@ -108,8 +108,11 @@ class _ViewChildParentPageState extends State<ViewChildParentPage> {
                     ),
 
                     child: Card(
-                      color: Colors.pink[100],
+                      color: Colors.pink[100]!.withOpacity(0.7),
                       elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                       child: ListTile(
                         contentPadding: EdgeInsets.all(10),
@@ -120,18 +123,18 @@ class _ViewChildParentPageState extends State<ViewChildParentPage> {
                         ),
                         title: Text(
                           children[index].childName ?? '',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Birth Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(children[index].birthDate as String))}",
-                              style: TextStyle(color: Colors.black.withOpacity(0.7)),
+                              style: TextStyle(fontSize: 16, color: Colors.black),
                             ),
                             Text(
                               "Program: ${children[index].program ?? 'N/A'}",
-                              style: TextStyle(color: Colors.black.withOpacity(0.7)),
+                              style: TextStyle(fontSize: 16, color: Colors.black),
                             ),
                             // Add any other details as needed
                           ],

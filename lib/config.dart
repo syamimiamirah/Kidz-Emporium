@@ -1,6 +1,6 @@
 class Config{
   static const String appName = "Kid Emporium";
-  static const String apiURL = "192.168.0.109:4000";
+  static const String apiURL = "192.168.0.119:4000";
   static const String registerAPI = "api/register";
   static const String loginAPI = "api/login";
 
@@ -26,4 +26,22 @@ class Config{
   static const String getTherapistDetailsAPI = "api/get-therapist-details";
   static const String updateTherapistAPI = "api/update-therapist";
   static const String getAllTherapistsAPI = "api/therapists";
+  static const String checkTherapistAvailability = "api/check-therapist-availability";
+
+  //booking
+  static const String createBookingAPI = "api/booking";
+  static const String getBookingAPI = "api/get-booking";
+  static const String deleteBookingAPI = "api/delete-booking";
+  static const String getBookingDetailsAPI = "api/get-booking-details";
+  static const String updateBookingAPI = "api/update-booking";
+  static const String getAllBookingsAPI = "api/bookings";
+
+  //payment
+  static const String createPaymentAPI = "api/payment";
+  static const String getPaymentAPI = "api/get-payment";
+  static const String deletePaymentAPI = "api/delete-payment";
+  static const String getPaymentDetailsAPI = "api/get-payment-details";
+  static const String updatePaymentAPI = "api/update-payment";
+  static const String getAllPaymentsAPI = "api/payments";
+
 }

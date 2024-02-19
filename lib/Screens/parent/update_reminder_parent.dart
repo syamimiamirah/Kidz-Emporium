@@ -123,8 +123,9 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
               borderRadius: 10,
               borderColor: Colors.grey,
               contentPadding: 15,
-              fontSize: 15,
+              fontSize: 16,
               prefixIconPaddingLeft: 10,
+              hintFontSize: 16,
             ),
           ),
           const SizedBox(height: 20),
@@ -152,7 +153,8 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
               borderRadius: 10,
               borderColor: Colors.grey,
               contentPadding: 15,
-              fontSize: 15,
+              fontSize: 16,
+              hintFontSize: 16,
               prefixIconPaddingLeft: 10,
               prefixIconPaddingBottom: 55,
               isMultiline: true,
@@ -189,15 +191,15 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
                         Expanded(
                           flex: 2,
                           child: ListTile(
-                            title: Text(Utils.toDate(fromDate)),
-                            trailing: Icon(Icons.arrow_drop_down),
+                            title: Text(Utils.toDate(fromDate),style: TextStyle(fontSize: 16)),
+                            trailing: const Icon(Icons.arrow_drop_down),
                             onTap: () => pickFromDateTime(pickDate: true),
                           ),
                         ),
                         Expanded(
                           child: ListTile(
-                            title: Text(Utils.toTime(fromDate)),
-                            trailing: Icon(Icons.arrow_drop_down),
+                            title: Text(Utils.toTime(fromDate),style: TextStyle(fontSize: 16)),
+                            trailing: const Icon(Icons.arrow_drop_down),
                             onTap: () => pickFromDateTime(pickDate: false),
                           ),
                         ),
@@ -239,14 +241,14 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
                         Expanded(
                           flex: 2,
                           child: ListTile(
-                            title: Text(Utils.toDate(toDate)),
+                            title: Text(Utils.toDate(toDate),style: TextStyle(fontSize: 16)),
                             trailing: Icon(Icons.arrow_drop_down),
                             onTap: () => pickToDateTime(pickDate: true),
                           ),
                         ),
                         Expanded(
                           child: ListTile(
-                            title: Text(Utils.toTime(toDate)),
+                            title: Text(Utils.toTime(toDate), style: TextStyle(fontSize: 16)),
                             trailing: Icon(Icons.arrow_drop_down),
                             onTap: ()=> pickToDateTime(pickDate: false),
                           ),
@@ -275,6 +277,7 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
                         txtColor: Colors.black,
                         borderRadius: 10,
                         borderColor: Colors.grey,
+                        fontSize: 16,
                       ),
                       SizedBox(width: 20),
                       FormHelper.submitButton(
@@ -325,7 +328,7 @@ class _updateReminderParentPageState extends State<UpdateReminderParentPage>{
                           }
                           }
                           },
-
+                        fontSize: 16,
                         btnColor: Colors.orange,
                         txtColor: Colors.black,
                         borderRadius: 10,

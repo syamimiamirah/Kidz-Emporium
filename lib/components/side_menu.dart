@@ -7,6 +7,7 @@ import 'package:kidz_emporium/Screens/home.dart';
 
 import '../Screens/admin/create_therapist_admin.dart';
 import '../Screens/admin/view_therapist_admin.dart';
+import '../Screens/parent/create_booking_parent.dart';
 import '../Screens/parent/view_child_parent.dart';
 import '../Screens/parent/view_reminder_parent.dart';
 import '../Screens/parent/view_therapist_parent.dart';
@@ -72,7 +73,9 @@ class _navBarState extends State<NavBar>{
           ListTile(
             leading: Icon(Icons.library_books),
             title: Text("Booking"),
-            onTap: () => null,
+            onTap: () => Navigator.push(context, MaterialPageRoute(
+                builder: (context) =>  CreateBookingParentPage(userData:widget.userData)),
+            ),
           ),
           ListTile(
             leading: Icon(Icons.payment),

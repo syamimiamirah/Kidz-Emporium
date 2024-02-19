@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/admin/view_therapist_admin.dart';
+import 'package:kidz_emporium/Screens/admin/view_youtube_admin.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
+import 'package:kidz_emporium/Screens/parent/create_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
+import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_therapist_parent.dart';
@@ -116,15 +119,16 @@ class _homePageState extends State<HomePage>{
                   return InkWell( // Wrap the container with InkWell for clickability
                       onTap: () async {
                     // Handle the click event for the calendar
+                   List<TherapistModel> therapists = await APIService.getAllTherapists();
                     if (catNames[index] == "Booking") {
                       // Add your code here to navigate or perform an action
                       // when the calendar is clicked
                       print("Booking clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
+                          builder: (context) =>  ViewBookingParentPage(userData:widget.userData)),
                       );
                     }
-                    List<TherapistModel> therapists = await APIService.getAllTherapists();
+
                     if (catNames[index] == "Therapist") {
                       // Add your code here to navigate or perform an action
                       // when the calendar is clicked
@@ -146,7 +150,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Video clicked!");
                       /*Navigator.push(context, MaterialPageRoute(
-                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
+                          builder: (context) =>  ViewYoutubeAdmin(userData:widget.userData)),
                       );*/
                     }
                     if (catNames[index] == "Calendar") {
@@ -396,9 +400,9 @@ class _adminHomePageState extends State<AdminHomePage>{
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
                           print("Video clicked!");
-                          /*Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>  ViewYoutubeAdmin(userData:widget.userData)),
+                          );
                         }
                         if (catNames[index] == "Calendar") {
                           // Add your code here to navigate or perform an action

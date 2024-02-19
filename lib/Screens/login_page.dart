@@ -112,8 +112,9 @@ class _loginPageState extends State<LoginPage>{
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 14,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
+                hintFontSize: 16,
               ),
             ),
             const SizedBox(height: 10),
@@ -138,9 +139,10 @@ class _loginPageState extends State<LoginPage>{
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 14,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
                 obscureText: hidePassword,
+                hintFontSize: 16,
                 suffixIcon: IconButton(
                   onPressed: (){
                     hidePassword = !hidePassword;
@@ -219,7 +221,8 @@ class _loginPageState extends State<LoginPage>{
               btnColor: Colors.pink,
               txtColor: Colors.white,
               borderRadius: 10,
-                borderColor: Colors.pink,
+              borderColor: Colors.pink,
+              fontSize: 16,
               ),
             ),
             Center(
@@ -229,13 +232,13 @@ class _loginPageState extends State<LoginPage>{
                     TextSpan(
                       text: "Dont have an account?",
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.black, fontSize: 16,
                       ),
                     ),
                     TextSpan(
                       text: "Sign Up",
                       style: TextStyle(
-                        color: Colors.orange,fontWeight: FontWeight.bold,
+                        color: Colors.orange,fontWeight: FontWeight.bold, fontSize: 16,
                       ),
                       recognizer: TapGestureRecognizer()..onTap = (){
                         Navigator.of(context).pushNamedAndRemoveUntil("/register", (route) => false,

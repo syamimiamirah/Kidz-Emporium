@@ -82,6 +82,7 @@ class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
                 itemCount: filteredTherapists.length,
                 itemBuilder: (context, index) {
                   return Card(
+                    color: Colors.orange[100]!.withOpacity(0.8),
                     elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),

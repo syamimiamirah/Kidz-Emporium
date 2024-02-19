@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
+  youtube_player_flutter: ^8.1.2
   api_cache_manager: ^1.0.1
   flutter_progress_hud: ^2.0.0
   snippet_coder_utils: ^1.0.13
@@ -48,9 +50,11 @@ dependencies:
 
   #handle dates
   provider: ^6.1.1
-
+  youtube_api: ^1.0.4
   http:
   fluttertoast:
+
+
 
 dev_dependencies:
   flutter_test:

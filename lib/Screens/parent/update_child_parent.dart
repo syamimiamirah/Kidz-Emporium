@@ -107,8 +107,9 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
               borderRadius: 10,
               borderColor: Colors.grey,
               contentPadding: 15,
-              fontSize: 15,
+              fontSize: 16,
               prefixIconPaddingLeft: 10,
+              hintFontSize: 16,
             ),
           ),
           const SizedBox(height: 10),
@@ -153,7 +154,7 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                                     ? "${birthDate!.toLocal()}".split(' ')[0]
                                     : 'Birth Date',
                                 style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 16,
                                   fontWeight: birthDate != null ? FontWeight.normal : FontWeight.bold,
                                 ),
                               ),
@@ -189,20 +190,20 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: gender.isNotEmpty ? gender : null,
-                          hint: const Text("Gender"),
-                          items: [
+                          hint: const Text("Gender", style: TextStyle(fontSize: 16)),
+                          items: const [
                             DropdownMenuItem<String>(
                               value: null,
-                              child: Text("Gender",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                              child: Text("Gender",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                             ),
                             // Other role options
                             DropdownMenuItem<String>(
                               value: "Male",
-                              child: Text("Male",style: TextStyle(fontSize: 15,),),
+                              child: Text("Male",style: TextStyle(fontSize: 16)),
                             ),
                             DropdownMenuItem<String>(
                               value: "Female",
-                              child: Text("Female",style: TextStyle(fontSize: 15,),),
+                              child: Text("Female",style: TextStyle(fontSize: 16)),
                             )
                           ],// The first item is the hint, set its value to null
                           isExpanded: true,
@@ -244,24 +245,24 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: program.isNotEmpty ? program : null,
-                          hint: const Text("Program"),
-                          items: [
+                          hint: const Text("Program", style: TextStyle(fontSize: 16)),
+                          items: const [
                             DropdownMenuItem<String>(
                               value: null,
-                              child: Text("Program",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                              child: Text("Program",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                             ),
                             // Other role options
                             DropdownMenuItem<String>(
                               value: "Early Intervention Program (EIP)",
-                              child: Text("Early Intervention Program (EIP)",style: TextStyle(fontSize: 15,),),
+                              child: Text("Early Intervention Program (EIP)",style: TextStyle(fontSize: 16,),),
                             ),
                             DropdownMenuItem<String>(
                               value: "Special Education Program (SPED)",
-                              child: Text("Special Education Program (SPED)",style: TextStyle(fontSize: 15,),),
+                              child: Text("Special Education Program (SPED)",style: TextStyle(fontSize: 16,),),
                             ),
                             DropdownMenuItem<String>(
                               value: "Special Clinic",
-                              child: Text("Special Clinic",style: TextStyle(fontSize: 15,),),
+                              child: Text("Special Clinic",style: TextStyle(fontSize: 16,),),
                             )
                           ],// The first item is the hint, set its value to null
                           isExpanded: true,
@@ -296,6 +297,7 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                         txtColor: Colors.black,
                         borderRadius: 10,
                         borderColor: Colors.grey,
+                        fontSize: 16,
                       ),
                       SizedBox(width: 20),
                       FormHelper.submitButton(
@@ -346,7 +348,7 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                           }
                         }
                       },
-
+                        fontSize: 16,
                         btnColor: kSecondaryColor,
                         txtColor: Colors.white,
                         borderRadius: 10,
