@@ -93,8 +93,9 @@ Widget _createReminderParentUI(BuildContext context){
                   borderRadius: 10,
                   borderColor: Colors.grey,
                   contentPadding: 15,
-                  fontSize: 15,
+                  fontSize: 16,
                   prefixIconPaddingLeft: 10,
+                  hintFontSize: 16,
                 ),
         ),
         const SizedBox(height: 20),
@@ -119,10 +120,11 @@ Widget _createReminderParentUI(BuildContext context){
             borderRadius: 10,
             borderColor: Colors.grey,
             contentPadding: 15,
-            fontSize: 15,
+            fontSize: 16,
             prefixIconPaddingLeft: 10,
             prefixIconPaddingBottom: 55,
             isMultiline: true,
+            hintFontSize: 16,
           ),
         ),
 
@@ -156,14 +158,14 @@ Widget _createReminderParentUI(BuildContext context){
                         Expanded(
                           flex: 2,
                           child: ListTile(
-                            title: Text(Utils.toDate(fromDate)),
+                            title: Text(Utils.toDate(fromDate), style:TextStyle(fontSize: 16)),
                             trailing: Icon(Icons.arrow_drop_down),
                             onTap: () => pickFromDateTime(pickDate: true),
                           ),
                         ),
                           Expanded(
                             child: ListTile(
-                              title: Text(Utils.toTime(fromDate)),
+                              title: Text(Utils.toTime(fromDate), style:TextStyle(fontSize: 16)),
                               trailing: Icon(Icons.arrow_drop_down),
                               onTap: () => pickFromDateTime(pickDate: false),
                             ),
@@ -206,14 +208,14 @@ Widget _createReminderParentUI(BuildContext context){
                       Expanded(
                         flex: 2,
                         child: ListTile(
-                          title: Text(Utils.toDate(toDate)),
+                          title: Text(Utils.toDate(toDate), style:TextStyle(fontSize: 16)),
                           trailing: Icon(Icons.arrow_drop_down),
                           onTap: () => pickToDateTime(pickDate: true),
                         ),
                       ),
                       Expanded(
                         child: ListTile(
-                          title: Text(Utils.toTime(toDate)),
+                          title: Text(Utils.toTime(toDate), style:TextStyle(fontSize: 16)),
                           trailing: Icon(Icons.arrow_drop_down),
                           onTap: ()=> pickToDateTime(pickDate: false),
                         ),
@@ -242,6 +244,7 @@ Widget _createReminderParentUI(BuildContext context){
                     txtColor: Colors.black,
                     borderRadius: 10,
                     borderColor: Colors.grey,
+                    fontSize: 16,
                   ),
                   SizedBox(width: 20),
                   FormHelper.submitButton(
@@ -291,7 +294,7 @@ Widget _createReminderParentUI(BuildContext context){
                         }
                       });
                     }},
-
+                    fontSize: 16,
                     btnColor: Colors.orange,
                     txtColor: Colors.black,
                     borderRadius: 10,
@@ -343,6 +346,17 @@ Widget _createReminderParentUI(BuildContext context){
           initialDate: initialDate,
           firstDate: firstDate ?? DateTime(2015, 8),
           lastDate: DateTime(2101),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+              primaryColor: kPrimaryColor, // Set your desired primary color
+              hintColor: kPrimaryColor, // Set your desired accent color
+              colorScheme: ColorScheme.light(primary: kPrimaryColor),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        },
       );
 
       if(date == null) return null;
@@ -354,6 +368,17 @@ Widget _createReminderParentUI(BuildContext context){
       final timeOfDay = await showTimePicker(
           context: context,
           initialTime: TimeOfDay.fromDateTime(initialDate),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+              primaryColor: kPrimaryColor, // Set your desired primary color
+              hintColor: kPrimaryColor, // Set your desired accent color
+              colorScheme: ColorScheme.light(primary: kPrimaryColor),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        },
       );
 
       if(timeOfDay == null) return null;

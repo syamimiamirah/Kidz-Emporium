@@ -99,8 +99,8 @@ class WelcomeScreen extends StatelessWidget{
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text("Go to", style: TextStyle(color: Colors.white), textAlign: TextAlign.right),
-                      Text(" Sign In", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold,), textAlign: TextAlign.right),
+                      Text("Go to", style: TextStyle(fontSize: 16, color: Colors.white), textAlign: TextAlign.right),
+                      Text(" Sign In", style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold,), textAlign: TextAlign.right),
                     ]
                 ),
               ),
@@ -126,8 +126,8 @@ class WelcomeScreen extends StatelessWidget{
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        Text("No account yet?"),
-                        Text(" Sign Up", style: TextStyle(fontWeight: FontWeight.bold,),
+                        Text("No account yet?", style: TextStyle(fontSize: 16)),
+                        Text(" Sign Up", style: TextStyle(fontSize:16, fontWeight: FontWeight.bold,),
                         ),
                       ]
                   )

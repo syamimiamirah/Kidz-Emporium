@@ -85,8 +85,9 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 15,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
+                hintFontSize: 16,
               ),
             ),
             const SizedBox(height: 10),
@@ -112,32 +113,32 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: specialization,
-                            hint: const Text("Specialization"),
+                            hint: const Text("Specialization", style: TextStyle(fontSize: 16)),
                             items: [
                               DropdownMenuItem<String>(
                                 value: null,
-                                child: Text("Specialization",style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                                child: Text("Specialization",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                               ),
                               // Other role options
                               DropdownMenuItem<String>(
                                 value: "Occupational Therapy",
-                                child: Text("Occupational Therapy",style: TextStyle(fontSize: 15,),),
+                                child: Text("Occupational Therapy",style: TextStyle(fontSize: 16,),),
                               ),
                               DropdownMenuItem<String>(
                                 value: "Speech-Language Pathology",
-                                child: Text("Speech-Language Pathology",style: TextStyle(fontSize: 15,),),
+                                child: Text("Speech-Language Pathology",style: TextStyle(fontSize: 16,),),
                               ),
                               DropdownMenuItem<String>(
                                 value: "Psychology, Counselling",
-                                child: Text("Psychology, Counselling",style: TextStyle(fontSize: 15,),),
+                                child: Text("Psychology, Counselling",style: TextStyle(fontSize: 16,),),
                               ),
                               DropdownMenuItem<String>(
                                 value: "Special Education",
-                                child: Text("Special Education",style: TextStyle(fontSize: 15,),),
+                                child: Text("Special Education",style: TextStyle(fontSize: 16,),),
                               ),
                               DropdownMenuItem<String>(
                                 value: "Early Childhood Education",
-                                child: Text("Early Childhood Education",style: TextStyle(fontSize: 15,),),
+                                child: Text("Early Childhood Education",style: TextStyle(fontSize: 16,),),
                               ),
                             ],// The first item is the hint, set its value to null
                             isExpanded: true,
@@ -198,7 +199,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                                   hiringDate != null
                                       ? "${hiringDate!.toLocal()}".split(' ')[0]
                                       : 'Hiring Date',
-                                  style: TextStyle(fontSize: 15, fontWeight: isHiringDateSet ? FontWeight.normal : FontWeight.bold,),
+                                  style: TextStyle(fontSize: 16, fontWeight: isHiringDateSet ? FontWeight.normal : FontWeight.bold,),
                                 ),
                               ),
                             ),
@@ -230,10 +231,11 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                 borderRadius: 10,
                 borderColor: Colors.grey,
                 contentPadding: 15,
-                fontSize: 15,
+                fontSize: 16,
                 prefixIconPaddingLeft: 10,
                 prefixIconPaddingBottom: 55,
                 isMultiline: true,
+                hintFontSize: 16,
               ),
             ),
             const SizedBox(height: 10),
@@ -252,6 +254,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                         txtColor: Colors.black,
                         borderRadius: 10,
                         borderColor: Colors.grey,
+                        fontSize: 16,
                       ),
                       SizedBox(width: 20),
                       FormHelper.submitButton(
@@ -307,6 +310,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                         btnColor: Colors.orange,
                         txtColor: Colors.black,
                         borderRadius: 10,
+                        fontSize: 16,
                         borderColor: Colors.orange,
                       ),
                     ],

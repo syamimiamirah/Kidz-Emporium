@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:kidz_emporium/config.dart';
+import 'package:kidz_emporium/models/booking_model.dart';
 import 'package:kidz_emporium/models/child_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/register_request_model.dart';
@@ -10,7 +11,10 @@ import 'package:kidz_emporium/models/login_request_model.dart';
 import 'package:kidz_emporium/models/reminder_model.dart';
 import 'package:kidz_emporium/services/shared_service.dart';
 
+import '../models/payment_model.dart';
 import '../models/therapist_model.dart';
+import '../models/youtube_model.dart';
+import '../utils.dart';
 
 class APIService{
   static var client = http.Client();
@@ -338,7 +342,6 @@ class APIService{
     }
   }
 
-  // Add this method to your APIService class
   static Future<bool> updateChild(String id, ChildModel updatedModel) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -383,7 +386,6 @@ class APIService{
       throw Exception('Failed to create therapist');
     }
   }
-
 
   static Future<List<TherapistModel>> getTherapist(String userId) async {
     var url = Uri.http(Config.apiURL, Config.getTherapistAPI, {'userId': userId});
@@ -507,7 +509,6 @@ class APIService{
     }
   }
 
-  // Add this method to your APIService class
   static Future<bool> updateTherapist(String id, TherapistModel updatedModel) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
@@ -530,4 +531,414 @@ class APIService{
       return false;
     }
   }
+
+  static Future<bool> checkTherapistAvailability(String id, DateTime startTime, DateTime endTime) async {
+    // Print for debugging
+    print('Formatted startTime: ${startTime.toIso8601String()}');
+    print('Formatted endTime: ${endTime.toIso8601String()}');
+    try {
+      /*var url = Uri.http(Config.apiURL, Config.checkTherapistAvailability, {
+        'id': id,
+        'startTime': startTime.toIso8601String(), // Format DateTime to ISO string
+        'endTime': endTime.toIso8601String(),     // Format DateTime to ISO string
+      });*/
+      var url = Uri.http(Config.apiURL, '${Config.checkTherapistAvailability}/$id', {
+        'startTime': startTime.toIso8601String(),
+        'endTime': endTime.toIso8601String(),
+      });
+
+
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print("success");
+        return responseData['isTherapistAvailable'];
+      } else {
+        // Handle the error response here
+        print('Failed to check therapist availability. Status code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      // Handle exceptions
+      print('Error checking therapist availability: $e');
+      return false;
+    }
+  }
+
+
+  //youtube videos
+  final String apiKey = 'AIzaSyAkNvZJvVD7_Hd5BmviEPb9ai6tQIgJS08';
+  final String username = 'kidzemporiumtherapycenter'; // Replace with the desired channel ID
+
+  /*Future<List<VideoModel>> searchVideosByUsername(String username) async {
+    final response = await http.get(
+      Uri.parse('https://www.googleapis.com/youtube/v3/search'
+          '?part=snippet&q=$username&type=channel&key=$apiKey'),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      print('Response Body: $data'); // Print the response body for analysis
+
+      if (data.containsKey('items') && data['items'] != null) {
+        final List<dynamic> channels = data['items'];
+
+        if (channels.isNotEmpty) {
+          final String channelId = channels[0]['id']['channelId'];
+          return await fetchVideosByChannelId(channelId);
+        } else {
+          throw Exception('No channel found for the given username');
+        }
+      } else {
+        throw Exception('Invalid response format. Expected key "items" not found or is null.');
+      }
+    } else {
+      throw Exception('Failed to load videos. Status code: ${response.statusCode}');
+    }
+  }*/
+
+  static Future<List<VideoModel>> fetchVideosByChannelId(String channelId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'https://www.googleapis.com/youtube/v3/search'
+              '?part=snippet&channelId=$channelId&maxResults=50&key=AIzaSyAkNvZJvVD7_Hd5BmviEPb9ai6tQIgJS08&type=video&videoEmbeddable=true',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic>? data = json.decode(response.body);
+
+        if (data != null && data.containsKey('items') && data['items'] != null) {
+          final List<dynamic> videos = data['items'];
+
+          List<VideoModel> videoList = videos.map((json) {
+            try {
+              final video = VideoModel.fromJson(json);
+              print('Video: $video');
+              return video;
+            } catch (e) {
+              print('Error creating VideoModel: $e');
+              rethrow; // Rethrow the exception to propagate it further
+            }
+          }).toList();
+
+          // Filter out videos that are not officially uploaded (liveBroadcastContent != 'none')
+          videoList = videoList.where((video) => video.liveBroadcastContent == 'none').toList();
+
+          return videoList;
+        } else {
+          throw Exception('Invalid response format. Expected key "items" not found or is null.');
+        }
+      } else {
+        throw Exception('Failed to load videos. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error fetching videos: $error');
+      throw Exception('Error fetching videos: $error');
+    }
+  }
+
+  //booking
+  static Future<BookingModel?> createBooking({
+    required String userId,
+    required String therapistId,
+    required String childId,
+    required String fromDate,
+    required String toDate,
+    required String paymentId,
+  }) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.createBookingAPI);
+    print('Formatted fromDate: ${fromDate}');
+    print('Formatted toDate: ${toDate}');
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode({
+        'userId': userId,
+        'therapistId': therapistId,
+        'childId': childId,
+        'fromDate': fromDate,
+        'toDate': toDate,
+        'paymentId': paymentId,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print("booking done");
+      return BookingModel.fromJson(responseData);
+    } else {
+      throw Exception('Failed to create booking');
+    }
+  }static Future<List<BookingModel>> getBooking(String userId) async {
+    var url = Uri.http(Config.apiURL, Config.getBookingAPI, {'userId': userId});
+    print("Request URL: $url");
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true && responseData.containsKey('success')) {
+          List<BookingModel> bookings = (responseData['success'] as List)
+              .map((json) => BookingModel.fromJson(json))
+              .toList();
+
+          return bookings;
+        } else {
+          print("Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print("Failed to fetch bookings. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching bookings: $error");
+      return [];
+    }
+  }
+
+  static Future<List<BookingModel>> getAllBookings() async {
+    var url = await Uri.http(
+        Config.apiURL, Config.getAllBookingsAPI); // Adjust the endpoint
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true &&
+            responseData.containsKey('success')) {
+          List<BookingModel> bookings = (responseData['success'] as List)
+              .map((json) => BookingModel.fromJson(json))
+              .toList();
+
+          return bookings;
+        } else {
+          print(
+              "Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print(
+            "Failed to fetch all bookings. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching all bookings: $error");
+      return [];
+    }
+  }
+
+
+  static Future<bool> deleteBooking(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.deleteBookingAPI);  // Change '_id' to 'id'
+    print("Request URL: $url");
+
+    try {
+      var response = await client.delete(
+        url,
+        headers: requestHeaders,
+        body: jsonEncode({'id': id}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to delete booking. Status code: ${response.statusCode}");
+        return false;
+      }
+    } catch (error) {
+      print("Error deleting booking: $error");
+      return false;
+    }
+  }
+
+  static Future<BookingModel?> getBookingDetails(String id) async {
+    try {
+      var url = Uri.http(Config.apiURL, '${Config.getBookingDetailsAPI}/$id');
+      print("Request URL: $url");
+
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+        return responseData != null ? BookingModel.fromJson(responseData['success']) : null;
+      } else {
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to get booking details. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error getting booking details: $error');
+      throw error;
+    }
+  }
+
+  static Future<bool> updateBooking(String id, BookingModel updatedModel) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, '${Config.updateBookingAPI}/$id'); // Adjust the API endpoint
+    print("Request URL: $url");
+    print("id: $id");
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode({'_id': id, 'updatedData': updatedModel.toJson()}),
+    );
+
+    if (response.statusCode == 200) {
+      print("success");
+      return true;
+    } else {
+      print("Failed to update booking. Status code: ${response.statusCode}");
+      return false;
+    }
+  }
+
+  //Payment
+  static Future<PaymentModel?> createPayment(PaymentModel model) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.createPaymentAPI);
+
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      return PaymentModel.fromJson(jsonResponse);
+    } else {
+      print('Error creating payment: ${response.statusCode}');
+      return null;
+    }
+  }
+
+  static Future<PaymentModel?> getPaymentDetails(String id) async {
+    try {
+      var url = Uri.http(Config.apiURL, '${Config.getPaymentDetailsAPI}/$id');
+      print("Request URL: $url");
+
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+        return responseData != null ? PaymentModel.fromJson(responseData['success']) : null;
+      } else {
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to get payment details. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error getting payment details: $error');
+      throw error;
+    }
+  }
+  static Future<List<PaymentModel>> getPayment(String userId) async {
+    var url = Uri.http(Config.apiURL, Config.getPaymentAPI, {'userId': userId});
+    print("Request URL: $url");
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true && responseData.containsKey('success')) {
+          List<PaymentModel> payments = (responseData['success'] as List)
+              .map((json) => PaymentModel.fromJson(json))
+              .toList();
+
+          return payments;
+        } else {
+          print("Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print("Failed to fetch payments. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching payments: $error");
+      return [];
+    }
+  }
+
+  static Future<List<PaymentModel>> getAllPayments() async {
+    var url = await Uri.http(
+        Config.apiURL, Config.getAllPaymentsAPI); // Adjust the endpoint
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true &&
+            responseData.containsKey('success')) {
+          List<PaymentModel> payments = (responseData['success'] as List)
+              .map((json) => PaymentModel.fromJson(json))
+              .toList();
+
+          return payments;
+        } else {
+          print(
+              "Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print(
+            "Failed to fetch all payments. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching all payments: $error");
+      return [];
+    }
+  }
+
 }
