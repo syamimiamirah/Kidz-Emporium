@@ -1,17 +1,17 @@
 class PaymentModel {
   late int amount;
   late String currency;
-  //late String status;
   late String paymentMethod;
   late String userId;
+  //late String tokenId; // Add tokenId field
   final String? id;
 
   PaymentModel({
     required this.amount,
     required this.currency,
-    //required this.status,
     required this.paymentMethod,
     required this.userId,
+    //required this.tokenId, // Initialize tokenId in the constructor
     this.id,
   });
 
@@ -26,9 +26,9 @@ class PaymentModel {
       id: json['_id'],
       amount: amount,
       currency: json['currency'] ?? '',
-      //status: json['status'] ?? '',
       paymentMethod: paymentMethod,
       userId: json['userId'] ?? '',
+      //tokenId: json['tokenId'] ?? '', // Parse tokenId from JSON
     );
   }
 
@@ -38,31 +38,15 @@ class PaymentModel {
       'userId': userId,
       'amount': amount,
       'currency': currency,
-      //'status': status,
       'paymentMethod': paymentMethod,
+      //'tokenId': tokenId, // Include tokenId in JSONaymentMethod,
       '_id': id
     };
 
-    /*if (id != null) {
+    if (id != null) {
       data['_id'] = id; // Include id in JSON if it's not null
-    }*/
+    }
 
     return data;
   }
 }
-
-/*class PaymentMethod {
-  final String id;
-  final String brand;
-  final String last4;
-
-  PaymentMethod({required this.id, required this.brand, required this.last4});
-
-  factory PaymentMethod.fromJson(Map<String, dynamic> json) {
-    return PaymentMethod(
-      id: json['id'],
-      brand: json['brand'],
-      last4: json['last4'],
-    );
-  }
-}*/

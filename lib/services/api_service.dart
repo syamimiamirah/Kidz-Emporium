@@ -543,8 +543,8 @@ class APIService{
         'endTime': endTime.toIso8601String(),     // Format DateTime to ISO string
       });*/
       var url = Uri.http(Config.apiURL, '${Config.checkTherapistAvailability}/$id', {
-        'startTime': startTime.toIso8601String(),
-        'endTime': endTime.toIso8601String(),
+        'fromDate': startTime.toIso8601String(),
+        'toDate': endTime.toIso8601String(),
       });
 
 
@@ -645,42 +645,29 @@ class APIService{
   }
 
   //booking
-  static Future<BookingModel?> createBooking({
-    required String userId,
-    required String therapistId,
-    required String childId,
-    required String fromDate,
-    required String toDate,
-    required String paymentId,
-  }) async {
+  static Future<BookingModel?> createBooking(BookingModel model) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
 
     var url = Uri.http(Config.apiURL, Config.createBookingAPI);
-    print('Formatted fromDate: ${fromDate}');
-    print('Formatted toDate: ${toDate}');
+
     var response = await client.post(
       url,
       headers: requestHeaders,
-      body: jsonEncode({
-        'userId': userId,
-        'therapistId': therapistId,
-        'childId': childId,
-        'fromDate': fromDate,
-        'toDate': toDate,
-        'paymentId': paymentId,
-      }),
+      body: jsonEncode(model.toJson()),
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      print("booking done");
-      return BookingModel.fromJson(responseData);
+      final jsonResponse = json.decode(response.body);
+      return BookingModel.fromJson(jsonResponse);
     } else {
-      throw Exception('Failed to create booking');
+      print('Error creating payment: ${response.statusCode}');
+      return null;
     }
-  }static Future<List<BookingModel>> getBooking(String userId) async {
+  }
+
+  static Future<List<BookingModel>> getBooking(String userId) async {
     var url = Uri.http(Config.apiURL, Config.getBookingAPI, {'userId': userId});
     print("Request URL: $url");
 
