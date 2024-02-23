@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
+import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
@@ -74,13 +75,8 @@ class _navBarState extends State<NavBar>{
             leading: Icon(Icons.library_books),
             title: Text("Booking"),
             onTap: () => Navigator.push(context, MaterialPageRoute(
-                builder: (context) =>  CreateBookingParentPage(userData:widget.userData)),
+                builder: (context) =>  ViewBookingParentPage(userData:widget.userData)),
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.payment),
-            title: Text("Payment"),
-            onTap: () => null,
           ),
           ListTile(
             leading: Icon(Icons.event_note),

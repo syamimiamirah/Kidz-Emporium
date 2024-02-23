@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/config.dart';
 import 'package:flutter/services.dart'; // Import this package
 import 'package:kidz_emporium/services/api_service.dart';
@@ -6,6 +7,7 @@ import 'package:kidz_emporium/services/api_service.dart';
 import '../../contants.dart';
 import '../../models/booking_model.dart';
 import '../../models/login_response_model.dart';
+import '../../models/paymentMethod_model.dart';
 import '../../models/payment_model.dart';
 import '../../utils.dart';
 
@@ -13,8 +15,8 @@ class PaymentPage extends StatefulWidget {
   final LoginResponseModel userData;
   final String? selectedTherapist;
   final String? selectedChild;
-  final DateTime fromDate;
-  final DateTime toDate;
+  final DateTime? fromDate;
+  final DateTime? toDate;
 
   const PaymentPage({Key? key,
     required this.userData,
@@ -30,9 +32,8 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   int? paymentAmount;
   String? paymentId;
-  late String userId;// Fixed payment amount in Malaysian Ringgit
+  late String userId; // Fixed payment amount in Malaysian Ringgit
 
-  // Define input formatters
   //final cardNumberFormatter = _CardNumberInputFormatter(); // Custom input formatter for card number
   final numericFormatter = FilteringTextInputFormatter.allow(RegExp(r'[0-9]'));
   final cvvFormatter = LengthLimitingTextInputFormatter(3); // Limit CVV to 3 digits
@@ -49,13 +50,13 @@ class _PaymentPageState extends State<PaymentPage> {
   bool _isPaymentSuccessful = false;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     paymentAmount = 50;
-    if(widget.userData != null && widget.userData.data != null){
+    if (widget.userData != null && widget.userData.data != null) {
       print("userData: ${widget.userData.data!.id}");
       userId = widget.userData.data!.id;
-    }else {
+    } else {
       // Handle the case where userData or userData.data is null
       print("Error: userData or userData.data is null");
       userId = '';
@@ -249,8 +250,14 @@ class _PaymentPageState extends State<PaymentPage> {
                     _processPayment();
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: _isPaymentSuccessful ? Colors.green : kPrimaryColor, // Change button color to green if payment is successful
+                    primary: _isPaymentSuccessful
+                        ? Colors.green
+                        : kPrimaryColor,
+                    // Change button color to green if payment is successful
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // BorderRadius
+                    ),
                   ),
                   child: _isProcessingPayment
                       ? SizedBox(
@@ -261,7 +268,8 @@ class _PaymentPageState extends State<PaymentPage> {
                     ),
                   )
                       : Text(
-                    _isPaymentSuccessful ? 'Paid' : 'Pay RM50.00', // Change button text to "Paid" if payment is successful
+                    _isPaymentSuccessful ? 'Paid' : 'Pay',
+                    // Change button text to "Paid" if payment is successful
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
@@ -275,23 +283,51 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   Future<void> _processPayment() async {
+    String cardNumber = cardNumberController.text.replaceAll(' ', '');
+    // Assign payment method based on the card number prefix
+    String paymentMethod;
+    if (cardNumber.startsWith('4')) {
+      // Visa
+      paymentMethod = "pm_card_visa";
+    } else if (cardNumber.startsWith('5')) {
+      // Mastercard
+      paymentMethod = "pm_card_mastercard";
+    } else if (cardNumber.startsWith('62')) {
+      // Discover
+      paymentMethod = "pm_card_unionpay";
+    } else {
+      // Default payment method if none of the above conditions match
+      _showErrorDialog('Please use a Visa, MasterCard, or UnionPay card.');
+      return;
+    }
     if (paymentAmount == null) {
       print('Error: Payment amount is null');
       return;
     }
+    bool isValidPayment = _simulatePayment(
+      cardNumberController.text,
+      expirationDateController.text,
+      cvvController.text,
+    );
 
-    print("Payment: RM ${paymentAmount}.00");
-
+    if (!isValidPayment) {
+      _showErrorDialog('Please enter valid payment information.');
+      setState(() {
+        _isProcessingPayment = false;
+      });
+      return;
+    }
     setState(() {
       _isProcessingPayment = true;
     });
     PaymentModel model = PaymentModel(
-      amount: 50,
-      currency: 'MYR',
-      paymentMethod: 'pm_card_visa',
-      userId: userId,
+        amount: paymentAmount!,
+        currency: "MYR",
+        userId: userId,
+        paymentMethod: paymentMethod,
     );
-    APIService.createPayment(model).then((response){
+
+    APIService.createPayment(model).then((response) {
       if (response != null) {
         _showPaymentSuccessDialog(); // Invoke the success callback
         setState(() {
@@ -316,14 +352,12 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
 
-
-
   void _showPaymentSuccessDialog() {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Payment Successful'),
+          title: const Text(Config.appName),
           content: Text('Your payment was successful.'),
           actions: <Widget>[
             TextButton(
@@ -343,7 +377,7 @@ class _PaymentPageState extends State<PaymentPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Payment Failed'),
+          title: const Text(Config.appName),
           content: Text('Your payment failed. Please try again.'),
           actions: <Widget>[
             TextButton(
@@ -363,7 +397,7 @@ class _PaymentPageState extends State<PaymentPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Error'),
+          title: const Text(Config.appName),
           content: Text(errorMessage),
           actions: <Widget>[
             TextButton(
@@ -377,52 +411,86 @@ class _PaymentPageState extends State<PaymentPage> {
       },
     );
   }
+
   Future<void> _createBooking() async {
     //print("Payment id: $paymentId");
 
-      BookingModel? response = await APIService.createBooking(
-        userId: widget.userData.data!.id,
-        therapistId: widget.selectedTherapist!,
-        childId: widget.selectedChild!,
-        fromDate: Utils.formatDateTimeToString(widget.fromDate),
-        toDate: Utils.formatDateTimeToString(widget.toDate),
-        paymentId: paymentId!, // Since payment is handled separately, set paymentId to null
-      );
-
+    BookingModel model = BookingModel(
+      userId: widget.userData.data!.id,
+      therapistId: widget.selectedTherapist!,
+      childId: widget.selectedChild!,
+      fromDate: Utils.formatDateTimeToString(widget.fromDate!),
+      toDate: Utils.formatDateTimeToString(widget.toDate!),
+      paymentId: paymentId!,
+    );
+    APIService.createBooking(model).then((response) {
       if (response != null) {
         print("mantap");
+        Navigator.pushReplacement(context, MaterialPageRoute(
+            builder: (context) => ViewBookingParentPage(userData: widget.userData)),
+        );
       } else {
-        // Handle failed booking creation
+        print('kejap');
+        _showErrorDialog('Failed to create booking. Please try again later.');
       }
-     /*catch (error) {
+    }).catchError((error) {
       _showErrorDialog(
           'An error occurred while processing your booking. Please try again later.');
-      print('Error creating booking: $error');
-    }*/
+      print('Error processing payment: $error');
+    }).whenComplete(() {
+      setState(() {
+        cardNumberController.clear();
+        expirationDateController.clear();
+        cvvController.clear();
+        cardNumberError = false;
+        _isProcessingPayment = false;
+        _isPaymentSuccessful = false;
+        paymentId = null;
+      });
+    });
   }
 }
 
 
 // Simulate payment logic (Replace this with actual payment logic)
-  bool _simulatePayment(String cardNumber, String expireDate, String cvv) {
-    // Check if all fields are not empty and the expiration date is valid
-    if (cardNumber.isNotEmpty && expireDate.isNotEmpty && cvv.isNotEmpty) {
-      // Split expiration date into month and year
-      List<String> dateParts = expireDate.split('/');
-      if (dateParts.length == 2) {
-        int month = int.tryParse(dateParts[0]) ?? 0;
-        int year = int.tryParse(dateParts[1]) ?? 0;
+bool _simulatePayment(String cardNumber, String expireDate, String cvv) {
+  // Check if all fields are not empty and the expiration date is valid
+  if (cardNumber.isNotEmpty && expireDate.isNotEmpty && cvv.isNotEmpty) {
+    // Split expiration date into month and year
+    List<String> dateParts = expireDate.split('/');
+    if (dateParts.length == 2) {
+      int month = int.tryParse(dateParts[0]) ?? 0;
+      int year = int.tryParse(dateParts[1]) ?? 0;
 
-        // Validate expiration date format (MM/YY)
-        if (month >= 1 && month <= 12 && year >= 0 && year <= 99) {
-          // Expiration date is valid
-          return true;
+      // Get the current year and month
+      final now = DateTime.now();
+      final currentYear = now.year % 100; // Get last two digits of the current year
+      final currentMonth = now.month;
+
+      // Validate expiration date format (MM/YY)
+      if (month >= 1 && month <= 12 && year >= currentYear && year <= currentYear + 50) {
+        // If the year is within the valid range (current year to current year + 50)
+        if (year == currentYear) {
+          // If the expiration year is the current year, check if the month is in the future
+          if (month >= currentMonth) {
+            // Check if CVV has exactly 3 digits
+            if (cvv.length == 3) {
+              return true;
+            }
+          }
+        } else {
+          // For future years, any month is valid
+          // Check if CVV has exactly 3 digits
+          if (cvv.length == 3) {
+            return true;
+          }
         }
       }
     }
-    // If any condition fails, return false
-    return false;
+  }
+  return false;
 }
+
 
 // Custom input formatter for expiration date (MM/YY)
 class _ExpirationDateInputFormatter extends TextInputFormatter {

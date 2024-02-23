@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:kidz_emporium/Screens/parent/create_payment_parent.dart';
+import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
@@ -14,22 +15,29 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 import '../../config.dart';
 import '../../models/booking_model.dart';
 import '../../utils.dart';
+import 'details_booking_parent.dart';
 
 
-class CreateBookingParentPage extends StatefulWidget{
+class UpdateBookingParentPage extends StatefulWidget{
   final LoginResponseModel userData;
+  final String bookingId;
 
-  const CreateBookingParentPage({Key? key, required this.userData}): super(key: key);
+  const UpdateBookingParentPage({Key? key, required this.userData, required this.bookingId}): super(key: key);
   @override
-  _createBookingParentPageState createState() => _createBookingParentPageState();
+  _updateBookingParentPageState createState() => _updateBookingParentPageState();
 }
 
-class _createBookingParentPageState extends State<CreateBookingParentPage> {
-  String? selectedTherapist;
-  String? selectedChild;
-  late DateTime fromDate;
-  late DateTime toDate;
+class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
+  late DateTime fromDate = DateTime.now();
+  late DateTime toDate = DateTime.now();
+  late String childId = "";
+  late String therapistId = "";
+  late String paymentId = "";
+  String? therapistName;
+  String? childName;
   late String userId;
+  bool isAPICallProcess =  false;
+
 
   List<TherapistModel> therapists = [];
   List<ChildModel> children = [];
@@ -37,8 +45,10 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
   @override
   void initState() {
     super.initState();
+    _loadData();
+    /*fetchBookingDetails();
     fetchTherapists();
-    fetchChildren();
+    fetchChildren();*/
     if (widget.userData != null && widget.userData.data != null) {
       print("userData: ${widget.userData.data!.id}");
       fromDate = DateTime.now();
@@ -47,6 +57,65 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
     } else {
       // Handle the case where userData or userData.data is null
       print("Error: userData or userData.data is null");
+    }
+  }
+
+  Future<void> _loadData() async {
+    try {
+      // Use Future.wait to wait for both API calls to complete
+      await Future.wait([
+      fetchBookingDetails(),
+      fetchTherapists(),
+      fetchChildren(),
+      ]);
+    } catch (error) {
+      print('Error loading data: $error');
+    }
+  }
+  Future<void> fetchBookingDetails() async {
+    try {
+      BookingModel? booking = await APIService.getBookingDetails(widget.bookingId);
+
+      if (booking != null) {
+        // Update UI with fetched reminder details
+        setState(() {
+          childId = booking.childId;
+          fromDate = Utils.parseStringToDateTime(booking.fromDate);
+          toDate = Utils.parseStringToDateTime(booking.toDate);
+          therapistId = booking.therapistId;
+          paymentId = booking.paymentId!;
+          TherapistModel? selectedTherapist = therapists.firstWhere((therapist) => therapist.id == therapistId, orElse: () => TherapistModel(
+            therapistName: '',
+            specialization: '',
+            hiringDate: '',
+            aboutMe: '',
+            userId: '',
+            ),
+          );
+          print(selectedTherapist);
+          if (selectedTherapist != null) {
+            therapistName = selectedTherapist.therapistName;
+          }
+          ChildModel? selectedChild = children.firstWhere((child) => child.id == childId, orElse: () => ChildModel(
+            childName: 'Unknown',
+            birthDate: '',
+            gender: '',
+            program: '',
+            userId: '',
+            ),
+          );
+          if (selectedTherapist != null) {
+            childName = selectedChild.childName;
+          }
+
+        });
+      } else {
+        // Handle case where reminder is null
+        print('Booking details not found');
+      }
+    } catch (error) {
+      print('Error fetching booking details: $error');
+      // Handle error
     }
   }
 
@@ -77,7 +146,7 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Booking'),
+        title: Text('Update Booking'),
         centerTitle: true,
         backgroundColor: kPrimaryColor,
       ),
@@ -106,23 +175,24 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                         ),
                         Expanded(
                           child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: const Text("Select Therapist", style: TextStyle(fontSize: 16)),
-                            value: selectedTherapist,
-                            onChanged: (newValue) {
-                              setState(() {
-                                selectedTherapist = newValue!;
-                              });
-                            },
-                            items: therapists.map((TherapistModel therapist) {
-                              return DropdownMenuItem<String>(
-                                value: therapist.id,
-                                child: Text(therapist.therapistName, style: TextStyle(fontSize: 16)
-                                ),
-                              );
-                            }).toList(),
+                            child: DropdownButton<String>(
+                              hint: const Text("Select Therapist", style: TextStyle(fontSize: 16)),
+                              value: therapistId,
+                              onChanged: (newValue) {
+                                setState(() {
+                                  // Update therapistId
+                                  therapistId = newValue!;
+                                });
+                              },
+                              items: therapists.map((TherapistModel therapist) {
+                                return DropdownMenuItem<String>(
+                                  value: therapist.id,
+                                  child: Text(therapist.therapistName, style: TextStyle(fontSize: 16)
+                                  ),
+                                );
+                              }).toList(),
+                            ),
                           ),
-                        ),
                         ),
                       ],
                     ),
@@ -153,10 +223,10 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               hint: const Text("Select Child", style: TextStyle(fontSize: 16)),
-                              value: selectedChild,
+                              value: childId,
                               onChanged: (newValue) {
                                 setState(() {
-                                  selectedChild = newValue!;
+                                  childId = newValue!;
                                 });
                               },
                               items: children
@@ -262,7 +332,7 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Row(
                             children: [
@@ -295,73 +365,92 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                   ),
                 ),
               ),
-
-              ElevatedButton(
-                onPressed: () async {
-                  // Check therapist availability before proceeding with the payment
-                  bool isTherapistAvailable = await APIService.checkTherapistAvailability(
-                    selectedTherapist!,
-                    fromDate,
-                    toDate,
-                  );
-
-                  if (!isTherapistAvailable) {
-                    // Display a snackbar for therapist not available
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Therapist is not available for the selected time.'),
-                        duration: Duration(seconds: 3),
-                      ),
-                    );
-                    return;
-                  }
-
-                  // Show the reminder AlertDialog
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(Config.appName),
-                        content: Text("REMINDER: Payment can only be made through Credit/Debit Card"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: Text("OK", style: TextStyle(color: kPrimaryColor),),
-                          ),
-                        ],
-                      );
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
                     },
-                  );
-
-                  // Navigate to the PaymentPage
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentPage(
-                        userData: widget.userData,
-                        selectedTherapist: selectedTherapist,
-                        selectedChild: selectedChild,
-                        fromDate: fromDate!,
-                        toDate: toDate!,
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.grey,
+                      padding: EdgeInsets.symmetric(horizontal: 55, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // BorderRadius
                       ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: kPrimaryColor,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // BorderRadius
+                    child: Text('Cancel',
+                      style: TextStyle(fontSize: 16, color: Colors.black),
+                    ),
                   ),
-                ),
-                child: Text('Proceed with Payment',
-                  style: TextStyle(fontSize: 16),
-                ),
+                  const SizedBox(width: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Check therapist availability before proceeding with the payment
+                      bool isTherapistAvailable = await APIService.checkTherapistAvailability(
+                        therapistId,
+                        fromDate,
+                        toDate,
+                      );
+
+                      if (!isTherapistAvailable) {
+                        // Display a snackbar for therapist not available
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Therapist is not available for the selected time.'),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                        return;
+                      }
+                      // Navigate to the PaymentPage
+                      BookingModel updatedModel = BookingModel(
+                        userId: widget.userData.data!.id,
+                        therapistId: therapistId,
+                        childId: childId,
+                        fromDate: Utils.formatDateTimeToString(fromDate),
+                        toDate: Utils.formatDateTimeToString(toDate),
+                      );
+                      bool success = await APIService.updateBooking(widget.bookingId, updatedModel);
+                      setState(() {
+                        isAPICallProcess = false;
+                      });
+                      if(success){
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(Config.appName),
+                              content: Text("Your booking has been updated"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pushReplacement(context, MaterialPageRoute(
+                                        builder: (context) => ViewBookingParentPage(userData: widget.userData)),
+                                    );// Close the dialog
+                                  },
+                                  child: Text("OK", style: TextStyle(color: kPrimaryColor),),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: kPrimaryColor,
+                      padding: EdgeInsets.symmetric(horizontal: 60, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // BorderRadius
+                      ),
+                    ),
+                    child: Text('Save',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
-
-
             ],
           ),
         ),

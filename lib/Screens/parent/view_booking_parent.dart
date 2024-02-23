@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kidz_emporium/contants.dart';
+import 'package:kidz_emporium/models/therapist_model.dart';
+import '../../components/side_menu.dart';
 import '../../models/booking_model.dart';
 import '../../models/child_model.dart';
 import '../../models/login_response_model.dart';
 import '../../services/api_service.dart';
 import '../../utils.dart';
 import 'create_booking_parent.dart';
+import 'details_booking_parent.dart';
 
 class ViewBookingParentPage extends StatefulWidget {
   final LoginResponseModel userData;
@@ -17,8 +20,10 @@ class ViewBookingParentPage extends StatefulWidget {
 }
 
 class _ViewBookingListPageState extends State<ViewBookingParentPage> {
-  List<BookingModel> booking = [];
+  List<BookingModel> bookings = [];
   List<ChildModel> children = [];
+  List<TherapistModel> therapists = [];
+  DateTime currentDate = DateTime.now();
 
   @override
   void initState() {
@@ -30,30 +35,29 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
     try {
       // Use Future.wait to wait for both API calls to complete
       await Future.wait([
-        _loadChildren(userId),
         _loadBooking(userId),
+        _loadChildren(userId),
+        _loadTherapists(userId),
       ]);
     } catch (error) {
       print('Error loading data: $error');
     }
   }
 
-
-  Future<void> _loadBooking(String userId) async{
-    try{
+  Future<void> _loadBooking(String userId) async {
+    try {
       List<BookingModel> loadedBooking = await APIService.getBooking(widget.userData.data!.id);
-      setState((){
-        booking = loadedBooking;
-    });
-    }catch(error){
-        print('Error loading bookings: $error');
+      setState(() {
+        bookings = loadedBooking;
+      });
+    } catch (error) {
+      print('Error loading bookings: $error');
     }
   }
 
   Future<void> _loadChildren(String userId) async {
     try {
       List<ChildModel> loadedChildren = await APIService.getChild(widget.userData.data!.id);
-
       setState(() {
         children = loadedChildren;
       });
@@ -62,9 +66,30 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
     }
   }
 
+  Future<void> _loadTherapists(String userId) async {
+    try {
+      List<TherapistModel> loadedTherapists = await APIService.getAllTherapists();
+      setState(() {
+        therapists = loadedTherapists;
+      });
+    } catch (error) {
+      print('Error loading therapists: $error');
+    }
+  }
+
+  List<BookingModel> filterBookingsByDate(DateTime date) {
+    return bookings.where((booking) {
+      DateTime bookingDate = DateTime.parse(booking.fromDate);
+      return bookingDate.year == date.year &&
+          bookingDate.month == date.month &&
+          bookingDate.day == date.day;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
         title: Text('Booking List'),
         centerTitle: true,
@@ -80,33 +105,17 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: kPrimaryColor,
+                color: Colors.black,
               ),
             ),
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: booking.length, // Replace with the actual number of bookings
+                itemCount: 10, // Display bookings for the next 7 days
                 itemBuilder: (context, index) {
-                  ChildModel? child = children.firstWhere(
-                          (child) => child.id == booking[index].childId,
-                      orElse: () => ChildModel(childName: 'Unknown', birthDate: '', gender: '', program: '', userId: ''),
-                  );// Replace this with actual booking data from your API or local storage
-                  return Card(
-                    elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 8),
-                    child: ListTile(
-                      title: Text("Booking for ${child.childName}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                      subtitle: Text(
-                        "From: ${booking[index].fromDate}",
-                        style: TextStyle(fontSize: 16, color: Colors.black),
-                      ),
-
-                      onTap: () {
-                        // Navigate to booking details page
-                      },
-                    ),
-                  );
+                  DateTime currentDate = DateTime.now().add(Duration(days: index));
+                  List<BookingModel> filteredBookings = filterBookingsByDate(currentDate);
+                  return _buildBookingListView(currentDate, filteredBookings);
                 },
               ),
             ),
@@ -122,6 +131,114 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
         child: Icon(Icons.add),
         backgroundColor: kPrimaryColor, // Change the color to match your theme
       ),
+    );
+  }
+
+  Widget _buildBookingListView(DateTime date, List<BookingModel> filteredBookings) {
+    if (filteredBookings.isEmpty) {
+      return SizedBox(); // Return an empty SizedBox if there are no bookings for this date
+    }
+    filteredBookings.sort((a, b) =>
+        DateTime.parse(a.fromDate).compareTo(DateTime.parse(b.fromDate)));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          DateFormat('EEEE, MMM d').format(date),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: kPrimaryColor,
+          ),
+        ),
+        SizedBox(height: 8),
+        ...filteredBookings.map((booking) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Card(
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: ListTile(
+              contentPadding: EdgeInsets.all(16),
+              title: Text(
+                children.firstWhere((child) => child.id == booking.childId, orElse: () => ChildModel(childName: 'Unknown', birthDate: '', gender: '', program: '', userId: '')).childName,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.date_range, size: 18, color: kPrimaryColor),
+                      SizedBox(width: 8),
+                      Text(
+                        "${DateFormat('dd-MM-yyyy').format(DateTime.parse(booking.fromDate))}",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.access_time, size: 18, color: kPrimaryColor),
+                      SizedBox(width: 8),
+                      Text("${DateFormat('hh:mm a').format(DateTime.parse(booking.fromDate))} - ${DateFormat('hh:mm a').format(DateTime.parse(booking.toDate))}",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(Icons.person, size: 18, color: kPrimaryColor),
+                      SizedBox(width: 8),
+                      Text(
+                        "Therapist: ${therapists.firstWhere((therapist) => therapist.id == booking.therapistId, orElse: () => TherapistModel(therapistName: 'Unknown', specialization: '', hiringDate: '', aboutMe: '', userId: '')).therapistName}",
+                        style: TextStyle(fontSize: 16, color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingDetailsPage(
+                      userData: widget.userData,
+                      booking: booking,
+                      therapist: therapists.firstWhere(
+                            (therapist) => therapist.id == booking.therapistId,
+                        orElse: () => TherapistModel(
+                          therapistName: 'Unknown',
+                          specialization: '',
+                          hiringDate: '',
+                          aboutMe: '',
+                          userId: '',
+                        ),
+                      ),
+                      child: children.firstWhere(
+                            (child) => child.id == booking.childId,
+                        orElse: () => ChildModel(
+                          childName: 'Unknown',
+                          birthDate: '',
+                          gender: '',
+                          program: '',
+                          userId: '',
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+
+            ),
+          ),
+        )),
+      ],
     );
   }
 }
