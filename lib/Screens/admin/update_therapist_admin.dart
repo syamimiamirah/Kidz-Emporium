@@ -9,6 +9,7 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
 import '../../models/login_response_model.dart';
+import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import '../../utils.dart';
 import '../parent/view_reminder_parent.dart';
@@ -30,9 +31,11 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
   bool isAPICallProcess =  false;
   late String therapistName = "";
   late String specialization = "";
+  late String therapistId = "";
   late DateTime hiringDate = DateTime.now();
   late String aboutMe = "";
-  late String userId;
+  late String managedBy = "";
+  List<UserModel> users = [];
   bool isHiringDateSet = false;
 
   @override
@@ -40,29 +43,54 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
     super.initState();
     if(widget.userData != null && widget.userData.data != null){
       print("userData: ${widget.userData.data!.id}");
-      userId = widget.userData.data!.id;
-      fetchTherapistDetails();
-    }else {
-      // Handle the case where userData or userData.data is null
+      managedBy = widget.userData.data!.id;
+      fetchTherapists();
+      fetchTherapistDetails(); // Fetch therapist details when the screen initializes
+    } else {
       print("Error: userData or userData.data is null");
     }
   }
 
+  Future<void> fetchTherapists() async {
+    try {
+      List<UserModel> fetchedUsers = await APIService.getAllUsers();
+
+      print('Fetched users JSON response: $fetchedUsers');
+
+      // Filter the fetched users to get only therapists
+      List<UserModel> fetchedTherapists = fetchedUsers.where((user) =>
+      user.role == 'Therapist').toList();
+      print('Filtered therapists: $fetchedTherapists');
+
+      // Print the id field of each user to debug
+      fetchedTherapists.forEach((user) {
+        print('User ID: ${user.id}');
+      });
+
+      setState(() {
+        users = fetchedTherapists;
+      });
+    }catch (error) {
+      print('Error fetching therapists: $error');
+    }
+  }
   Future<void> fetchTherapistDetails() async {
     try {
       TherapistModel? therapist = await APIService.getTherapistDetails(widget.therapistId);
-
+      print(therapist);
+      //UserModel therapistUser = users.firstWhere((user) => user.id == therapist?.therapistId);
       if (therapist != null) {
-        // Update UI with fetched reminder details
+        // Update UI with fetched therapist details
         setState(() {
-          therapistName = therapist.therapistName;
+          therapistId = therapist.therapistId;
           hiringDate = Utils.parseStringToDateTime(therapist.hiringDate);
+          print('Hiring date string: $hiringDate');
           specialization = therapist.specialization;
           aboutMe = therapist.aboutMe;
           // Update other fields as needed
         });
       } else {
-        // Handle case where reminder is null
+        // Handle case where therapist is null
         print('Therapist details not found');
       }
     } catch (error) {
@@ -92,31 +120,53 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
     return SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: FormHelper.inputFieldWidget(context, "therapist", "Therapist Name", (onValidateVal){
-                if(onValidateVal.isEmpty){
-                  return "Therapist name can't be empty";
-                }
-                return null;
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey,),
 
-              }, (onSavedVal){
-                therapistName = onSavedVal.toString().trim();
-              },
-                initialValue: therapistName,
-                prefixIconColor: kPrimaryColor,
-                showPrefixIcon: true,
-                prefixIcon: const Icon(Icons.person),
-                borderRadius: 10,
-                borderColor: Colors.grey,
-                contentPadding: 15,
-                fontSize: 16,
-                prefixIconPaddingLeft: 10,
-                hintFontSize: 16,
+                  ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Icon(
+                          Icons.person, // Your desired icon
+                          color: kPrimaryColor, // Icon color
+                        ),
+                      ),
+                      Expanded(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            hint: const Text("Select Therapist", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                            value: therapistId,
+                            isExpanded: true,
+                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                            onChanged: (newValue) {
+                              setState(() {
+                                therapistId = newValue!;
+                                //therapistName = users.firstWhere((user) => user.id == therapistName).name;
+                              });
+                            },
+                            items: users.map((UserModel user) {
+                              return DropdownMenuItem<String>(
+                                value: user.id,
+                                child: Text(user.name, style: TextStyle(fontSize: 16)
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               ),
             ),
-            const SizedBox(height: 10),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
@@ -293,11 +343,11 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
 
 
                             TherapistModel updatedModel = TherapistModel(
-                              therapistName: therapistName!,
                               specialization: specialization!,
                               hiringDate: Utils.formatDateTimeToString(hiringDate!),
                               aboutMe: aboutMe!,
-                              userId: userId,
+                              managedBy: widget.userData.data!.id,
+                              therapistId: therapistId,
                             );
 
                             bool success = await APIService.updateTherapist(widget.therapistId, updatedModel);

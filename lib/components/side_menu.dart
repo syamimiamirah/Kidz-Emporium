@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kidz_emporium/Screens/admin/view_booking_admin.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
+import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
@@ -17,6 +19,7 @@ import '../Screens/therapist/view_therapist.dart';
 import '../models/child_model.dart';
 import '../models/login_response_model.dart';
 import '../models/therapist_model.dart';
+import '../models/user_model.dart';
 import '../services/api_service.dart';
 
 class NavBar extends StatefulWidget{
@@ -31,11 +34,13 @@ class NavBar extends StatefulWidget{
 class _navBarState extends State<NavBar>{
 
   List<TherapistModel> therapists = [];
+  List<UserModel> users = [];
 
   @override
   void initState() {
     super.initState();
-    loadTherapists();// Load children data when the page initializes
+    loadTherapists();
+    loadUsers();// Load children data when the page initializes
   }
 
   Future<void> loadTherapists() async {
@@ -43,6 +48,17 @@ class _navBarState extends State<NavBar>{
       List<TherapistModel> fetchedTherapists = await APIService.getAllTherapists();
       setState(() {
         therapists = fetchedTherapists;
+      });
+    } catch (error) {
+      // Handle error
+      print("Error fetching therapists: $error");
+    }
+  }
+  Future<void> loadUsers() async{
+    try {
+      List<UserModel> fetchedUsers = await APIService.getAllUsers();
+      setState(() {
+        users = fetchedUsers;
       });
     } catch (error) {
       // Handle error
@@ -93,7 +109,7 @@ class _navBarState extends State<NavBar>{
             title: Text("Therapist"),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => ViewTherapistParentPage(userData:widget.userData, therapists: therapists)),//CreateTherapist()),
+                  builder: (context) => ViewTherapistParentPage(userData:widget.userData, therapists: therapists, users: users,)),//CreateTherapist()),
               );
             },
           ),
@@ -159,7 +175,11 @@ class _adminNavBarState extends State<AdminNavBar> {
             ListTile(
               leading: Icon(Icons.library_books),
               title: Text("Booking"),
-              onTap: () => null,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => ViewBookingAdminPage(userData: widget.userData),
+                ));
+              },
             ),
             ListTile(
               leading: Icon(Icons.payment),
@@ -226,14 +246,26 @@ class _therapistNavBarState extends State<TherapistNavBar> {
 
   List<ChildModel> children = [];
   List<TherapistModel> therapists = [];
+  List<UserModel> users = [];
 
   @override
   void initState() {
     super.initState();
     loadChildren();
-    loadTherapists();// Load children data when the page initializes
+    loadTherapists();
+    loadUsers();// Load children data when the page initializes
   }
-
+  Future<void> loadUsers() async{
+    try {
+      List<UserModel> fetchedUsers = await APIService.getAllUsers();
+      setState(() {
+        users = fetchedUsers;
+      });
+    } catch (error) {
+      // Handle error
+      print("Error fetching therapists: $error");
+    }
+  }
   // Function to fetch children data
   Future<void> loadChildren() async {
     try {
@@ -283,7 +315,11 @@ class _therapistNavBarState extends State<TherapistNavBar> {
             ListTile(
               leading: Icon(Icons.library_books),
               title: Text("Booking"),
-              onTap: () => null,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                builder: (context) => ViewBookingTherapistPage(userData: widget.userData),
+                ));
+              },
             ),
             ListTile(
               leading: Icon(Icons.payment),
@@ -307,7 +343,7 @@ class _therapistNavBarState extends State<TherapistNavBar> {
                 Navigator.push(context, MaterialPageRoute(
                     builder: (context) =>
                         TherapistDetailPage(
-                            userData: widget.userData, therapists: therapists)), //CreateTherapist()),
+                            userData: widget.userData, therapists: therapists, users: users,)), //CreateTherapist()),
                 );
               },
             ),

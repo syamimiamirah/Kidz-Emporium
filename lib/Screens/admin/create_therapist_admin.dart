@@ -9,6 +9,7 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
 import '../../models/login_response_model.dart';
+import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import '../../utils.dart';
 import '../parent/view_reminder_parent.dart';
@@ -26,16 +27,19 @@ class CreateTherapistAdminPage extends StatefulWidget{
 class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
   static final GlobalKey<FormState> globalFormKey = GlobalKey<FormState>();
   bool isAPICallProcess =  false;
-  String? therapistName;
+  String? selectedTherapist;
+  String? selectedTherapistName;
   String? specialization;
   DateTime? hiringDate;
   String? aboutMe;
   late String userId;
   bool isHiringDateSet = false;
+  List<UserModel> users = [];
 
   @override
   void initState(){
     super.initState();
+    fetchTherapists();
     if(widget.userData != null && widget.userData.data != null){
       print("userData: ${widget.userData.data!.id}");
       userId = widget.userData.data!.id;
@@ -45,6 +49,29 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
     }
   }
 
+  Future<void> fetchTherapists() async {
+    try {
+      List<UserModel> fetchedUsers = await APIService.getAllUsers();
+
+      print('Fetched users JSON response: $fetchedUsers');
+
+      // Filter the fetched users to get only therapists
+      List<UserModel> fetchedTherapists = fetchedUsers.where((user) =>
+      user.role == 'Therapist').toList();
+      print('Filtered therapists: $fetchedTherapists');
+
+      // Print the id field of each user to debug
+      fetchedTherapists.forEach((user) {
+        print('User ID: ${user.id}');
+      });
+
+      setState(() {
+        users = fetchedTherapists;
+      });
+    }catch (error) {
+      print('Error fetching therapists: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context){
@@ -68,29 +95,53 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
         child: Column(
           children: [
             const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: FormHelper.inputFieldWidget(context, "therapist", "Therapist Name", (onValidateVal){
-                if(onValidateVal.isEmpty){
-                  return "Therapist name can't be empty";
-                }
-                return null;
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey,),
 
-              }, (onSavedVal){
-                therapistName = onSavedVal.toString().trim();
-              },
-                prefixIconColor: kPrimaryColor,
-                showPrefixIcon: true,
-                prefixIcon: const Icon(Icons.person),
-                borderRadius: 10,
-                borderColor: Colors.grey,
-                contentPadding: 15,
-                fontSize: 16,
-                prefixIconPaddingLeft: 10,
-                hintFontSize: 16,
+                  ),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Icon(
+                          Icons.person, // Your desired icon
+                          color: kPrimaryColor, // Icon color
+                        ),
+                      ),
+                      Expanded(
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            hint: const Text("Select Therapist", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                            value: selectedTherapist,
+                            isExpanded: true,
+                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedTherapist = newValue!;
+                                selectedTherapistName = users.firstWhere((user) => user.id == selectedTherapist).name;
+                              });
+                            },
+                            items: users.map((UserModel user) {
+                              return DropdownMenuItem<String>(
+                                value: user.id,
+                                child: Text(user.name, style: TextStyle(fontSize: 16)
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               ),
             ),
-            const SizedBox(height: 10),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
@@ -184,6 +235,19 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime.now(),
+                                  builder: (BuildContext context, Widget? child) {
+                                    return Theme(
+                                      data: ThemeData(
+                                        colorScheme: ColorScheme.light(
+                                          primary: kPrimaryColor, // Set your desired color here
+                                        ),
+                                        buttonTheme: ButtonThemeData(
+                                          textTheme: ButtonTextTheme.primary,
+                                        ),
+                                      ),
+                                      child: child!,
+                                    );
+                                  },
                                 ).then((selectedDate){
                                   if(selectedDate != null && selectedDate != hiringDate){
                                     setState(() {
@@ -266,11 +330,11 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
 
 
                           TherapistModel model = TherapistModel(
-                            therapistName: therapistName!,
                             specialization: specialization!,
                             hiringDate: Utils.formatDateTimeToString(hiringDate!),
                             aboutMe: aboutMe!,
-                            userId: userId,
+                            therapistId: selectedTherapist!,
+                            managedBy: widget.userData.data!.id
                           );
 
                           APIService.createTherapist(model).then((response) {
@@ -281,7 +345,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                             if (response != null) {
                               FormHelper.showSimpleAlertDialog(
                                 context, Config.appName,
-                                "Child Profile created", "OK", () {
+                                "Therapist Profile created", "OK", () {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

@@ -13,6 +13,7 @@ import 'package:kidz_emporium/services/shared_service.dart';
 
 import '../models/payment_model.dart';
 import '../models/therapist_model.dart';
+import '../models/user_model.dart';
 import '../models/youtube_model.dart';
 import '../utils.dart';
 
@@ -69,6 +70,42 @@ class APIService{
     }
   }
 
+  static Future<List<UserModel>> getAllUsers() async {
+    var url = await Uri.http(
+        Config.apiURL, Config.getAllUsersAPI); // Adjust the endpoint
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true &&
+            responseData.containsKey('success')) {
+          List<UserModel> users = (responseData['success'] as List)
+              .map((json) => UserModel.fromJson(json))
+              .toList();
+
+          return users;
+        } else {
+          print(
+              "Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print(
+            "Failed to fetch all users. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching all users: $error");
+      return [];
+    }
+  }
 
   static Future<ReminderModel?> createReminder(ReminderModel model) async {
     Map<String, String> requestHeaders = {
@@ -387,8 +424,8 @@ class APIService{
     }
   }
 
-  static Future<List<TherapistModel>> getTherapist(String userId) async {
-    var url = Uri.http(Config.apiURL, Config.getTherapistAPI, {'userId': userId});
+  static Future<List<TherapistModel>> getTherapist(String managedBy) async {
+    var url = Uri.http(Config.apiURL, Config.getTherapistAPI, {'managedBy': managedBy});
     print("Request URL: $url");
 
     try {
@@ -486,9 +523,9 @@ class APIService{
     }
   }
 
-  static Future<TherapistModel?> getTherapistDetails(String id) async {
+  static Future<TherapistModel?> getTherapistDetails(String therapistId) async {
     try {
-      var url = Uri.http(Config.apiURL, '${Config.getTherapistDetailsAPI}/$id');
+      var url = Uri.http(Config.apiURL, '${Config.getTherapistDetailsAPI}/$therapistId');
       print("Request URL: $url");
 
       var response = await client.get(
@@ -501,26 +538,28 @@ class APIService{
         return responseData != null ? TherapistModel.fromJson(responseData['success']) : null;
       } else {
         print('Error response body: ${response.body}');
-        throw Exception('Failed to get therapist details. Status code: ${response.statusCode}');
+        throw Exception('Failed to get booking details. Status code: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error getting therapist details: $error');
+      print('Error getting booking details: $error');
       throw error;
     }
   }
 
-  static Future<bool> updateTherapist(String id, TherapistModel updatedModel) async {
+
+
+  static Future<bool> updateTherapist(String therapistId, TherapistModel updatedModel) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
 
-    var url = Uri.http(Config.apiURL, '${Config.updateTherapistAPI}/$id'); // Adjust the API endpoint
+    var url = Uri.http(Config.apiURL, '${Config.updateTherapistAPI}/$therapistId'); // Adjust the API endpoint
     print("Request URL: $url");
-    print("id: $id");
+    print("id: $therapistId");
     var response = await client.put(
       url,
       headers: requestHeaders,
-      body: jsonEncode({'_id': id, 'updatedData': updatedModel.toJson()}),
+      body: jsonEncode({'therapistId': therapistId, 'updatedData': updatedModel.toJson()}),
     );
 
     if (response.statusCode == 200) {

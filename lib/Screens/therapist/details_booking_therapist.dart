@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kidz_emporium/Screens/parent/update_booking_parent.dart';
 import 'package:kidz_emporium/models/booking_model.dart';
 import 'package:kidz_emporium/models/child_model.dart';
+import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/therapist_model.dart';
-import 'package:kidz_emporium/models/user_model.dart'; // Import UserModel
 
 import '../../contants.dart';
-import '../../models/login_response_model.dart';
+import '../../models/user_model.dart';
 
-class BookingDetailsPage extends StatefulWidget {
+class BookingDetailsTherapistPage extends StatefulWidget {
   final LoginResponseModel userData;
   final BookingModel booking;
   final TherapistModel therapist;
-  final ChildModel child;
-  final UserModel therapistUser; // Add UserModel parameter
+  final UserModel therapistUser;
 
-  const BookingDetailsPage({
+  final ChildModel child;
+
+  const BookingDetailsTherapistPage({
     Key? key,
     required this.userData,
     required this.booking,
     required this.therapist,
     required this.child,
-    required this.therapistUser, // Add UserModel parameter
+    required this.therapistUser,
   }) : super(key: key);
 
   @override
-  _BookingDetailsPageState createState() => _BookingDetailsPageState();
+  _BookingDetailsTherapistPageState createState() => _BookingDetailsTherapistPageState();
 }
 
-class _BookingDetailsPageState extends State<BookingDetailsPage> {
+class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,43 +72,18 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               ),
               _buildDetailItem(
                 label: 'Time Slot:',
-                value:
-                "${DateFormat('hh:mm a').format(DateTime.parse(widget.booking.fromDate))} - ${DateFormat('hh:mm a').format(DateTime.parse(widget.booking.toDate))}",
+                value: "${DateFormat('hh:mm a').format(DateTime.parse(widget.booking.fromDate))} - ${DateFormat('hh:mm a').format(DateTime.parse(widget.booking.toDate))}",
                 icon: Icons.access_time,
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
                 label: 'Therapist:',
-                value: widget.therapistUser.name, // Use therapist's name from UserModel
+                value: widget.therapistUser.name,
                 icon: Icons.person,
                 iconColor: kPrimaryColor,
               ),
               SizedBox(height: 20),
               _buildRules(),
-              SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UpdateBookingParentPage(userData: widget.userData, bookingId: widget.booking.id ?? ''),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: kPrimaryColor,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    'Reschedule',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
               SizedBox(height: 20),
             ],
           ),
@@ -131,7 +106,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Your Appointment',
+            'Booking Details',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -186,17 +161,16 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Reminders Before Going to the Center:',
+            'Reminders:',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
           ),
           SizedBox(height: 10),
-          _buildRuleItem('Wear a mask at all times.'),
-          _buildRuleItem('Maintain social distancing.'),
-          _buildRuleItem('Arrive 10 minutes prior to your appointment.'),
-          _buildRuleItem('Reschedule your appointment if your child is feeling unwell.'),
+          _buildRuleItem('Update progress notes after each session.'),
+          _buildRuleItem('Communicate any changes in schedule to the administrative team.'),
+          _buildRuleItem('Be prepared for the session.'),
         ],
       ),
     );
