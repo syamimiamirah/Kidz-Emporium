@@ -11,6 +11,7 @@ import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/models/therapist_model.dart';
 
+import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import 'create_therapist_admin.dart';
 
@@ -24,7 +25,8 @@ class ViewTherapistAdminPage extends StatefulWidget {
 }
 
 class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
-  List<TherapistModel> therapists = []; // Added the list to store children
+  List<TherapistModel> therapists = [];
+  List<UserModel> users = [];// Added the list to store children
 
   @override
   void initState() {
@@ -32,12 +34,14 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
     _loadTherapists(widget.userData.data!.id);
   }
 
-  Future<void> _loadTherapists(String userId) async {
+  Future<void> _loadTherapists(String managedBy) async {
     try {
-      List<TherapistModel> loadedTherapists = await APIService.getTherapist(widget.userData.data!.id);
+      List<TherapistModel> loadedTherapists = await APIService.getAllTherapists();
+      List<UserModel> loadedUsers = await APIService.getAllUsers(); // Adjust this according to your API
 
       setState(() {
         therapists = loadedTherapists;
+        users = loadedUsers;
       });
     } catch (error) {
       print('Error loading therapists: $error');
@@ -66,7 +70,7 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
             Text(
               "List of therapists",
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
@@ -76,6 +80,8 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
               child: ListView.builder(
                 itemCount: therapists.length,
                 itemBuilder: (context, index) {
+                  UserModel therapistUser = users.firstWhere((user) => user.id == therapists[index].therapistId);
+                  String therapistName = therapistUser.name;
                   return Dismissible(
                     key: Key(therapists[index].id ?? ''),
                     onDismissed: (direction) async {
@@ -113,6 +119,9 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
 
                     child: Card(
                       color: Colors.orange[100],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
                       elevation: 2,
                       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                       child: ListTile(
@@ -122,20 +131,19 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
                           radius: 30,
                           backgroundImage: AssetImage('assets/images/medical_team.png'),
                         ),
-                        title: Text(
-                          therapists[index].therapistName ?? '',
-                          style: TextStyle(fontSize: 18),
+                        title: Text(therapistName ?? '',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Hiring Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(therapists[index].hiringDate as String))}",
-                              style: TextStyle(color: Colors.black.withOpacity(0.7)),
+                              style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.7)),
                             ),
                             Text(
                               "Specialist In: ${therapists[index].specialization ?? 'N/A'}",
-                              style: TextStyle(color: Colors.black.withOpacity(0.7)),
+                              style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.7)),
                             ),
                             // Add any other details as needed
                           ],
@@ -146,7 +154,7 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => UpdateTherapistAdminPage(userData: widget.userData, therapistId: therapists[index].id ?? ''),
+                                builder: (context) => UpdateTherapistAdminPage(userData: widget.userData, therapistId: therapists[index].therapistId ?? ''),
                               ),
                             );
                           },

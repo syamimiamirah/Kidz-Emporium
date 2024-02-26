@@ -1,38 +1,38 @@
 class TherapistModel {
-  late String therapistName;
   late String specialization;
   late String hiringDate;
   late String aboutMe;
-  late String userId;
+  late String therapistId;
+  late String managedBy;
   final String? id;
 
   TherapistModel({
-    required this.therapistName,
     required this.specialization,
     required this.hiringDate,
     required this.aboutMe,
-    required this.userId,
+    required this.therapistId,
+    required this.managedBy,
     this.id, // Nullable id field
   });
 
   factory TherapistModel.fromJson(Map<String, dynamic> json) {
     return TherapistModel(
-      id: json['_id'],
-      therapistName: json['therapistName'] ?? '', // Provide a default value or handle null
+      id: json['_id'], // Provide a default value or handle null
       specialization: json['specialization'] ?? '', // Provide a default value or handle null
       hiringDate: json['hiringDate'] ?? '', // Provide a default value or handle null
-      aboutMe: json['aboutMe'] ?? '', // Provide a default value or handle null
-      userId: json['userId'] ?? '',
+      aboutMe: json['aboutMe'] ?? '',
+      therapistId: json['therapistId'] ?? '',// Provide a default value or handle null
+      managedBy: json['managedBy'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      'therapistName': therapistName,
       'specialization': specialization,
       'hiringDate': hiringDate,
       'aboutMe': aboutMe,
-      'userId': userId,
+      'therapistId': therapistId,
+      'managedBy': managedBy,
       '_id': id,
     };
 

@@ -13,6 +13,7 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
 import '../../models/booking_model.dart';
+import '../../models/user_model.dart';
 import '../../utils.dart';
 
 
@@ -33,6 +34,7 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
 
   List<TherapistModel> therapists = [];
   List<ChildModel> children = [];
+  List<UserModel> users = [];
 
   @override
   void initState() {
@@ -53,9 +55,16 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
   Future<void> fetchTherapists() async {
     try {
       List<TherapistModel> fetchedTherapists = await APIService.getAllTherapists();
-      print('$fetchedTherapists');
       setState(() {
         therapists = fetchedTherapists;
+      });
+      // Fetch users (therapists) from API
+      List<UserModel> fetchedUsers = await APIService.getAllUsers();
+      List<UserModel> therapist = fetchedUsers.where((user) =>
+      user.role == 'Therapist').toList();
+      print('Filtered therapists: $fetchedTherapists');// Adjust this according to your API method
+      setState(() {
+        users = therapist;
       });
     } catch (error) {
       print('Error fetching therapists: $error');
@@ -114,10 +123,10 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                                 selectedTherapist = newValue!;
                               });
                             },
-                            items: therapists.map((TherapistModel therapist) {
+                            items: users.map((UserModel user) {
                               return DropdownMenuItem<String>(
-                                value: therapist.id,
-                                child: Text(therapist.therapistName, style: TextStyle(fontSize: 16)
+                                value: user.id,
+                                child: Text(user.name, style: TextStyle(fontSize: 16)
                                 ),
                               );
                             }).toList(),

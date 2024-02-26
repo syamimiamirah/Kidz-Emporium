@@ -8,12 +8,14 @@ import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_therapist_parent.dart';
+import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_child_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
+import 'package:kidz_emporium/models/user_model.dart';
 import '../config.dart';
 import '../main.dart';
 import '../models/child_model.dart';
@@ -21,6 +23,7 @@ import '../models/therapist_model.dart';
 import '../services/api_service.dart';
 import '../services/shared_service.dart';
 import 'admin/create_therapist_admin.dart';
+import 'admin/view_booking_admin.dart';
 
 class HomePage extends StatefulWidget {
   final LoginResponseModel userData;
@@ -120,6 +123,7 @@ class _homePageState extends State<HomePage>{
                       onTap: () async {
                     // Handle the click event for the calendar
                    List<TherapistModel> therapists = await APIService.getAllTherapists();
+                   List<UserModel> users = await APIService.getAllUsers();
                     if (catNames[index] == "Booking") {
                       // Add your code here to navigate or perform an action
                       // when the calendar is clicked
@@ -134,7 +138,7 @@ class _homePageState extends State<HomePage>{
                       // when the calendar is clicked
                       print("Therapist clicked!");
                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => ViewTherapistParentPage(userData:widget.userData, therapists: therapists)),//CreateTherapist()),
+                          builder: (context) => ViewTherapistParentPage(userData:widget.userData, therapists: therapists, users: users,)),//CreateTherapist()),
                       );
                     }
                     if (catNames[index] == "Report") {
@@ -274,7 +278,7 @@ class _homePageState extends State<HomePage>{
   }
 }
 
-
+//Admin Home Page
 class AdminHomePage extends StatefulWidget {
   final LoginResponseModel userData;
   const AdminHomePage({Key? key, required this.userData}) : super(key: key);
@@ -376,9 +380,9 @@ class _adminHomePageState extends State<AdminHomePage>{
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
                           print("Booking clicked!");
-                          /*Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>  ViewBookingAdminPage(userData:widget.userData)),
+                          );
                         }
                         if (catNames[index] == "Therapist") {
                           // Add your code here to navigate or perform an action
@@ -525,7 +529,7 @@ class _adminHomePageState extends State<AdminHomePage>{
   }
 }
 
-
+//Therapist HomePage
 class TherapistHomePage extends StatefulWidget {
   final LoginResponseModel userData;
   const TherapistHomePage({Key? key, required this.userData}) : super(key: key);
@@ -626,19 +630,19 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                         if (catNames[index] == "Booking") {
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
-                          print("Booking clicked!");/*
+                          print("Booking clicked!");
                           Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                              builder: (context) => ViewBookingTherapistPage(userData:widget.userData)),
+                          );
                         }
                         List<TherapistModel> therapists = await APIService.getAllTherapists();
-
+                        List<UserModel> users = await APIService.getAllUsers();
                         if (catNames[index] == "Therapist") {
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
                           print("Therapist clicked!");
                           Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => TherapistDetailPage(userData:widget.userData, therapists: therapists)),//CreateTherapist()),
+                              builder: (context) => TherapistDetailPage(userData:widget.userData, therapists: therapists, users: users)),//CreateTherapist()),
                           );
                         }
                         if (catNames[index] == "Report") {

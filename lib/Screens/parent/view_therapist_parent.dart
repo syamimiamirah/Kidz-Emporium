@@ -4,21 +4,26 @@ import 'package:kidz_emporium/models/therapist_model.dart';
 
 import '../../contants.dart';
 import '../../models/login_response_model.dart';
+import '../../models/user_model.dart';
 
 class ViewTherapistParentPage extends StatefulWidget {
   final LoginResponseModel userData;
-  final List<TherapistModel> therapists; // Pass the list of therapists
+  final List<TherapistModel> therapists;
+  final List<UserModel> users; // List of UserModel
 
-  const ViewTherapistParentPage({Key? key, required this.userData, required this.therapists})
-      : super(key: key);
+  const ViewTherapistParentPage({
+    Key? key,
+    required this.userData,
+    required this.therapists,
+    required this.users,
+  }) : super(key: key);
 
   @override
-  _viewTherapistParentPageState createState() => _viewTherapistParentPageState();
+  _ViewTherapistParentPageState createState() => _ViewTherapistParentPageState();
 }
 
-class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
+class _ViewTherapistParentPageState extends State<ViewTherapistParentPage> {
   List<TherapistModel> filteredTherapists = [];
-  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -30,7 +35,7 @@ class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
     setState(() {
       filteredTherapists = widget.therapists
           .where((therapist) =>
-          therapist.therapistName.toLowerCase().contains(query.toLowerCase()))
+          therapist.id!.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -38,7 +43,6 @@ class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
   void _resetSearch() {
     setState(() {
       filteredTherapists = widget.therapists;
-      searchController.clear();
     });
   }
 
@@ -61,7 +65,6 @@ class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
         child: Column(
           children: [
             TextField(
-              controller: searchController,
               onChanged: _filterTherapists,
               decoration: InputDecoration(
                 labelText: 'Search by Name',
@@ -81,6 +84,17 @@ class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
               child: ListView.builder(
                 itemCount: filteredTherapists.length,
                 itemBuilder: (context, index) {
+                  // Find the user associated with the therapist
+                  UserModel? therapistUser = widget.users.firstWhere(
+                        (user) => user.id == filteredTherapists[index].therapistId,
+                    orElse: () =>  UserModel(id: '',
+                        name: 'Unknown',
+                        email: '',
+                        password: '',
+                        phone: '',
+                        role: 'Therapist'),
+                  );
+
                   return Card(
                     color: Colors.orange[100]!.withOpacity(0.8),
                     elevation: 5,
@@ -103,7 +117,7 @@ class _viewTherapistParentPageState extends State<ViewTherapistParentPage> {
                           ),
                           SizedBox(height: 20),
                           Text(
-                            '${filteredTherapists[index].therapistName ?? 'N/A'}',
+                            '${therapistUser?.name ?? 'N/A'}', // Display therapist's name
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 10),

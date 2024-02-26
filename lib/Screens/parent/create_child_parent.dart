@@ -111,6 +111,19 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                               initialDate: DateTime.now(),
                               firstDate: DateTime(1900),
                               lastDate: DateTime.now(),
+                            builder: (BuildContext context, Widget? child) {
+                              return Theme(
+                                data: ThemeData(
+                                  colorScheme: ColorScheme.light(
+                                    primary: kSecondaryColor, // Set your desired color here
+                                  ),
+                                  buttonTheme: ButtonThemeData(
+                                    textTheme: ButtonTextTheme.primary,
+                                  ),
+                                ),
+                                child: child!,
+                              );
+                            },
                           ).then((selectedDate){
                             if(selectedDate != null && selectedDate != birthDate){
                               setState(() {

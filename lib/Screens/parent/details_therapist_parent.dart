@@ -4,6 +4,7 @@ import 'package:kidz_emporium/models/therapist_model.dart';
 
 import '../../contants.dart';
 import '../../models/login_response_model.dart';
+import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import '../../utils.dart';
 
@@ -25,7 +26,7 @@ class _TherapistDetailParentPageState extends State<TherapistDetailParentPage> {
   late DateTime hiringDate = DateTime.now();
   late String aboutMe = "";
   late String userId;
-
+  List<UserModel> users = [];
   @override
   void initState() {
     super.initState();
@@ -42,11 +43,11 @@ class _TherapistDetailParentPageState extends State<TherapistDetailParentPage> {
   Future<void> fetchTherapistDetails() async {
     try {
       TherapistModel? therapist = await APIService.getTherapistDetails(widget.therapistId);
-
+      UserModel therapistUser = users.firstWhere((user) => user.id == therapist?.therapistId);
       if (therapist != null) {
         // Update UI with fetched reminder details
         setState(() {
-          therapistName = therapist.therapistName;
+          therapistName = therapistUser.name;
           hiringDate = Utils.parseStringToDateTime(therapist.hiringDate);
           specialization = therapist.specialization;
           aboutMe = therapist.aboutMe;

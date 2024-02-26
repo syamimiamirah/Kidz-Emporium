@@ -14,6 +14,7 @@ import 'package:snippet_coder_utils/FormHelper.dart';
 
 import '../../config.dart';
 import '../../models/booking_model.dart';
+import '../../models/user_model.dart';
 import '../../utils.dart';
 import 'details_booking_parent.dart';
 
@@ -41,6 +42,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
 
   List<TherapistModel> therapists = [];
   List<ChildModel> children = [];
+  List<UserModel> users = [];
 
   @override
   void initState() {
@@ -72,62 +74,53 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
       print('Error loading data: $error');
     }
   }
+  Future<void> fetchTherapists() async {
+    try {
+      // Fetch therapists from API
+      List<TherapistModel> fetchedTherapists = await APIService.getAllTherapists();
+      setState(() {
+        therapists = fetchedTherapists;
+      });
+      // Fetch users (therapists) from API
+      List<UserModel> fetchedUsers = await APIService.getAllUsers();
+      List<UserModel> therapist = fetchedUsers.where((user) =>
+      user.role == 'Therapist').toList();
+      print('Filtered therapists: $fetchedTherapists');// Adjust this according to your API method
+      setState(() {
+        users = therapist;
+      });
+    } catch (error) {
+      print('Error fetching data: $error');
+    }
+  }
+
   Future<void> fetchBookingDetails() async {
     try {
+      // Fetch booking details from API
       BookingModel? booking = await APIService.getBookingDetails(widget.bookingId);
-
       if (booking != null) {
-        // Update UI with fetched reminder details
+        // Update UI with fetched booking details
         setState(() {
           childId = booking.childId;
           fromDate = Utils.parseStringToDateTime(booking.fromDate);
           toDate = Utils.parseStringToDateTime(booking.toDate);
           therapistId = booking.therapistId;
-          paymentId = booking.paymentId!;
-          TherapistModel? selectedTherapist = therapists.firstWhere((therapist) => therapist.id == therapistId, orElse: () => TherapistModel(
-            therapistName: '',
-            specialization: '',
-            hiringDate: '',
-            aboutMe: '',
-            userId: '',
-            ),
+          paymentId = booking.paymentId ?? '';
+          // Find therapist name from users list
+          UserModel? selectedTherapist = users.firstWhere(
+                (user) => user.id == therapistId,
+            orElse: () => UserModel(id: '', name: 'Unknown', email: '', password: '', phone: '', role: 'Therapist'), // Default if therapist is not found
           );
-          print(selectedTherapist);
-          if (selectedTherapist != null) {
-            therapistName = selectedTherapist.therapistName;
-          }
-          ChildModel? selectedChild = children.firstWhere((child) => child.id == childId, orElse: () => ChildModel(
-            childName: 'Unknown',
-            birthDate: '',
-            gender: '',
-            program: '',
-            userId: '',
-            ),
-          );
-          if (selectedTherapist != null) {
-            childName = selectedChild.childName;
-          }
-
+          therapistName = selectedTherapist.name;
+          // Fetch and set child name similarly if needed
         });
       } else {
-        // Handle case where reminder is null
+        // Handle case where booking is null
         print('Booking details not found');
       }
     } catch (error) {
       print('Error fetching booking details: $error');
       // Handle error
-    }
-  }
-
-  Future<void> fetchTherapists() async {
-    try {
-      List<TherapistModel> fetchedTherapists = await APIService.getAllTherapists();
-      print('$fetchedTherapists');
-      setState(() {
-        therapists = fetchedTherapists;
-      });
-    } catch (error) {
-      print('Error fetching therapists: $error');
     }
   }
 
@@ -184,10 +177,10 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                                   therapistId = newValue!;
                                 });
                               },
-                              items: therapists.map((TherapistModel therapist) {
+                              items: users.map((UserModel user) {
                                 return DropdownMenuItem<String>(
-                                  value: therapist.id,
-                                  child: Text(therapist.therapistName, style: TextStyle(fontSize: 16)
+                                  value: user.id,
+                                  child: Text(user.name, style: TextStyle(fontSize: 16)
                                   ),
                                 );
                               }).toList(),

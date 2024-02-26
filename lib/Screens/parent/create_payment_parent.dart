@@ -339,7 +339,6 @@ class _PaymentPageState extends State<PaymentPage> {
       paymentId = response?.id;
       print(response?.id);
       print(paymentId);
-      _createBooking();
     }).catchError((error) {
       _showErrorDialog(
           'An error occurred while processing your payment. Please try again later.');
@@ -363,6 +362,7 @@ class _PaymentPageState extends State<PaymentPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                _createBooking();
               },
               child: Text('OK'),
             ),

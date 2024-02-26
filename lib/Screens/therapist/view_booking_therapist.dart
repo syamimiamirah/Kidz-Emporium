@@ -9,18 +9,18 @@ import '../../models/login_response_model.dart';
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import '../../utils.dart';
-import 'create_booking_parent.dart';
-import 'details_booking_parent.dart';
+import '../parent/details_booking_parent.dart';
+import 'details_booking_therapist.dart';
 
-class ViewBookingParentPage extends StatefulWidget {
+class ViewBookingTherapistPage extends StatefulWidget {
   final LoginResponseModel userData;
 
-  const ViewBookingParentPage({Key? key, required this.userData}): super(key: key);
+  const ViewBookingTherapistPage({Key? key, required this.userData}): super(key: key);
   @override
   _ViewBookingListPageState createState() => _ViewBookingListPageState();
 }
 
-class _ViewBookingListPageState extends State<ViewBookingParentPage> {
+class _ViewBookingListPageState extends State<ViewBookingTherapistPage> {
   List<BookingModel> bookings = [];
   List<ChildModel> children = [];
   List<TherapistModel> therapists = [];
@@ -37,7 +37,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
       // Use Future.wait to wait for all API calls to complete
       await Future.wait([
         _loadBooking(userId),
-        _loadChildren(userId),
+        _loadChildren(),
         _loadTherapists(userId),
         _loadUsers(), // Fetch user details
       ]);
@@ -60,18 +60,19 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
 
   Future<void> _loadBooking(String userId) async {
     try {
-      List<BookingModel> loadedBooking = await APIService.getBooking(widget.userData.data!.id);
+      List<BookingModel> loadedBookings = await APIService.getAllBookings();
+      List<BookingModel> therapistBookings = loadedBookings.where((booking) => booking.therapistId == userId).toList();
       setState(() {
-        bookings = loadedBooking;
+        bookings = therapistBookings;
       });
     } catch (error) {
       print('Error loading bookings: $error');
     }
   }
 
-  Future<void> _loadChildren(String userId) async {
+  Future<void> _loadChildren() async {
     try {
-      List<ChildModel> loadedChildren = await APIService.getChild(widget.userData.data!.id);
+      List<ChildModel> loadedChildren = await APIService.getAllChildren();
       setState(() {
         children = loadedChildren;
       });
@@ -103,7 +104,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavBar(userData: widget.userData),
+      drawer: TherapistNavBar(userData: widget.userData),
       appBar: AppBar(
         title: Text('Booking List'),
         centerTitle: true,
@@ -125,7 +126,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: 10, // Display bookings for the next 7 days
+                itemCount: 7, // Display bookings for the next 7 days
                 itemBuilder: (context, index) {
                   DateTime currentDate = DateTime.now().add(Duration(days: index));
                   List<BookingModel> filteredBookings = filterBookingsByDate(currentDate);
@@ -135,15 +136,6 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => CreateBookingParentPage(userData: widget.userData)),
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: kPrimaryColor, // Change the color to match your theme
       ),
     );
   }
@@ -246,7 +238,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          BookingDetailsPage(
+                          BookingDetailsTherapistPage(
                             userData: widget.userData,
                             booking: booking,
                             therapist: therapists.firstWhere(
@@ -277,7 +269,6 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                     ),
                   );
                 },
-
               ),
             ),
           );

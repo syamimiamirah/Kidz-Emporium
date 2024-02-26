@@ -4,12 +4,14 @@ import 'package:kidz_emporium/models/therapist_model.dart';
 
 import '../../contants.dart';
 import '../../models/login_response_model.dart';
+import '../../models/user_model.dart';
 
 class TherapistDetailPage extends StatefulWidget {
   final LoginResponseModel userData;
-  final List<TherapistModel> therapists; // Pass the list of therapists
+  final List<TherapistModel> therapists;
+  final List<UserModel> users;// Pass the list of therapists
 
-  const TherapistDetailPage({Key? key, required this.userData, required this.therapists})
+  const TherapistDetailPage({Key? key, required this.userData, required this.therapists, required this.users})
       : super(key: key);
 
   @override
@@ -30,11 +32,10 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
     setState(() {
       filteredTherapists = widget.therapists
           .where((therapist) =>
-          therapist.therapistName.toLowerCase().contains(query.toLowerCase()))
+          therapist.id!.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
-
   void _resetSearch() {
     setState(() {
       filteredTherapists = widget.therapists;
@@ -81,6 +82,15 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
               child: ListView.builder(
                 itemCount: filteredTherapists.length,
                 itemBuilder: (context, index) {
+                  UserModel? therapistUser = widget.users.firstWhere(
+                        (user) => user.id == filteredTherapists[index].therapistId,
+                    orElse: () =>  UserModel(id: '',
+                        name: 'Unknown',
+                        email: '',
+                        password: '',
+                        phone: '',
+                        role: 'Therapist'),
+                  );
                   return Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
@@ -102,7 +112,7 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
                           ),
                           SizedBox(height: 20),
                           Text(
-                            '${filteredTherapists[index].therapistName ?? 'N/A'}',
+                            '${therapistUser?.name ?? 'N/A'}', // Display therapist's name
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 10),

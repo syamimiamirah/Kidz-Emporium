@@ -3,6 +3,7 @@ class Config{
   static const String apiURL = "192.168.0.119:4000";
   static const String registerAPI = "api/register";
   static const String loginAPI = "api/login";
+  static const String getAllUsersAPI = "api/users";
 
   //reminder
   static const String createReminderAPI = "api/reminder";
