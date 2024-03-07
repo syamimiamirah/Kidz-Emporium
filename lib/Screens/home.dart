@@ -10,6 +10,7 @@ import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_therapist_parent.dart';
 import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_child_therapist.dart';
+import 'package:kidz_emporium/Screens/therapist/view_report_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
@@ -649,9 +650,9 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
                           print("Report clicked!");
-                          /*Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>  ViewReportTherapistPage(userData:widget.userData)),
+                          );
                         }
                         if (catNames[index] == "Video") {
                           // Add your code here to navigate or perform an action

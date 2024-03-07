@@ -3,6 +3,7 @@ import 'package:kidz_emporium/Screens/admin/view_booking_admin.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
+import 'package:kidz_emporium/Screens/therapist/create_report_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
@@ -15,6 +16,7 @@ import '../Screens/parent/view_child_parent.dart';
 import '../Screens/parent/view_reminder_parent.dart';
 import '../Screens/parent/view_therapist_parent.dart';
 import '../Screens/therapist/view_child_therapist.dart';
+import '../Screens/therapist/view_report_therapist.dart';
 import '../Screens/therapist/view_therapist.dart';
 import '../models/child_model.dart';
 import '../models/login_response_model.dart';
@@ -322,14 +324,13 @@ class _therapistNavBarState extends State<TherapistNavBar> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.payment),
-              title: Text("Payment"),
-              onTap: () => null,
-            ),
-            ListTile(
               leading: Icon(Icons.event_note),
               title: Text("Report"),
-              onTap: () => null,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) => ViewReportTherapistPage(userData: widget.userData),
+                ));
+              },
             ),
             ListTile(
               leading: Icon(Icons.video_library),

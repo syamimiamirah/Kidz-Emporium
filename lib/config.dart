@@ -45,4 +45,14 @@ class Config{
   static const String updatePaymentAPI = "api/update-payment";
   static const String getAllPaymentsAPI = "api/payments";
 
+  //report
+  static const String createReportAPI = "api/report";
+  static const String getReportAPI = "api/get-report";
+  static const String deleteReportAPI = "api/delete-report";
+  static const String getReportDetailsByBookingIdAPI = "api/get-report-details-by-bookingId";
+  static const String updateReportAPI = "api/update-report";
+  static const String getAllReportsAPI = "api/reports";
+  static const String checkReportAPI = "api/check-report";
+  static const String getReportDetailsAPI = "api/get-report-details";
+
 }
