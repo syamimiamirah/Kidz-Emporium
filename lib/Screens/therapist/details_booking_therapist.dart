@@ -13,7 +13,6 @@ class BookingDetailsTherapistPage extends StatefulWidget {
   final BookingModel booking;
   final TherapistModel therapist;
   final UserModel therapistUser;
-
   final ChildModel child;
 
   const BookingDetailsTherapistPage({
