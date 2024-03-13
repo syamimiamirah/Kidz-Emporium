@@ -7,6 +7,7 @@ import 'package:kidz_emporium/services/api_service.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../components/side_menu.dart';
+import '../../config.dart';
 import '../../contants.dart';
 import '../../models/login_response_model.dart';
 
@@ -213,50 +214,51 @@ class _ViewReminderParentPageState extends State<ViewReminderParentPage> {
       ),
     );
   }
+  Future<bool> showDeleteConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Config.appName),
+          content: Text('Are you sure you want to delete this reminder?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false when cancel is pressed
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.black),),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true when delete is pressed
+              },
+              child: Text('Delete', style: TextStyle(color: kPrimaryColor),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showAlertDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Config.appName),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK', style: TextStyle(color: kPrimaryColor),),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
-Future<bool> showDeleteConfirmationDialog(BuildContext context) async {
-  return await showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Delete Confirmation'),
-        content: Text('Are you sure you want to delete this reminder?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(false); // Return false when cancel is pressed
-            },
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(true); // Return true when delete is pressed
-            },
-            child: Text('Delete'),
-          ),
-        ],
-      );
-    },
-  );
-}
 
-void showAlertDialog(BuildContext context, String message) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Message'),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('OK'),
-          ),
-        ],
-      );
-    },
-  );
-}

@@ -48,7 +48,7 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Therapists List'),
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
         centerTitle: true,
         actions: [
           IconButton(

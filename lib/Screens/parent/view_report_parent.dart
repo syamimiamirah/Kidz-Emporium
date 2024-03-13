@@ -8,19 +8,17 @@ import '../../models/child_model.dart';
 import '../../models/login_response_model.dart';
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
-import '../../utils.dart';
-import 'create_booking_parent.dart';
-import 'details_booking_parent.dart';
+import 'details_report_parent.dart';
 
-class ViewBookingParentPage extends StatefulWidget {
+class ViewReportParentPage extends StatefulWidget {
   final LoginResponseModel userData;
 
-  const ViewBookingParentPage({Key? key, required this.userData}): super(key: key);
+  const ViewReportParentPage({Key? key, required this.userData}): super(key: key);
   @override
-  _ViewBookingListPageState createState() => _ViewBookingListPageState();
+  _ViewReportParentPageState createState() => _ViewReportParentPageState();
 }
 
-class _ViewBookingListPageState extends State<ViewBookingParentPage> {
+class _ViewReportParentPageState extends State<ViewReportParentPage> {
   List<BookingModel> bookings = [];
   List<ChildModel> children = [];
   List<TherapistModel> therapists = [];
@@ -79,7 +77,6 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
       print('Error loading children: $error');
     }
   }
-
   Future<void> _loadTherapists(String userId) async {
     try {
       List<TherapistModel> loadedTherapists = await APIService.getAllTherapists();
@@ -105,9 +102,9 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
     return Scaffold(
       drawer: NavBar(userData: widget.userData),
       appBar: AppBar(
-        title: Text('Booking List'),
+        title: Text('Report List'),
         centerTitle: true,
-        backgroundColor: kPrimaryColor, // Change the color to match your theme
+        backgroundColor: kPrimaryColor,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -115,7 +112,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Your Bookings',
+              'Your Reports',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -127,7 +124,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
               child: ListView.builder(
                 itemCount: 30, // Display bookings for the next 7 days
                 itemBuilder: (context, index) {
-                  DateTime currentDate = DateTime.now().add(Duration(days: index));
+                  DateTime currentDate = DateTime.now().subtract(Duration(days: index));
                   List<BookingModel> filteredBookings = filterBookingsByDate(currentDate);
                   return _buildBookingListView(currentDate, filteredBookings);
                 },
@@ -136,29 +133,23 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => CreateBookingParentPage(userData: widget.userData)),
-          );
-        },
-        child: Icon(Icons.add),
-        backgroundColor: kPrimaryColor, // Change the color to match your theme
-      ),
     );
   }
-
   Widget _buildBookingListView(DateTime date, List<BookingModel> filteredBookings) {
+    filteredBookings = filteredBookings.where((booking) {
+      DateTime toDate = DateTime.parse(booking.toDate);
+      return toDate.isBefore(DateTime.now());
+    }).toList();
+
     if (filteredBookings.isEmpty) {
       return SizedBox(); // Return an empty SizedBox if there are no bookings for this date
     }
-    filteredBookings.sort((a, b) =>
-        DateTime.parse(a.fromDate).compareTo(DateTime.parse(b.fromDate)));
+
+    filteredBookings.sort((a, b) => DateTime.parse(a.toDate).compareTo(DateTime.parse(b.toDate)));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-
         Text(
           DateFormat('EEEE, MMM d').format(date),
           style: TextStyle(
@@ -172,12 +163,14 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
           // Fetch user details for the therapist
           UserModel therapistUser = users.firstWhere(
                 (user) => user.id == booking.therapistId,
-            orElse: () => UserModel(id: '',
-                name: 'Unknown',
-                email: '',
-                password: '',
-                phone: '',
-                role: 'Therapist'), // Default value if user not found
+            orElse: () => UserModel(
+              id: '',
+              name: 'Unknown',
+              email: '',
+              password: '',
+              phone: '',
+              role: 'Therapist',
+            ), // Default value if user not found
           );
 
           return Padding(
@@ -192,11 +185,13 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                 title: Text(
                   children
                       .firstWhere((child) => child.id == booking.childId,
-                      orElse: () => ChildModel(childName: 'Unknown',
-                          birthDate: '',
-                          gender: '',
-                          program: '',
-                          userId: ''))
+                      orElse: () => ChildModel(
+                        childName: 'Unknown',
+                        birthDate: '',
+                        gender: '',
+                        program: '',
+                        userId: '',
+                      ))
                       .childName,
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
@@ -209,8 +204,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                         Icon(Icons.date_range, size: 18, color: kPrimaryColor),
                         SizedBox(width: 8),
                         Text(
-                          "${DateFormat('dd-MM-yyyy').format(
-                              DateTime.parse(booking.fromDate))}",
+                          "${DateFormat('dd-MM-yyyy').format(DateTime.parse(booking.fromDate))}",
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ],
@@ -220,9 +214,8 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                       children: [
                         Icon(Icons.access_time, size: 18, color: kPrimaryColor),
                         SizedBox(width: 8),
-                        Text("${DateFormat('hh:mm a').format(
-                            DateTime.parse(booking.fromDate))} - ${DateFormat(
-                            'hh:mm a').format(DateTime.parse(booking.toDate))}",
+                        Text(
+                          "${DateFormat('hh:mm a').format(DateTime.parse(booking.fromDate))} - ${DateFormat('hh:mm a').format(DateTime.parse(booking.toDate))}",
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ],
@@ -246,7 +239,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          BookingDetailsPage(
+                          ReportDetailsParentPage(
                             userData: widget.userData,
                             booking: booking,
                             therapist: therapists.firstWhere(
@@ -277,12 +270,10 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
                     ),
                   );
                 },
-
               ),
             ),
           );
-        }
-        ),
+        }).toList(),
       ],
     );
   }

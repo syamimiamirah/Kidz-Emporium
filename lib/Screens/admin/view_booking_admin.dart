@@ -125,7 +125,7 @@ class _ViewBookingListPageState extends State<ViewBookingAdminPage> {
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: 7, // Display bookings for the next 7 days
+                itemCount: bookings.length, // Display bookings for the next 7 days
                 itemBuilder: (context, index) {
                   DateTime currentDate = DateTime.now().add(Duration(days: index));
                   List<BookingModel> filteredBookings = filterBookingsByDate(currentDate);

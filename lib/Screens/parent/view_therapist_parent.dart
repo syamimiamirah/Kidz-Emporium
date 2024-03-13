@@ -51,7 +51,7 @@ class _ViewTherapistParentPageState extends State<ViewTherapistParentPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Therapists List'),
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
         centerTitle: true,
         actions: [
           IconButton(
@@ -96,7 +96,7 @@ class _ViewTherapistParentPageState extends State<ViewTherapistParentPage> {
                   );
 
                   return Card(
-                    color: Colors.orange[100]!.withOpacity(0.8),
+                    //color: Colors.pink[100]!.withOpacity(0.8),
                     elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),

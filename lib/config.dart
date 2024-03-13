@@ -1,6 +1,6 @@
 class Config{
   static const String appName = "Kid Emporium";
-  static const String apiURL = "192.168.0.119:4000";
+  static const String apiURL = "192.168.0.110:4000";
   static const String registerAPI = "api/register";
   static const String loginAPI = "api/login";
   static const String getAllUsersAPI = "api/users";
@@ -55,4 +55,11 @@ class Config{
   static const String checkReportAPI = "api/check-report";
   static const String getReportDetailsAPI = "api/get-report-details";
 
+  //task
+  static const String createTaskAPI = "api/task";
+  static const String getTaskAPI = "api/get-task";
+  static const String deleteTaskAPI = "api/delete-task";
+  static const String getTaskDetailsAPI = "api/get-task-details";
+  static const String updateTaskAPI = "api/update-task";
+  static const String getAllTasksAPI = "api/tasks";
 }

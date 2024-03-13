@@ -7,10 +7,12 @@ import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
+import 'package:kidz_emporium/Screens/parent/view_report_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_therapist_parent.dart';
 import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_child_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_report_therapist.dart';
+import 'package:kidz_emporium/Screens/therapist/view_task_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
@@ -23,8 +25,10 @@ import '../models/child_model.dart';
 import '../models/therapist_model.dart';
 import '../services/api_service.dart';
 import '../services/shared_service.dart';
+import 'admin/create_task_admin.dart';
 import 'admin/create_therapist_admin.dart';
 import 'admin/view_booking_admin.dart';
+import 'admin/view_task_admin.dart';
 
 class HomePage extends StatefulWidget {
   final LoginResponseModel userData;
@@ -146,9 +150,9 @@ class _homePageState extends State<HomePage>{
                       // Add your code here to navigate or perform an action
                       // when the calendar is clicked
                       print("Report clicked!");
-                      /*Navigator.push(context, MaterialPageRoute(
-                          builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                      );*/
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) =>  ViewReportParentPage(userData:widget.userData)),
+                      );
                     }
                     if (catNames[index] == "Video") {
                       // Add your code here to navigate or perform an action
@@ -296,7 +300,7 @@ class _adminHomePageState extends State<AdminHomePage>{
     "Therapist",
     "Report",
     "Video",
-    "Calendar",
+    "Task",
     "Child"
   ];
 
@@ -409,13 +413,13 @@ class _adminHomePageState extends State<AdminHomePage>{
                               builder: (context) =>  ViewYoutubeAdmin(userData:widget.userData)),
                           );
                         }
-                        if (catNames[index] == "Calendar") {
+                        if (catNames[index] == "Task") {
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
-                          print("Calendar clicked!");
-                          /*Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                          print("Task clicked!");
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>  ViewTaskAdminPage(userData:widget.userData)),
+                          );
                         }
                         if (catNames[index] == "Child") {
                           // Add your code here to navigate or perform an action
@@ -547,7 +551,7 @@ class _therapistHomePageState extends State<TherapistHomePage>{
     "Therapist",
     "Report",
     "Video",
-    "Calendar",
+    "Task",
     "Child"
   ];
 
@@ -662,13 +666,13 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                               builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
                           );*/
                         }
-                        if (catNames[index] == "Calendar") {
+                        if (catNames[index] == "Task") {
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
-                          print("Calendar clicked!");
-                          /*Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                          print("Task clicked!");
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>  ViewTaskTherapistPage(userData:widget.userData)),
+                          );
                         }
 
                         List<ChildModel> children = await APIService.getAllChildren();

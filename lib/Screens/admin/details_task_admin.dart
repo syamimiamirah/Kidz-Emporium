@@ -1,40 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kidz_emporium/Screens/parent/update_booking_parent.dart';
-import 'package:kidz_emporium/models/booking_model.dart';
+import 'package:kidz_emporium/Screens/admin/update_task_admin.dart';
 import 'package:kidz_emporium/models/child_model.dart';
+import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/therapist_model.dart';
-import 'package:kidz_emporium/models/user_model.dart'; // Import UserModel
 
 import '../../contants.dart';
-import '../../models/login_response_model.dart';
+import '../../models/task_model.dart';
+import '../../models/user_model.dart';
+import '../../services/api_service.dart';
 
-class BookingDetailsPage extends StatefulWidget {
+class TaskDetailsAdminPage extends StatefulWidget {
   final LoginResponseModel userData;
-  final BookingModel booking;
-  final TherapistModel therapist;
-  final ChildModel child;
-  final UserModel therapistUser; // Add UserModel parameter
+  final TaskModel task;
 
-  const BookingDetailsPage({
+  const TaskDetailsAdminPage({
     Key? key,
     required this.userData,
-    required this.booking,
-    required this.therapist,
-    required this.child,
-    required this.therapistUser, // Add UserModel parameter
+    required this.task,
   }) : super(key: key);
 
   @override
-  _BookingDetailsPageState createState() => _BookingDetailsPageState();
+  _TaskDetailsAdminPageState createState() => _TaskDetailsAdminPageState();
 }
 
-class _BookingDetailsPageState extends State<BookingDetailsPage> {
+class _TaskDetailsAdminPageState extends State<TaskDetailsAdminPage> {
+  List<UserModel> users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsers();
+  }
+  Future<void> _loadUsers() async {
+    try {
+      List<UserModel> loadedUsers = await APIService.getAllUsers();
+      setState(() {
+        users = loadedUsers;
+      });
+    } catch (error) {
+      print('Error loading users: $error');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking Details'),
+        title: Text('Task Details'),
         centerTitle: true,
         backgroundColor: kPrimaryColor,
       ),
@@ -59,41 +73,44 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               _buildHeader(),
               SizedBox(height: 20),
               _buildDetailItem(
-                label: 'Child Name:',
-                value: widget.child.childName,
-                icon: Icons.child_care,
+                label: 'Task:',
+                value: widget.task.taskTitle,
+                icon: Icons.task,
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
-                label: 'Booking Date:',
-                value: DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.booking.fromDate)),
+                label: 'Date:',
+                value: DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.task.fromDate)),
                 icon: Icons.calendar_today,
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
                 label: 'Time Slot:',
-                value:
-                "${DateFormat('hh:mm a').format(DateTime.parse(widget.booking.fromDate))} - ${DateFormat('hh:mm a').format(DateTime.parse(widget.booking.toDate))}",
+                value: "${DateFormat('hh:mm a').format(DateTime.parse(widget.task.fromDate))} - ${DateFormat('hh:mm a').format(DateTime.parse(widget.task.toDate))}",
                 icon: Icons.access_time,
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
-                label: 'Therapist:',
-                value: widget.therapistUser.name, // Use therapist's name from UserModel
-                icon: Icons.person,
+                label: 'Description:',
+                value: widget.task.taskDescription,
+                icon: Icons.description,
                 iconColor: kPrimaryColor,
               ),
-              SizedBox(height: 20),
-              _buildRules(),
+              _buildDetailItem(
+                label: 'Therapist:',
+                value: "",
+                icon: Icons.people,
+                iconColor: kPrimaryColor,
+              ),
               SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    print('Booking ID: ${widget.booking.id}');
+                    print('Task ID: ${widget.task.id}');
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => UpdateBookingParentPage(userData: widget.userData, bookingId: widget.booking.id ?? ''),
+                        builder: (context) => UpdateTaskAdminPage(userData: widget.userData, taskId: widget.task.id ?? ''),
                       ),
                     );
                   },
@@ -105,7 +122,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     ),
                   ),
                   child: Text(
-                    'Reschedule',
+                    'Update',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -132,7 +149,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Your Appointment',
+            'Task Details',
             style: TextStyle(
               color: Colors.white,
               fontSize: 24,
@@ -147,7 +164,26 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     );
   }
 
-  Widget _buildDetailItem({required String label, required String value, required IconData icon, Color iconColor = Colors.blue}) {
+  Widget _buildDetailItem({required String label, required String value, required IconData icon, Color iconColor = kPrimaryColor}) {
+    if (label == 'Therapist:') {
+      // Convert therapist IDs to a list of names
+      final therapistNames = widget.task.therapistId.map((therapistId) {
+        print('Therapist ID: $therapistId');
+        // Find the corresponding therapist in the users list
+        UserModel? therapist = users.firstWhere((user) => user.id == therapistId, orElse: () => UserModel(id: '',
+            name: '',
+            email: '',
+            password: '',
+            phone: '',
+            role: 'Therapist'), // Default value if user not found
+        );
+        return therapist?.name ?? 'Unknown Therapist';
+      }).toList();
+
+      // Join the therapist names into a single string
+      value = therapistNames.map((name) => '• $name').join('\n');
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Row(
@@ -155,66 +191,25 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         children: [
           Icon(icon, size: 30, color: iconColor),
           SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                value,
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRules() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Reminders Before Going to the Center:',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-          SizedBox(height: 10),
-          _buildRuleItem('Wear a mask at all times.'),
-          _buildRuleItem('Maintain social distancing.'),
-          _buildRuleItem('Arrive 10 minutes prior to your appointment.'),
-          _buildRuleItem('Reschedule your appointment if your child is feeling unwell.'),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRuleItem(String rule) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.check_circle, size: 20, color: Colors.green),
-          SizedBox(width: 10),
           Expanded(
-            child: Text(
-              rule,
-              style: TextStyle(fontSize: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(fontSize: 16),
+                  softWrap: true,
+                  maxLines: null,
+                ),
+              ],
             ),
           ),
         ],

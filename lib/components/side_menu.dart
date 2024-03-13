@@ -10,10 +10,12 @@ import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
 
 import '../Screens/admin/create_therapist_admin.dart';
+import '../Screens/admin/view_task_admin.dart';
 import '../Screens/admin/view_therapist_admin.dart';
 import '../Screens/parent/create_booking_parent.dart';
 import '../Screens/parent/view_child_parent.dart';
 import '../Screens/parent/view_reminder_parent.dart';
+import '../Screens/parent/view_report_parent.dart';
 import '../Screens/parent/view_therapist_parent.dart';
 import '../Screens/therapist/view_child_therapist.dart';
 import '../Screens/therapist/view_report_therapist.dart';
@@ -99,7 +101,9 @@ class _navBarState extends State<NavBar>{
           ListTile(
             leading: Icon(Icons.event_note),
             title: Text("Report"),
-            onTap: () => null,
+            onTap: () => Navigator.push(context, MaterialPageRoute(
+              builder: (context) =>  ViewReportParentPage(userData:widget.userData)),
+            ),
           ),
           ListTile(
             leading: Icon(Icons.video_library),
@@ -211,17 +215,18 @@ class _adminNavBarState extends State<AdminNavBar> {
             ),
             ListTile(
               leading: Icon(Icons.child_care),
-              title: Text("My Child"),
+              title: Text("Children"),
               onTap: () => null,
             ),
             ListTile(
               leading: Icon(Icons.calendar_month),
-              title: Text("Calendar"),
-              onTap: () => null,
-                  /*Navigator.push(context, MaterialPageRoute(
-                      builder: (context) =>
-                          ViewReminderParentPage(userData: widget.userData)),
-                  ),*/
+              title: Text("Task"),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context) =>
+                    ViewTaskAdminPage(userData: widget.userData)),
+                );
+              },
             ),
             Divider(),
             ListTile(
@@ -350,7 +355,7 @@ class _therapistNavBarState extends State<TherapistNavBar> {
             ),
             ListTile(
               leading: Icon(Icons.child_care),
-              title: Text("My Child"),
+              title: Text("Children"),
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) =>
@@ -359,12 +364,12 @@ class _therapistNavBarState extends State<TherapistNavBar> {
             ),
             ListTile(
               leading: Icon(Icons.calendar_month),
-              title: Text("Calendar"),
-              onTap: () => null,
-                  /*Navigator.push(context, MaterialPageRoute(
+              title: Text("Task"),
+              onTap: () =>
+                  Navigator.push(context, MaterialPageRoute(
                       builder: (context) =>
-                          ViewReminderParentPage(userData: widget.userData)),
-                  ),*/
+                          ViewTaskAdminPage(userData: widget.userData)),
+                  ),
             ),
             Divider(),
             ListTile(
