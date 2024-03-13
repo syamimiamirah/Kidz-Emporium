@@ -103,7 +103,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
         title: Text("Update Therapist Profile"),
         centerTitle: true,
       ),
@@ -135,7 +135,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                         padding: const EdgeInsets.all(10),
                         child: Icon(
                           Icons.person, // Your desired icon
-                          color: kPrimaryColor, // Icon color
+                          color: kSecondaryColor, // Icon color
                         ),
                       ),
                       Expanded(
@@ -144,7 +144,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                             hint: const Text("Select Therapist", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
                             value: therapistId,
                             isExpanded: true,
-                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                            icon: Icon(Icons.arrow_drop_down, color: kSecondaryColor),
                             onChanged: (newValue) {
                               setState(() {
                                 therapistId = newValue!;
@@ -182,7 +182,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                         padding: const EdgeInsets.all(10),
                         child: Icon(
                           Icons.school, // Your desired icon
-                          color: kPrimaryColor, // Icon color
+                          color: kSecondaryColor, // Icon color
                         ),
                       ),
                       Expanded(
@@ -218,7 +218,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                               ),
                             ],// The first item is the hint, set its value to null
                             isExpanded: true,
-                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                            icon: Icon(Icons.arrow_drop_down, color: kSecondaryColor),
                             onChanged: (String? newValue){
                               //Your code to execute, when a menu item is selected from dropdown
                               //dropDownStringItem = value;
@@ -249,7 +249,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                             padding: const EdgeInsets.all(10),
                             child: Icon(
                               Icons.calendar_today, // Your desired icon for date picker
-                              color: kPrimaryColor, // Icon color
+                              color: kSecondaryColor, // Icon color
                             ),
                           ),
                           Expanded(
@@ -302,7 +302,7 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                   aboutMe = onSavedVal.toString().trim();
                 },
                 initialValue: aboutMe,
-                prefixIconColor: kPrimaryColor,
+                prefixIconColor: kSecondaryColor,
                 showPrefixIcon: true,
                 prefixIcon: const Icon(Icons.description),
                 borderRadius: 10,
@@ -384,11 +384,11 @@ class _updateTherapistAdminPageState extends State<UpdateTherapistAdminPage>{
                             }
                           }
                         },
-                          btnColor: Colors.orange,
-                          txtColor: Colors.black,
+                          btnColor: Colors.pink,
+                          txtColor: Colors.white,
                           borderRadius: 10,
                           fontSize: 16,
-                          borderColor: Colors.orange,
+                          borderColor: Colors.pink,
                         ),
                       ],
                     )

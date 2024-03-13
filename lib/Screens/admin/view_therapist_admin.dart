@@ -11,6 +11,7 @@ import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/models/therapist_model.dart';
 
+import '../../config.dart';
 import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import 'create_therapist_admin.dart';
@@ -58,7 +59,7 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
     return Scaffold(
       drawer: AdminNavBar(userData: widget.userData),
       appBar: AppBar(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
         title: Text("View Therapist Profile"),
         centerTitle: true,
       ),
@@ -118,7 +119,7 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
                     ),
 
                     child: Card(
-                      color: Colors.orange[100],
+                      //color: Colors.pink[200],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
@@ -178,9 +179,54 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
             ),
           );
         },
-        child: Icon(Icons.add, color: Colors.black),
-        backgroundColor: kPrimaryColor,
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: kSecondaryColor,
       ),
+    );
+  }
+  Future<bool> showDeleteConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Config.appName),
+          content: Text('Are you sure you want to delete this therapist?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false when cancel is pressed
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.black),),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true when delete is pressed
+              },
+              child: Text('Delete', style: TextStyle(color: kSecondaryColor),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showAlertDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Config.appName),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK', style: TextStyle(color: kSecondaryColor),),
+            ),
+          ],
+        );
+      },
     );
   }
 }

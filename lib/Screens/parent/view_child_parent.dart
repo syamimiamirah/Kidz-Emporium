@@ -9,6 +9,7 @@ import 'package:kidz_emporium/models/child_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/contants.dart';
 
+import '../../config.dart';
 import '../../services/api_service.dart';
 
 class ViewChildParentPage extends StatefulWidget {
@@ -172,6 +173,51 @@ class _ViewChildParentPageState extends State<ViewChildParentPage> {
         child: Icon(Icons.add, color: Colors.white),
         backgroundColor: kSecondaryColor,
       ),
+    );
+  }
+  Future<bool> showDeleteConfirmationDialog(BuildContext context) async {
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Config.appName),
+          content: Text('Are you sure you want to delete this child?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // Return false when cancel is pressed
+              },
+              child: Text('Cancel', style: TextStyle(color: Colors.black),),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // Return true when delete is pressed
+              },
+              child: Text('Delete', style: TextStyle(color: kSecondaryColor),),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showAlertDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(Config.appName),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK', style: TextStyle(color: kSecondaryColor),),
+            ),
+          ],
+        );
+      },
     );
   }
 }

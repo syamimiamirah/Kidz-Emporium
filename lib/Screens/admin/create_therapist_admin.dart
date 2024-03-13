@@ -77,7 +77,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: kSecondaryColor,
         title: Text("Create Therapist Profile"),
         centerTitle: true,
       ),
@@ -110,7 +110,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                         padding: const EdgeInsets.all(10),
                         child: Icon(
                           Icons.person, // Your desired icon
-                          color: kPrimaryColor, // Icon color
+                          color: kSecondaryColor, // Icon color
                         ),
                       ),
                       Expanded(
@@ -119,7 +119,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                             hint: const Text("Select Therapist", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
                             value: selectedTherapist,
                             isExpanded: true,
-                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                            icon: Icon(Icons.arrow_drop_down, color: kSecondaryColor),
                             onChanged: (newValue) {
                               setState(() {
                                 selectedTherapist = newValue!;
@@ -157,7 +157,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                         padding: const EdgeInsets.all(10),
                         child: Icon(
                           Icons.school, // Your desired icon
-                          color: kPrimaryColor, // Icon color
+                          color: kSecondaryColor, // Icon color
                         ),
                       ),
                       Expanded(
@@ -193,7 +193,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                               ),
                             ],// The first item is the hint, set its value to null
                             isExpanded: true,
-                            icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),
+                            icon: Icon(Icons.arrow_drop_down, color: kSecondaryColor),
                             onChanged: (String? newValue){
                               //Your code to execute, when a menu item is selected from dropdown
                               //dropDownStringItem = value;
@@ -224,7 +224,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                             padding: const EdgeInsets.all(10),
                             child: Icon(
                               Icons.calendar_today, // Your desired icon for date picker
-                              color: kPrimaryColor, // Icon color
+                              color: kSecondaryColor, // Icon color
                             ),
                           ),
                           Expanded(
@@ -239,7 +239,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                                     return Theme(
                                       data: ThemeData(
                                         colorScheme: ColorScheme.light(
-                                          primary: kPrimaryColor, // Set your desired color here
+                                          primary: kSecondaryColor, // Set your desired color here
                                         ),
                                         buttonTheme: ButtonThemeData(
                                           textTheme: ButtonTextTheme.primary,
@@ -289,7 +289,7 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
                     (onSavedVal){
                   aboutMe = onSavedVal.toString().trim();
                 },
-                prefixIconColor: kPrimaryColor,
+                prefixIconColor: kSecondaryColor,
                 showPrefixIcon: true,
                 prefixIcon: const Icon(Icons.description),
                 borderRadius: 10,
@@ -371,11 +371,11 @@ class _createTherapistAdminPageState extends State<CreateTherapistAdminPage>{
 
                         }
                       },
-                        btnColor: Colors.orange,
-                        txtColor: Colors.black,
+                        btnColor: Colors.pink,
+                        txtColor: Colors.white,
                         borderRadius: 10,
                         fontSize: 16,
-                        borderColor: Colors.orange,
+                        borderColor: Colors.pink,
                       ),
                     ],
                   )

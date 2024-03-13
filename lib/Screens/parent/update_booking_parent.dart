@@ -380,65 +380,21 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                   const SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      // Check therapist availability before proceeding with the payment
-                      bool isTherapistAvailable = await APIService.checkTherapistAvailability(
-                        therapistId,
-                        fromDate,
-                        toDate,
-                      );
-
-                      if (!isTherapistAvailable) {
-                        // Display a snackbar for therapist not available
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Therapist is not available for the selected time.'),
-                            duration: Duration(seconds: 3),
-                          ),
-                        );
-                        return;
-                      }
-                      // Navigate to the PaymentPage
-                      BookingModel updatedModel = BookingModel(
-                        userId: widget.userData.data!.id,
-                        therapistId: therapistId,
-                        childId: childId,
-                        fromDate: Utils.formatDateTimeToString(fromDate),
-                        toDate: Utils.formatDateTimeToString(toDate),
-                      );
-                      bool success = await APIService.updateBooking(widget.bookingId, updatedModel);
-                      setState(() {
-                        isAPICallProcess = false;
-                      });
-                      if(success){
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text(Config.appName),
-                              content: Text("Your booking has been updated"),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(context, MaterialPageRoute(
-                                        builder: (context) => ViewBookingParentPage(userData: widget.userData)),
-                                    );// Close the dialog
-                                  },
-                                  child: Text("OK", style: TextStyle(color: kPrimaryColor),),
-                                ),
-                              ],
-                            );
-                          },
-                        );
+                      if (await validateAndSave()) {
+                        setState(() {
+                          isAPICallProcess = true;
+                        });
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       primary: kPrimaryColor,
                       padding: EdgeInsets.symmetric(horizontal: 60, vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // BorderRadius
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text('Save',
+                    child: Text(
+                      'Save',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -524,6 +480,97 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
       final date = DateTime(initialDate.year, initialDate.month, initialDate.day);
       final time = Duration(hours: timeOfDay.hour, minutes: timeOfDay.minute);
       return date.add(time);
+    }
+  }
+
+  Future<bool> validateAndSave() async {
+    print("Validate and Save method is called");
+    BookingModel? booking = await APIService.getBookingDetails(widget.bookingId);
+
+    print(Utils.parseStringToDateTime(booking!.fromDate));
+    if (fromDate != Utils.parseStringToDateTime(booking!.fromDate) || toDate != Utils.parseStringToDateTime(booking!.toDate)) {
+      // Timeslot is being updated, perform the availability check
+      checkTherapistAvailabilityAndUpdate();
+    } else {
+      // Timeslot remains the same, update only the task details
+      saveBookingDetails();
+    }
+    return true;
+  }
+
+  Future<void> checkTherapistAvailabilityAndUpdate() async {
+    try {
+      bool isAvailable = await APIService.checkTherapistAvailability(
+        therapistId,
+        fromDate,
+        toDate,
+      );
+      if (isAvailable) {
+        // Therapist is available, proceed with task update
+        saveBookingDetails();
+      } else {
+        // Therapist is not available during the specified time range
+        FormHelper.showSimpleAlertDialog(
+          context,
+          "Therapist Not Available",
+          "The selected therapist is not available during the specified time range.",
+          "OK",
+              () => Navigator.of(context).pop(),
+        );
+      }
+    } catch (error) {
+      print('Error checking therapist availability: $error');
+      // Handle error
+    }
+  }
+
+  Future<void> saveBookingDetails() async {
+    try {
+      BookingModel updatedBooking = BookingModel(
+        userId: userId,
+        therapistId: therapistId,
+        childId: childId,
+        fromDate: Utils.formatDateTimeToString(fromDate),
+        toDate: Utils.formatDateTimeToString(toDate),
+      );
+
+      bool success = await APIService.updateBooking(widget.bookingId, updatedBooking);
+      setState(() {
+        isAPICallProcess = false;
+      });
+
+      if (success) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Success'),
+              content: Text('Booking details have been updated successfully.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewBookingParentPage(userData: widget.userData),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: kPrimaryColor),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Handle update failure
+        // Show error message or retry option
+      }
+    } catch (error) {
+      print('Error updating booking details: $error');
     }
   }
 }
