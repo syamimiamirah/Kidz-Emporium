@@ -5,6 +5,7 @@ import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/therapist/create_report_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
+import 'package:kidz_emporium/Screens/therapist/view_video_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/home.dart';
@@ -19,6 +20,7 @@ import '../Screens/parent/view_report_parent.dart';
 import '../Screens/parent/view_therapist_parent.dart';
 import '../Screens/therapist/view_child_therapist.dart';
 import '../Screens/therapist/view_report_therapist.dart';
+import '../Screens/therapist/view_task_therapist.dart';
 import '../Screens/therapist/view_therapist.dart';
 import '../models/child_model.dart';
 import '../models/login_response_model.dart';
@@ -340,7 +342,12 @@ class _therapistNavBarState extends State<TherapistNavBar> {
             ListTile(
               leading: Icon(Icons.video_library),
               title: Text("Video"),
-              onTap: () => null,
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                    builder: (context) =>
+                        ViewVideoTherapistPage(userData: widget.userData)), //CreateTherapist()),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.people),
@@ -368,7 +375,7 @@ class _therapistNavBarState extends State<TherapistNavBar> {
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) =>
-                          ViewTaskAdminPage(userData: widget.userData)),
+                          ViewTaskTherapistPage(userData: widget.userData)),
                   ),
             ),
             Divider(),

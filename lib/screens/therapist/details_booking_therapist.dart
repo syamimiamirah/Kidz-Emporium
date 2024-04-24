@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kidz_emporium/Screens/therapist/broadcast_livestream_google.dart';
 import 'package:kidz_emporium/models/booking_model.dart';
 import 'package:kidz_emporium/models/child_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/therapist_model.dart';
 
+
+
 import '../../contants.dart';
 import '../../models/user_model.dart';
 
-class BookingDetailsAdminPage extends StatefulWidget {
+class BookingDetailsTherapistPage extends StatefulWidget {
   final LoginResponseModel userData;
   final BookingModel booking;
   final TherapistModel therapist;
   final UserModel therapistUser;
-
   final ChildModel child;
 
-  const BookingDetailsAdminPage({
+  const BookingDetailsTherapistPage({
     Key? key,
     required this.userData,
     required this.booking,
@@ -29,7 +31,7 @@ class BookingDetailsAdminPage extends StatefulWidget {
   _BookingDetailsTherapistPageState createState() => _BookingDetailsTherapistPageState();
 }
 
-class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
+class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,6 +67,12 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
+                label: 'Type of Services:',
+                value: widget.booking.service, // Use therapist's name from UserModel
+                icon: Icons.school,
+                iconColor: kPrimaryColor,
+              ),
+              _buildDetailItem(
                 label: 'Booking Date:',
                 value: DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.booking.fromDate)),
                 icon: Icons.calendar_today,
@@ -82,14 +90,28 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
                 icon: Icons.person,
                 iconColor: kPrimaryColor,
               ),
-              _buildDetailItem(
-                label: 'Payment Status:',
-                value: widget.booking.paymentId != null ? 'Paid' : 'Not Paid',
-                icon: Icons.payment,
-                iconColor: kPrimaryColor,
+              SizedBox(height: 20),
+              _buildRules(),
+              SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: kPrimaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Livestream',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
               ),
               SizedBox(height: 20),
-              //_buildRules(),
             ],
           ),
         ),
@@ -156,7 +178,7 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
     );
   }
 
-/*Widget _buildRules() {
+  Widget _buildRules() {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -173,6 +195,9 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
             ),
           ),
           SizedBox(height: 10),
+          _buildRuleItem('Update progress notes after each session.'),
+          _buildRuleItem('Communicate any changes in schedule to the administrative team.'),
+          _buildRuleItem('Be prepared for the session.'),
         ],
       ),
     );
@@ -195,5 +220,5 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
         ],
       ),
     );
-  }*/
+  }
 }

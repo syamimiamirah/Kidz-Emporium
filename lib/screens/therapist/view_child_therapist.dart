@@ -69,6 +69,13 @@ class _ViewChildTherapistPageState extends State<ViewChildTherapistPage> {
               onChanged: _filterChildren,
               decoration: InputDecoration(
                 labelText: 'Search by Name',
+                prefixIcon: Icon(Icons.search),
+                fillColor: Colors.grey[200],
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -89,6 +96,7 @@ class _ViewChildTherapistPageState extends State<ViewChildTherapistPage> {
                     elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
+                      side: BorderSide(color: Colors.grey.shade300, width: 1),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),

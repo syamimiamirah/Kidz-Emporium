@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:kidz_emporium/config.dart';
 import 'package:kidz_emporium/models/booking_model.dart';
 import 'package:kidz_emporium/models/child_model.dart';
+import 'package:kidz_emporium/models/livestream_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/register_request_model.dart';
 import 'package:kidz_emporium/models/register_response_model.dart';
@@ -16,6 +20,7 @@ import '../models/payment_model.dart';
 import '../models/report_model.dart';
 import '../models/therapist_model.dart';
 import '../models/user_model.dart';
+import '../models/video_model.dart';
 import '../models/youtube_model.dart';
 import '../utils.dart';
 
@@ -615,7 +620,7 @@ class APIService{
   final String apiKey = 'AIzaSyAkNvZJvVD7_Hd5BmviEPb9ai6tQIgJS08';
   final String username = 'kidzemporiumtherapycenter'; // Replace with the desired channel ID
 
-  /*Future<List<VideoModel>> searchVideosByUsername(String username) async {
+  /*Future<List<YoutubeModel>> searchVideosByUsername(String username) async {
     final response = await http.get(
       Uri.parse('https://www.googleapis.com/youtube/v3/search'
           '?part=snippet&q=$username&type=channel&key=$apiKey'),
@@ -643,7 +648,7 @@ class APIService{
     }
   }*/
 
-  static Future<List<VideoModel>> fetchVideosByChannelId(String channelId) async {
+  static Future<List<YoutubeModel>> fetchVideosByChannelId(String channelId) async {
     try {
       final response = await http.get(
         Uri.parse(
@@ -658,9 +663,9 @@ class APIService{
         if (data != null && data.containsKey('items') && data['items'] != null) {
           final List<dynamic> videos = data['items'];
 
-          List<VideoModel> videoList = videos.map((json) {
+          List<YoutubeModel> videoList = videos.map((json) {
             try {
-              final video = VideoModel.fromJson(json);
+              final video = YoutubeModel.fromJson(json);
               print('Video: $video');
               return video;
             } catch (e) {
@@ -1360,5 +1365,194 @@ class APIService{
       return false;
     }
   }
+
+  //livestream
+  static Future<LivestreamModel?> createLivestream(LivestreamModel model) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.createLivestreamAPI);
+
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return LivestreamModel.fromJson(responseData);
+    } else {
+      throw Exception('Failed to create task');
+    }
+  }
+
+  static Future<VideoModel?> createVideo(VideoModel model) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.createVideoAPI);
+
+    var response = await client.post(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode(model.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      return VideoModel.fromJson(responseData);
+    } else {
+      throw Exception('Failed to create task');
+    }
+  }
+
+
+  static Future<List<VideoModel>> getVideo(String userId) async {
+    var url = Uri.http(Config.apiURL, Config.getVideoAPI, {'userId': userId});
+    print("Request URL: $url");
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true && responseData.containsKey('success')) {
+          List<VideoModel> tasks = (responseData['success'] as List)
+              .map((json) => VideoModel.fromJson(json))
+              .toList();
+
+          return tasks;
+        } else {
+          print("Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print("Failed to fetch videos. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching videos: $error");
+      return [];
+    }
+  }
+
+  static Future<List<VideoModel>> getAllVideos() async {
+    var url = await Uri.http(
+        Config.apiURL, Config.getAllVideosAPI); // Adjust the endpoint
+
+    try {
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      ).timeout(Duration(seconds: 10));
+
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+
+        if (responseData['status'] == true &&
+            responseData.containsKey('success')) {
+          List<VideoModel> videos = (responseData['success'] as List)
+              .map((json) => VideoModel.fromJson(json))
+              .toList();
+
+          return videos;
+        } else {
+          print(
+              "Invalid response format. Expected 'status' true and 'success' key.");
+          return [];
+        }
+      } else {
+        print(
+            "Failed to fetch all videos. Status code: ${response.statusCode}");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching all videos: $error");
+      return [];
+    }
+  }
+
+  static Future<bool> deleteVideo(String id) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, Config.deleteVideoAPI);  // Change '_id' to 'id'
+    print("Request URL: $url");
+
+    try {
+      var response = await client.delete(
+        url,
+        headers: requestHeaders,
+        body: jsonEncode({'id': id}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to delete video. Status code: ${response.statusCode}");
+        return false;
+      }
+    } catch (error) {
+      print("Error deleting video: $error");
+      return false;
+    }
+  }
+
+  static Future<VideoModel?> getVideoDetails(String videoId) async {
+    try {
+      var url = Uri.http(Config.apiURL, '${Config.getVideoDetailsAPI}/$videoId');
+      print("Request URL: $url");
+
+      var response = await client.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = json.decode(response.body);
+        return responseData != null ? VideoModel.fromJson(responseData['success']) : null;
+      } else {
+        print('Error response body: ${response.body}');
+        throw Exception('Failed to get video details. Status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error getting video details: $error');
+      throw error;
+    }
+  }
+
+  static Future<bool> updateVideo(String videoId, VideoModel updatedModel) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    var url = Uri.http(Config.apiURL, '${Config.updateVideoAPI}/$videoId'); // Adjust the API endpoint
+    print("Request URL: $url");
+    print("id: $videoId");
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+      body: jsonEncode({'videoId': videoId, 'updatedData': updatedModel.toJson()}),
+    );
+
+    if (response.statusCode == 200) {
+      print("success");
+      return true;
+    } else {
+      print("Failed to update video. Status code: ${response.statusCode}");
+      return false;
+    }
+  }
+
 
 }

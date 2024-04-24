@@ -9,11 +9,13 @@ import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_report_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_therapist_parent.dart';
+import 'package:kidz_emporium/Screens/therapist/create_video_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_child_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_report_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_task_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_therapist.dart';
+import 'package:kidz_emporium/Screens/therapist/view_video_therapist.dart';
 import 'package:kidz_emporium/contants.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
@@ -21,6 +23,7 @@ import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/user_model.dart';
 import '../config.dart';
 import '../main.dart';
+import '../models/booking_model.dart';
 import '../models/child_model.dart';
 import '../models/therapist_model.dart';
 import '../services/api_service.dart';
@@ -39,7 +42,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _homePageState extends State<HomePage>{
-
+  List<BookingModel> bookings = [];
   //Creating static data in lists
   List catNames = [
     "Booking",
@@ -70,6 +73,22 @@ class _homePageState extends State<HomePage>{
   List bookingList = [
     'Booking 1', 'Booking 2', 'Booking 3', 'Booking 4'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future <void> _loadBooking() async {
+    try {
+      List<BookingModel> loadedBooking = await APIService.getBooking(widget.userData.data!.id);
+      setState(() {
+        bookings = loadedBooking;
+      });
+    } catch (error) {
+      print('Error loading bookings: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context){
@@ -212,13 +231,20 @@ class _homePageState extends State<HomePage>{
                       fontSize: 23,
                     ),
                   ),
-                  Text(
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => ViewBookingParentPage(userData:widget.userData)),
+                      );
+                    },
+                    child: Text(
                       "See All",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: kSecondaryColor,
-                      fontWeight: FontWeight.bold,
-                    )
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: kSecondaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   )
                 ],
               ),
@@ -293,7 +319,7 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _adminHomePageState extends State<AdminHomePage>{
-
+  List<BookingModel> bookings = [];
   //Creating static data in lists
   List catNames = [
     "Booking",
@@ -324,6 +350,22 @@ class _adminHomePageState extends State<AdminHomePage>{
   List bookingList = [
     'Booking 1', 'Booking 2', 'Booking 3', 'Booking 4'
   ];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future <void> _loadBooking() async {
+    try {
+      List<BookingModel> loadedBookings = await APIService.getAllBookings();
+      setState(() {
+        bookings = loadedBookings;
+      });
+    } catch (error) {
+      print('Error loading bookings: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context){
@@ -463,13 +505,20 @@ class _adminHomePageState extends State<AdminHomePage>{
                         fontSize: 23,
                       ),
                     ),
-                    Text(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => ViewBookingAdminPage(userData:widget.userData)),
+                        );
+                      },
+                      child: Text(
                         "See All",
                         style: TextStyle(
                           fontSize: 18,
                           color: kSecondaryColor,
                           fontWeight: FontWeight.bold,
-                        )
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -544,7 +593,7 @@ class TherapistHomePage extends StatefulWidget {
 }
 
 class _therapistHomePageState extends State<TherapistHomePage>{
-
+  List<BookingModel> bookings = [];
   //Creating static data in lists
   List catNames = [
     "Booking",
@@ -576,6 +625,22 @@ class _therapistHomePageState extends State<TherapistHomePage>{
     'Booking 1', 'Booking 2', 'Booking 3', 'Booking 4'
   ];
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future <void> _loadBooking() async {
+    try {
+      List<BookingModel> loadedBookings = await APIService.getAllBookings();
+      List<BookingModel> therapistBookings = loadedBookings.where((booking) => booking.therapistId == widget.userData.data?.id).toList();
+      setState(() {
+        bookings = therapistBookings;
+      });
+    } catch (error) {
+      print('Error loading bookings: $error');
+    }
+  }
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -662,9 +727,9 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                           // Add your code here to navigate or perform an action
                           // when the calendar is clicked
                           print("Video clicked!");
-                          /*Navigator.push(context, MaterialPageRoute(
-                              builder: (context) =>  ViewReminderParentPage(userData:widget.userData)),
-                          );*/
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) =>  ViewVideoTherapistPage(userData:widget.userData)),
+                          );
                         }
                         if (catNames[index] == "Task") {
                           // Add your code here to navigate or perform an action
@@ -718,13 +783,20 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                         fontSize: 23,
                       ),
                     ),
-                    Text(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (context) => ViewBookingTherapistPage(userData:widget.userData)),
+                        );
+                      },
+                      child: Text(
                         "See All",
                         style: TextStyle(
                           fontSize: 18,
                           color: kSecondaryColor,
                           fontWeight: FontWeight.bold,
-                        )
+                        ),
+                      ),
                     )
                   ],
                 ),

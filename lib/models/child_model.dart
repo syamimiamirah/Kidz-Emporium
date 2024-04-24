@@ -1,8 +1,8 @@
 class ChildModel {
-  late String childName;
-  late String birthDate;
-  late String gender;
-  late String program;
+  String childName;
+  String birthDate;
+  String gender;
+  String program;
   late String userId;
   final String? id;
 

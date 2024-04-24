@@ -65,6 +65,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
+                label: 'Type of Services:',
+                value: widget.booking.service, // Use therapist's name from UserModel
+                icon: Icons.school,
+                iconColor: kPrimaryColor,
+              ),
+              _buildDetailItem(
                 label: 'Booking Date:',
                 value: DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.booking.fromDate)),
                 icon: Icons.calendar_today,

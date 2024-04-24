@@ -286,14 +286,18 @@ class _registerPageState extends State<RegisterPage> {
                         isAPICallProcess = false;//API
                       });
 
-                      if(response){
+                      if(response != null){
                         FormHelper.showSimpleAlertDialog(
                           context,
                           Config.appName,
-                          "Registration Successful. Please login to the account!",
+                          "Registration Successful. Please login to the account.",
                           "OK", (){
-                            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false,
-                            );
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          );
                           },
                         );
                       }else{

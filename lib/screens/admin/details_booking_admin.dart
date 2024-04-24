@@ -8,14 +8,15 @@ import 'package:kidz_emporium/models/therapist_model.dart';
 import '../../contants.dart';
 import '../../models/user_model.dart';
 
-class BookingDetailsTherapistPage extends StatefulWidget {
+class BookingDetailsAdminPage extends StatefulWidget {
   final LoginResponseModel userData;
   final BookingModel booking;
   final TherapistModel therapist;
   final UserModel therapistUser;
+
   final ChildModel child;
 
-  const BookingDetailsTherapistPage({
+  const BookingDetailsAdminPage({
     Key? key,
     required this.userData,
     required this.booking,
@@ -28,7 +29,7 @@ class BookingDetailsTherapistPage extends StatefulWidget {
   _BookingDetailsTherapistPageState createState() => _BookingDetailsTherapistPageState();
 }
 
-class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPage> {
+class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +65,12 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPag
                 iconColor: kPrimaryColor,
               ),
               _buildDetailItem(
+                label: 'Type of Services:',
+                value: widget.booking.service, // Use therapist's name from UserModel
+                icon: Icons.school,
+                iconColor: kPrimaryColor,
+              ),
+              _buildDetailItem(
                 label: 'Booking Date:',
                 value: DateFormat('dd-MM-yyyy').format(DateTime.parse(widget.booking.fromDate)),
                 icon: Icons.calendar_today,
@@ -81,9 +88,14 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPag
                 icon: Icons.person,
                 iconColor: kPrimaryColor,
               ),
+              _buildDetailItem(
+                label: 'Payment Status:',
+                value: widget.booking.paymentId != null ? 'Paid' : 'Not Paid',
+                icon: Icons.payment,
+                iconColor: kPrimaryColor,
+              ),
               SizedBox(height: 20),
-              _buildRules(),
-              SizedBox(height: 20),
+              //_buildRules(),
             ],
           ),
         ),
@@ -150,7 +162,7 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPag
     );
   }
 
-  Widget _buildRules() {
+/*Widget _buildRules() {
     return Container(
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -167,9 +179,6 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPag
             ),
           ),
           SizedBox(height: 10),
-          _buildRuleItem('Update progress notes after each session.'),
-          _buildRuleItem('Communicate any changes in schedule to the administrative team.'),
-          _buildRuleItem('Be prepared for the session.'),
         ],
       ),
     );
@@ -192,5 +201,5 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsTherapistPag
         ],
       ),
     );
-  }
+  }*/
 }

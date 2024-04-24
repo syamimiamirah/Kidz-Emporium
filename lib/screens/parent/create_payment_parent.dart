@@ -13,6 +13,7 @@ import '../../utils.dart';
 
 class PaymentPage extends StatefulWidget {
   final LoginResponseModel userData;
+  final String? service;
   final String? selectedTherapist;
   final String? selectedChild;
   final DateTime? fromDate;
@@ -23,7 +24,7 @@ class PaymentPage extends StatefulWidget {
     required this.selectedTherapist,
     required this.selectedChild,
     required this.fromDate,
-    required this.toDate,}) : super(key: key);
+    required this.toDate, required this.service,}) : super(key: key);
 
   @override
   _PaymentPageState createState() => _PaymentPageState();
@@ -417,6 +418,7 @@ class _PaymentPageState extends State<PaymentPage> {
 
     BookingModel model = BookingModel(
       userId: widget.userData.data!.id,
+      service: widget.service!,
       therapistId: widget.selectedTherapist!,
       childId: widget.selectedChild!,
       fromDate: Utils.formatDateTimeToString(widget.fromDate!),
