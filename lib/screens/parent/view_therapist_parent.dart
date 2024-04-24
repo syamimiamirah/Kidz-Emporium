@@ -6,19 +6,23 @@ import '../../contants.dart';
 import '../../models/login_response_model.dart';
 import '../../models/user_model.dart';
 
-class TherapistDetailPage extends StatefulWidget {
+class ViewTherapistParentPage extends StatefulWidget {
   final LoginResponseModel userData;
   final List<TherapistModel> therapists;
-  final List<UserModel> users;// Pass the list of therapists
+  final List<UserModel> users; // List of UserModel
 
-  const TherapistDetailPage({Key? key, required this.userData, required this.therapists, required this.users})
-      : super(key: key);
+  const ViewTherapistParentPage({
+    Key? key,
+    required this.userData,
+    required this.therapists,
+    required this.users,
+  }) : super(key: key);
 
   @override
-  _TherapistDetailPageState createState() => _TherapistDetailPageState();
+  _ViewTherapistParentPageState createState() => _ViewTherapistParentPageState();
 }
 
-class _TherapistDetailPageState extends State<TherapistDetailPage> {
+class _ViewTherapistParentPageState extends State<ViewTherapistParentPage> {
   List<TherapistModel> filteredTherapists = [];
   TextEditingController searchController = TextEditingController();
 
@@ -30,12 +34,26 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
 
   void _filterTherapists(String query) {
     setState(() {
-      filteredTherapists = widget.therapists
-          .where((therapist) =>
-          therapist.id!.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredTherapists = widget.therapists.where((therapist) {
+        // Find the user associated with the therapist
+        UserModel? therapistUser = widget.users.firstWhere(
+              (user) => user.id == therapist.therapistId,
+          orElse: () => UserModel(
+            id: '',
+            name: 'Unknown',
+            email: '',
+            password: '',
+            phone: '',
+            role: 'Therapist',
+          ),
+        );
+
+        // Check if the therapist's name contains the query
+        return therapistUser?.name.toLowerCase().contains(query.toLowerCase()) ?? false;
+      }).toList();
     });
   }
+
   void _resetSearch() {
     setState(() {
       filteredTherapists = widget.therapists;
@@ -66,6 +84,13 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
               onChanged: _filterTherapists,
               decoration: InputDecoration(
                 labelText: 'Search by Name',
+                prefixIcon: Icon(Icons.search),
+                fillColor: Colors.grey[200],
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
             SizedBox(height: 10),
@@ -82,6 +107,7 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
               child: ListView.builder(
                 itemCount: filteredTherapists.length,
                 itemBuilder: (context, index) {
+                  // Find the user associated with the therapist
                   UserModel? therapistUser = widget.users.firstWhere(
                         (user) => user.id == filteredTherapists[index].therapistId,
                     orElse: () =>  UserModel(id: '',
@@ -91,10 +117,13 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
                         phone: '',
                         role: 'Therapist'),
                   );
+
                   return Card(
+                    //color: Colors.pink[100]!.withOpacity(0.8),
                     elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15.0),
+                      side: BorderSide(color: Colors.grey.shade300, width: 1),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),

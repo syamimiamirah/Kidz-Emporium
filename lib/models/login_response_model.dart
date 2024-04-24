@@ -49,12 +49,17 @@ class Data {
   }
 
   Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['email'] = email;
-    _data['name'] = name;
-    _data['_id'] = id;
-    _data['token'] = token;
-    _data['role'] = role;
-    return _data;
+    final data = <String, dynamic>{};
+    data['email'] = email;
+    data['name'] = name;
+    data['_id'] = id;
+    data['token'] = token;
+    data['role'] = role;
+
+    if (id != null) {
+      data['_id'] = id; // Include id in JSON if it's not null
+    }
+
+    return data;
   }
 }

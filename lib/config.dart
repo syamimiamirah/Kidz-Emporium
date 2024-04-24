@@ -1,6 +1,6 @@
 class Config{
-  static const String appName = "Kid Emporium";
-  static const String apiURL = "192.168.0.110:4000";
+  static const String appName = "Kidz Emporium";
+  static const String apiURL = "172.20.10.4:4000";
   static const String registerAPI = "api/register";
   static const String loginAPI = "api/login";
   static const String getAllUsersAPI = "api/users";
@@ -62,4 +62,20 @@ class Config{
   static const String getTaskDetailsAPI = "api/get-task-details";
   static const String updateTaskAPI = "api/update-task";
   static const String getAllTasksAPI = "api/tasks";
+
+  //livestream
+  static const String createLivestreamAPI = "api/livestream";
+  static const String getLivestreamAPI = "api/get-livestream";
+  static const String deleteLivestreamAPI = "api/delete-livestream";
+  static const String getLivestreamDetailsAPI = "api/get-livestream-details";
+  static const String updateLivestreamAPI = "api/update-livestream";
+  static const String getAllLivestreamsAPI = "api/livestreams";
+
+  //video
+  static const String createVideoAPI = "api/video";
+  static const String getVideoAPI = "api/get-video";
+  static const String deleteVideoAPI = "api/delete-video";
+  static const String getVideoDetailsAPI = "api/get-video-details";
+  static const String updateVideoAPI = "api/update-video";
+  static const String getAllVideosAPI = "api/videos";
 }

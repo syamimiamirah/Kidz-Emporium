@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:kidz_emporium/Screens/parent/create_payment_parent.dart';
-import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/contants.dart';
@@ -16,29 +15,23 @@ import '../../config.dart';
 import '../../models/booking_model.dart';
 import '../../models/user_model.dart';
 import '../../utils.dart';
-import 'details_booking_parent.dart';
 
 
-class UpdateBookingParentPage extends StatefulWidget{
+class CreateBookingParentPage extends StatefulWidget{
   final LoginResponseModel userData;
-  final String bookingId;
 
-  const UpdateBookingParentPage({Key? key, required this.userData, required this.bookingId}): super(key: key);
+  const CreateBookingParentPage({Key? key, required this.userData}): super(key: key);
   @override
-  _updateBookingParentPageState createState() => _updateBookingParentPageState();
+  _createBookingParentPageState createState() => _createBookingParentPageState();
 }
 
-class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
-  late DateTime fromDate = DateTime.now();
-  late DateTime toDate = DateTime.now();
-  late String childId = "";
-  late String therapistId = "";
-  late String paymentId = "";
-  String? therapistName;
-  String? childName;
+class _createBookingParentPageState extends State<CreateBookingParentPage> {
+  String? selectedTherapist;
+  String? selectedChild;
+  String? service;
+  late DateTime fromDate;
+  late DateTime toDate;
   late String userId;
-  bool isAPICallProcess =  false;
-
 
   List<TherapistModel> therapists = [];
   List<ChildModel> children = [];
@@ -47,10 +40,8 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
   @override
   void initState() {
     super.initState();
-    _loadData();
-    /*fetchBookingDetails();
     fetchTherapists();
-    fetchChildren();*/
+    fetchChildren();
     if (widget.userData != null && widget.userData.data != null) {
       print("userData: ${widget.userData.data!.id}");
       fromDate = DateTime.now();
@@ -62,21 +53,8 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
     }
   }
 
-  Future<void> _loadData() async {
-    try {
-      // Use Future.wait to wait for both API calls to complete
-      await Future.wait([
-      fetchBookingDetails(),
-      fetchTherapists(),
-      fetchChildren(),
-      ]);
-    } catch (error) {
-      print('Error loading data: $error');
-    }
-  }
   Future<void> fetchTherapists() async {
     try {
-      // Fetch therapists from API
       List<TherapistModel> fetchedTherapists = await APIService.getAllTherapists();
       setState(() {
         therapists = fetchedTherapists;
@@ -90,37 +68,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
         users = therapist;
       });
     } catch (error) {
-      print('Error fetching data: $error');
-    }
-  }
-
-  Future<void> fetchBookingDetails() async {
-    try {
-      // Fetch booking details from API
-      BookingModel? booking = await APIService.getBookingDetails(widget.bookingId);
-      if (booking != null) {
-        // Update UI with fetched booking details
-        setState(() {
-          childId = booking.childId;
-          fromDate = Utils.parseStringToDateTime(booking.fromDate);
-          toDate = Utils.parseStringToDateTime(booking.toDate);
-          therapistId = booking.therapistId;
-          paymentId = booking.paymentId ?? '';
-          // Find therapist name from users list
-          UserModel? selectedTherapist = users.firstWhere(
-                (user) => user.id == therapistId,
-            orElse: () => UserModel(id: '', name: 'Unknown', email: '', password: '', phone: '', role: 'Therapist'), // Default if therapist is not found
-          );
-          therapistName = selectedTherapist.name;
-          // Fetch and set child name similarly if needed
-        });
-      } else {
-        // Handle case where booking is null
-        print('Booking details not found');
-      }
-    } catch (error) {
-      print('Error fetching booking details: $error');
-      // Handle error
+      print('Error fetching therapists: $error');
     }
   }
 
@@ -139,7 +87,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Update Booking'),
+        title: Text('Create Booking'),
         centerTitle: true,
         backgroundColor: kPrimaryColor,
       ),
@@ -148,6 +96,94 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
         child: ProgressHUD(
           child: Column(
             children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey,),
+
+                    ),
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Icon(
+                            Icons.school, // Your desired icon
+                            color: kPrimaryColor, // Icon color
+                          ),
+                        ),
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: service,
+                              hint: const Text("Type of services", style: TextStyle(fontSize: 16)),
+                              items: [
+                                DropdownMenuItem<String>(
+                                  value: null,
+                                  child: Text("Type of Services",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
+                                ),
+                                // Other role options
+                                DropdownMenuItem<String>(
+                                  value: "Speech Therapy",
+                                  child: Text("Speech Therapy",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Occupational Therapy",
+                                  child: Text("Occupational Therapy",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Special Education",
+                                  child: Text("Special Education",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Clinical Psychology",
+                                  child: Text("Clinical Psychology",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Psychotherapy",
+                                  child: Text("Psychotherapy",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Counseling",
+                                  child: Text("Counseling",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Vocational Class",
+                                  child: Text("Vocational Class",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Kidz Playgroup",
+                                  child: Text("Kidz Playgroup",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Consultation",
+                                  child: Text("Consultation",style: TextStyle(fontSize: 16)),
+                                ),
+                                DropdownMenuItem<String>(
+                                  value: "Iqra & Quranic Class",
+                                  child: Text("Iqra & Quranic Class",style: TextStyle(fontSize: 16)),
+                                ),
+                              ],// The first item is the hint, set its value to null
+                              isExpanded: true,
+                              icon: Icon(Icons.arrow_drop_down, color: Colors.grey),
+                              onChanged: (String? newValue){
+                                //Your code to execute, when a menu item is selected from dropdown
+                                //dropDownStringItem = value;
+                                setState(() {
+                                  this.service = newValue!;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                ),
+              ),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10),
@@ -168,24 +204,23 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                         ),
                         Expanded(
                           child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              hint: const Text("Select Therapist", style: TextStyle(fontSize: 16)),
-                              value: therapistId,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  // Update therapistId
-                                  therapistId = newValue!;
-                                });
-                              },
-                              items: users.map((UserModel user) {
-                                return DropdownMenuItem<String>(
-                                  value: user.id,
-                                  child: Text(user.name, style: TextStyle(fontSize: 16)
-                                  ),
-                                );
-                              }).toList(),
-                            ),
+                          child: DropdownButton<String>(
+                            hint: const Text("Select Therapist", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                            value: selectedTherapist,
+                            onChanged: (newValue) {
+                              setState(() {
+                                selectedTherapist = newValue!;
+                              });
+                            },
+                            items: users.map((UserModel user) {
+                              return DropdownMenuItem<String>(
+                                value: user.id,
+                                child: Text(user.name, style: TextStyle(fontSize: 16)
+                                ),
+                              );
+                            }).toList(),
                           ),
+                        ),
                         ),
                       ],
                     ),
@@ -215,11 +250,11 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                         Expanded(
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              hint: const Text("Select Child", style: TextStyle(fontSize: 16)),
-                              value: childId,
+                              hint: const Text("Select Child", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                              value: selectedChild,
                               onChanged: (newValue) {
                                 setState(() {
-                                  childId = newValue!;
+                                  selectedChild = newValue!;
                                 });
                               },
                               items: children
@@ -325,7 +360,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Row(
                             children: [
@@ -358,48 +393,74 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(context);
+
+              ElevatedButton(
+                onPressed: () async {
+                  // Check therapist availability before proceeding with the payment
+                  bool isTherapistAvailable = await APIService.checkTherapistAvailability(
+                    selectedTherapist!,
+                    fromDate,
+                    toDate,
+                  );
+
+                  if (!isTherapistAvailable) {
+                    // Display a snackbar for therapist not available
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Therapist is not available for the selected time.'),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                    return;
+                  }
+
+                  // Show the reminder AlertDialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text(Config.appName),
+                        content: Text("REMINDER: Payment can only be made through Credit/Debit Card"),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog
+                            },
+                            child: Text("OK", style: TextStyle(color: kPrimaryColor),),
+                          ),
+                        ],
+                      );
                     },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.grey,
-                      padding: EdgeInsets.symmetric(horizontal: 55, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // BorderRadius
+                  );
+
+                  // Navigate to the PaymentPage
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PaymentPage(
+                        userData: widget.userData,
+                        service: service,
+                        selectedTherapist: selectedTherapist,
+                        selectedChild: selectedChild,
+                        fromDate: fromDate!,
+                        toDate: toDate!,
                       ),
                     ),
-                    child: Text('Cancel',
-                      style: TextStyle(fontSize: 16, color: Colors.black),
-                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  primary: kPrimaryColor,
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // BorderRadius
                   ),
-                  const SizedBox(width: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (await validateAndSave()) {
-                        setState(() {
-                          isAPICallProcess = true;
-                        });
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: kPrimaryColor,
-                      padding: EdgeInsets.symmetric(horizontal: 60, vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: Text(
-                      'Save',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                ],
+                ),
+                child: Text('Proceed with Payment',
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
+
+
             ],
           ),
         ),
@@ -480,97 +541,6 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
       final date = DateTime(initialDate.year, initialDate.month, initialDate.day);
       final time = Duration(hours: timeOfDay.hour, minutes: timeOfDay.minute);
       return date.add(time);
-    }
-  }
-
-  Future<bool> validateAndSave() async {
-    print("Validate and Save method is called");
-    BookingModel? booking = await APIService.getBookingDetails(widget.bookingId);
-
-    print(Utils.parseStringToDateTime(booking!.fromDate));
-    if (fromDate != Utils.parseStringToDateTime(booking!.fromDate) || toDate != Utils.parseStringToDateTime(booking!.toDate)) {
-      // Timeslot is being updated, perform the availability check
-      checkTherapistAvailabilityAndUpdate();
-    } else {
-      // Timeslot remains the same, update only the task details
-      saveBookingDetails();
-    }
-    return true;
-  }
-
-  Future<void> checkTherapistAvailabilityAndUpdate() async {
-    try {
-      bool isAvailable = await APIService.checkTherapistAvailability(
-        therapistId,
-        fromDate,
-        toDate,
-      );
-      if (isAvailable) {
-        // Therapist is available, proceed with task update
-        saveBookingDetails();
-      } else {
-        // Therapist is not available during the specified time range
-        FormHelper.showSimpleAlertDialog(
-          context,
-          "Therapist Not Available",
-          "The selected therapist is not available during the specified time range.",
-          "OK",
-              () => Navigator.of(context).pop(),
-        );
-      }
-    } catch (error) {
-      print('Error checking therapist availability: $error');
-      // Handle error
-    }
-  }
-
-  Future<void> saveBookingDetails() async {
-    try {
-      BookingModel updatedBooking = BookingModel(
-        userId: userId,
-        therapistId: therapistId,
-        childId: childId,
-        fromDate: Utils.formatDateTimeToString(fromDate),
-        toDate: Utils.formatDateTimeToString(toDate),
-      );
-
-      bool success = await APIService.updateBooking(widget.bookingId, updatedBooking);
-      setState(() {
-        isAPICallProcess = false;
-      });
-
-      if (success) {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Success'),
-              content: Text('Booking details have been updated successfully.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewBookingParentPage(userData: widget.userData),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'OK',
-                    style: TextStyle(color: kPrimaryColor),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        // Handle update failure
-        // Show error message or retry option
-      }
-    } catch (error) {
-      print('Error updating booking details: $error');
     }
   }
 }

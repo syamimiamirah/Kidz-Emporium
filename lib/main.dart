@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kidz_emporium/Screens/home.dart';
 import 'package:kidz_emporium/contants.dart';
@@ -8,13 +9,11 @@ import 'package:provider/provider.dart';
 import 'Screens/parent/create_reminder_parent.dart';
 import 'Screens/parent/view_reminder_parent.dart';
 
-void main() => runApp(
-  ChangeNotifierProvider(
-    create: (context) => UserProvider(),
-    child: MyApp(),
-  ),
-);
-
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure that Flutter bindings are initialized
+  await Firebase.initializeApp(); // Initialize Firebase
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
 //This widget is the root of your application

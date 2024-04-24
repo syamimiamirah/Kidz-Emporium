@@ -16,7 +16,7 @@ class ViewYoutubeAdmin extends StatefulWidget {
 }
 
 class _ViewYoutubeAdminPageState extends State<ViewYoutubeAdmin> {
-  late Future<List<VideoModel>> videos;
+  late Future<List<YoutubeModel>> videos;
   TextEditingController searchController = TextEditingController();
 
   @override
@@ -24,10 +24,9 @@ class _ViewYoutubeAdminPageState extends State<ViewYoutubeAdmin> {
     super.initState();
     // Replace 'UCzWxpAV6ospqUqZqOdna44A' with your actual channel ID
     videos = APIService.fetchVideosByChannelId('UCzWxpAV6ospqUqZqOdna44A');
-
   }
 
-  List<VideoModel> filterVideos(String query, List<VideoModel> videos) {
+  List<YoutubeModel> filterVideos(String query, List<YoutubeModel> videos) {
     return videos.where((video) {
       final titleLower = video.title?.toLowerCase() ?? '';
       final queryLower = query.toLowerCase();
@@ -56,7 +55,7 @@ class _ViewYoutubeAdminPageState extends State<ViewYoutubeAdmin> {
           ),
         ],
       ),
-      body: FutureBuilder<List<VideoModel>>(
+      body: FutureBuilder<List<YoutubeModel>>(
         future: videos,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -80,10 +79,10 @@ class _ViewYoutubeAdminPageState extends State<ViewYoutubeAdmin> {
               ),
             );
           } else {
-            List<VideoModel> youtubeVideos = snapshot.data!;
+            List<YoutubeModel> youtubeVideos = snapshot.data!;
 
             // Filter videos based on the search query
-            List<VideoModel> filteredVideos =
+            List<YoutubeModel> filteredVideos =
             filterVideos(searchController.text, youtubeVideos);
 
             return Column(
@@ -94,8 +93,14 @@ class _ViewYoutubeAdminPageState extends State<ViewYoutubeAdmin> {
                   child: TextField(
                     controller: searchController,
                     decoration: InputDecoration(
-                      labelText: 'Search',
+                      labelText: 'Search Videos',
                       prefixIcon: Icon(Icons.search),
+                      fillColor: Colors.grey[200],
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                     onChanged: (query) {
                       setState(() {
@@ -121,42 +126,56 @@ class _ViewYoutubeAdminPageState extends State<ViewYoutubeAdmin> {
                     itemBuilder: (context, index) {
                       final video = filteredVideos[index];
 
-                      return Padding(
-                        padding:
-                        const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                        child: Card(
-                          elevation: 2,
-                          child: ListTile(
-                            title: Text(
-                              video.title,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                      return Card(
+                        elevation: 2,
+                        margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.all(8.0),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              video.thumbnailUrl ?? '',
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
                             ),
-                            subtitle: Text(video.description),
-                            leading: AspectRatio(
-                              aspectRatio: 1,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  video.thumbnailUrl,
-                                  fit: BoxFit.cover,
+                          ),
+                          title: Text(
+                            video.title ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 4),
+                              Text(
+                                'Description: ${video.description ?? ''}',
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            // Navigate to the VideoPlayerPage when a video is tapped
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VideoPlayerPage(
+                                  videoId: video.videoId ?? '',
+                                  title: video.title,
+                                  description: video.description
                                 ),
                               ),
-                            ),
-                            onTap: () {
-                              // Navigate to the VideoPlayerPage when a video is tapped
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => VideoPlayerPage(videoId: video.videoId),
-                                ),
-                              );
-                            },
-                          ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
                 ),
+
               ],
             );
           }
