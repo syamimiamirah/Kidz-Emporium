@@ -5,6 +5,7 @@ import 'package:kidz_emporium/models/therapist_model.dart';
 import '../../contants.dart';
 import '../../models/login_response_model.dart';
 import '../../models/user_model.dart';
+import 'details_therapist.dart';
 
 class TherapistDetailPage extends StatefulWidget {
   final LoginResponseModel userData;
@@ -112,53 +113,79 @@ class _TherapistDetailPageState extends State<TherapistDetailPage> {
                         phone: '',
                         role: 'Therapist'),
                   );
-                  return Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                      side: BorderSide(color: Colors.grey.shade300, width: 1),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircleAvatar(
-                                radius: 60,
-                                backgroundImage: AssetImage('assets/images/medical_team.png'),
+                  return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                TherapistDetailTherapistPage(
+                                  userData: widget.userData,
+                                  therapistId: therapistUser.id!,
+                                ),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Card(
+                            //color: Colors.pink[100]!.withOpacity(0.8),
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              side: BorderSide(color: Colors.grey.shade300, width: 1),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: AssetImage('assets/images/medical_team.png'),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.person, size: 18, color: kSecondaryColor),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                '${therapistUser?.name ?? 'N/A'}',
+                                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.school, size: 18, color: kSecondaryColor),
+                                              SizedBox(width: 8),
+                                              Text(
+                                                '${filteredTherapists[index].specialization ?? 'N/A'}',
+                                                style: TextStyle(fontSize: 16),
+                                                softWrap: true,
+                                                maxLines: null,
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                ],
                               ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Text(
-                            '${therapistUser?.name ?? 'N/A'}', // Display therapist's name
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Hiring Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(filteredTherapists[index].hiringDate as String))}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Specialization: ${filteredTherapists[index].specialization ?? 'N/A'}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'About Me:',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Text(
-                            '${filteredTherapists[index].aboutMe ?? 'N/A'}',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    ),
+
+                            ),
+                          )
+                      )
                   );
                 },
               ),

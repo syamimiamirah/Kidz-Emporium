@@ -8,19 +8,19 @@ import '../../models/user_model.dart';
 import '../../services/api_service.dart';
 import '../../utils.dart';
 
-class TherapistDetailParentPage extends StatefulWidget {
+class TherapistDetailTherapistPage extends StatefulWidget {
   final LoginResponseModel userData;
   final String therapistId;
 
-  const TherapistDetailParentPage(
+  const TherapistDetailTherapistPage(
       {Key? key, required this.userData, required this.therapistId})
       : super(key: key);
 
   @override
-  _TherapistDetailParentPageState createState() => _TherapistDetailParentPageState();
+  _TherapistDetailTherapistPageState createState() => _TherapistDetailTherapistPageState();
 }
 
-class _TherapistDetailParentPageState extends State<TherapistDetailParentPage> {
+class _TherapistDetailTherapistPageState extends State<TherapistDetailTherapistPage> {
   late String therapistName = "";
   late String specialization = "";
   late DateTime hiringDate = DateTime.now();
@@ -87,19 +87,19 @@ class _TherapistDetailParentPageState extends State<TherapistDetailParentPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 3,
-                  blurRadius: 5,
-                  offset: Offset(0, 3),
-            ),
-          ],
-        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 3,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

@@ -124,36 +124,59 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
                         borderRadius: BorderRadius.circular(15.0),
                         side: BorderSide(color: Colors.grey.shade300, width: 1),
                       ),
-                      elevation: 2,
+                      elevation: 4,
                       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                      child: ListTile(
+                      child:
+                      ListTile(
                         contentPadding: EdgeInsets.all(10),
                         minVerticalPadding: 20,
                         leading: CircleAvatar(
                           radius: 30,
                           backgroundImage: AssetImage('assets/images/medical_team.png'),
                         ),
-                        title: Text(therapistName ?? '',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        title: Row(
+                          children: [
+                            Icon(Icons.person, size: 18, color: kSecondaryColor),
+                            SizedBox(width: 10),
+                            Text(
+                              therapistName ?? '',
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                          ],
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Hiring Date: ${DateFormat('yyyy-MM-dd').format(DateTime.parse(therapists[index].hiringDate as String))}",
-                              style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.7)),
+                            Row(
+                              children: [
+                                Icon(Icons.date_range, size: 18, color: kSecondaryColor),
+                                SizedBox(width: 10),
+                                Text(
+                                  DateFormat('yyyy-MM-dd').format(DateTime.parse(therapists[index].hiringDate as String)),
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ],
                             ),
-                            Text(
-                              "Specialist In: ${therapists[index].specialization ?? 'N/A'}",
-                              style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(0.7)),
+                            Row(
+                              children: [
+                                Icon(Icons.school, size: 18, color: kSecondaryColor),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    therapists[index].specialization,
+                                    style: TextStyle(fontSize: 16),
+                                    softWrap: true,
+                                    maxLines: null,
+                                  ),
+                                ),
+                              ],
                             ),
-                            // Add any other details as needed
                           ],
                         ),
                         trailing: IconButton(
                           icon: Icon(Icons.edit, color: Colors.black),
                           onPressed: () {
-                           Navigator.push(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => UpdateTherapistAdminPage(userData: widget.userData, therapistId: therapists[index].therapistId ?? ''),
@@ -161,8 +184,8 @@ class _ViewTherapistAdminPageState extends State<ViewTherapistAdminPage> {
                             );
                           },
                         ),
-                        // Add any other child details as needed
                       ),
+
                     ),
                   );
                 },
