@@ -106,7 +106,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
           service = booking.service;
           fromDate = Utils.parseStringToDateTime(booking.fromDate);
           toDate = Utils.parseStringToDateTime(booking.toDate);
-          therapistId = booking.therapistId;
+          therapistId = booking.therapistId!;
           paymentId = booking.paymentId ?? '';
           // Find therapist name from users list
           UserModel? selectedTherapist = users.firstWhere(
@@ -176,48 +176,35 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
                               items: [
                                 DropdownMenuItem<String>(
                                   value: null,
-                                  child: Text("Services",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
-                                ),
-                                // Other role options
-                                DropdownMenuItem<String>(
-                                  value: "Speech Therapy",
-                                  child: Text("Speech Therapy",style: TextStyle(fontSize: 16)),
+                                  child: Text("Type of Services",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Occupational Therapy",
-                                  child: Text("Occupational Therapy",style: TextStyle(fontSize: 16)),
+                                  value: "Screening Session",
+                                  child: Text("Screening Session",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Special Education",
-                                  child: Text("Special Education",style: TextStyle(fontSize: 16)),
+                                  value: "Speech Therapy (ST)",
+                                  child: Text("Speech Therapy (ST)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Clinical Psychology",
-                                  child: Text("Clinical Psychology",style: TextStyle(fontSize: 16)),
+                                  value: "Occupational Therapy (OT)",
+                                  child: Text("Occupational Therapy (OT)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Psychotherapy",
-                                  child: Text("Psychotherapy",style: TextStyle(fontSize: 16)),
+                                  value: "Special Education (SPED)",
+                                  child: Text("Special Education (SPED)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Counseling",
-                                  child: Text("Counseling",style: TextStyle(fontSize: 16)),
+                                  value: "Clinical Psychology (PSY)",
+                                  child: Text("Clinical Psychology (PSY)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Vocational Class",
-                                  child: Text("Vocational Class",style: TextStyle(fontSize: 16)),
+                                  value: "Big Ones Playgroup",
+                                  child: Text("Big Ones Playgroup",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Kidz Playgroup",
-                                  child: Text("Kidz Playgroup",style: TextStyle(fontSize: 16)),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: "Consultation",
-                                  child: Text("Consultation",style: TextStyle(fontSize: 16)),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: "Iqra & Quranic Class",
-                                  child: Text("Iqra & Quranic Class",style: TextStyle(fontSize: 16)),
+                                  value: "Small Ones Playgroup",
+                                  child: Text("Small Ones Playgroup",style: TextStyle(fontSize: 16)),
                                 ),
                               ],// The first item is the hint, set its value to null
                               isExpanded: true,
@@ -238,52 +225,6 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
 
                 ),
               ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey,),
-
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Icon(
-                            Icons.people, // Your desired icon
-                            color: kPrimaryColor, // Icon color
-                          ),
-                        ),
-                        Expanded(
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              hint: const Text("Select Therapist", style: TextStyle(fontSize: 16)),
-                              value: therapistId,
-                              onChanged: (newValue) {
-                                setState(() {
-                                  // Update therapistId
-                                  therapistId = newValue!;
-                                });
-                              },
-                              items: users.map((UserModel user) {
-                                return DropdownMenuItem<String>(
-                                  value: user.id,
-                                  child: Text(user.name, style: TextStyle(fontSize: 16)
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                ),
-              ),
-              SizedBox(height: 10),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10),
@@ -580,7 +521,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
     print(Utils.parseStringToDateTime(booking!.fromDate));
     if (fromDate != Utils.parseStringToDateTime(booking!.fromDate) || toDate != Utils.parseStringToDateTime(booking!.toDate)) {
       // Timeslot is being updated, perform the availability check
-      checkTherapistAvailabilityAndUpdate();
+      saveBookingDetails();
     } else {
       // Timeslot remains the same, update only the task details
       saveBookingDetails();
@@ -588,41 +529,42 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
     return true;
   }
 
-  Future<void> checkTherapistAvailabilityAndUpdate() async {
-    try {
-      bool isAvailable = await APIService.checkTherapistAvailability(
-        therapistId,
-        fromDate,
-        toDate,
-      );
-      if (isAvailable) {
-        // Therapist is available, proceed with task update
-        saveBookingDetails();
-      } else {
-        // Therapist is not available during the specified time range
-        FormHelper.showSimpleAlertDialog(
-          context,
-          "Therapist Not Available",
-          "The selected therapist is not available during the specified time range.",
-          "OK",
-              () => Navigator.of(context).pop(),
-        );
-      }
-    } catch (error) {
-      print('Error checking therapist availability: $error');
-      // Handle error
-    }
-  }
+  // Future<void> checkTherapistAvailabilityAndUpdate() async {
+  //   try {
+  //     bool isAvailable = await APIService.checkTherapistAvailability(
+  //       therapistId,
+  //       fromDate,
+  //       toDate,
+  //     );
+  //     if (isAvailable) {
+  //       // Therapist is available, proceed with task update
+  //       saveBookingDetails();
+  //     } else {
+  //       // Therapist is not available during the specified time range
+  //       FormHelper.showSimpleAlertDialog(
+  //         context,
+  //         "Therapist Not Available",
+  //         "The selected therapist is not available during the specified time range.",
+  //         "OK",
+  //             () => Navigator.of(context).pop(),
+  //       );
+  //     }
+  //   } catch (error) {
+  //     print('Error checking therapist availability: $error');
+  //     // Handle error
+  //   }
+  // }
 
   Future<void> saveBookingDetails() async {
     try {
       BookingModel updatedBooking = BookingModel(
         userId: userId,
         service: service,
-        therapistId: therapistId,
+        therapistId: null,
         childId: childId,
         fromDate: Utils.formatDateTimeToString(fromDate),
         toDate: Utils.formatDateTimeToString(toDate),
+        statusBooking: "Pending",
       );
 
       bool success = await APIService.updateBooking(widget.bookingId, updatedBooking);
@@ -635,7 +577,7 @@ class _updateBookingParentPageState extends State<UpdateBookingParentPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Success'),
+              title: Text(Config.appName),
               content: Text('Booking details have been updated successfully.'),
               actions: [
                 TextButton(

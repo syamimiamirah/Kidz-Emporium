@@ -29,6 +29,7 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
   String? selectedTherapist;
   String? selectedChild;
   String? service;
+  String statusBooking = "Pending";
   late DateTime fromDate;
   late DateTime toDate;
   late String userId;
@@ -124,46 +125,33 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                                   value: null,
                                   child: Text("Type of Services",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                                 ),
-                                // Other role options
                                 DropdownMenuItem<String>(
-                                  value: "Speech Therapy",
-                                  child: Text("Speech Therapy",style: TextStyle(fontSize: 16)),
+                                  value: "Screening Session",
+                                  child: Text("Screening Session",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Occupational Therapy",
-                                  child: Text("Occupational Therapy",style: TextStyle(fontSize: 16)),
+                                  value: "Speech Therapy (ST)",
+                                  child: Text("Speech Therapy (ST)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Special Education",
-                                  child: Text("Special Education",style: TextStyle(fontSize: 16)),
+                                  value: "Occupational Therapy (OT)",
+                                  child: Text("Occupational Therapy (OT)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Clinical Psychology",
-                                  child: Text("Clinical Psychology",style: TextStyle(fontSize: 16)),
+                                  value: "Special Education (SPED)",
+                                  child: Text("Special Education (SPED)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Psychotherapy",
-                                  child: Text("Psychotherapy",style: TextStyle(fontSize: 16)),
+                                  value: "Clinical Psychology (PSY)",
+                                  child: Text("Clinical Psychology (PSY)",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Counseling",
-                                  child: Text("Counseling",style: TextStyle(fontSize: 16)),
+                                  value: "Big Ones Playgroup",
+                                  child: Text("Big Ones Playgroup",style: TextStyle(fontSize: 16)),
                                 ),
                                 DropdownMenuItem<String>(
-                                  value: "Vocational Class",
-                                  child: Text("Vocational Class",style: TextStyle(fontSize: 16)),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: "Kidz Playgroup",
-                                  child: Text("Kidz Playgroup",style: TextStyle(fontSize: 16)),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: "Consultation",
-                                  child: Text("Consultation",style: TextStyle(fontSize: 16)),
-                                ),
-                                DropdownMenuItem<String>(
-                                  value: "Iqra & Quranic Class",
-                                  child: Text("Iqra & Quranic Class",style: TextStyle(fontSize: 16)),
+                                  value: "Small Ones Playgroup",
+                                  child: Text("Small Ones Playgroup",style: TextStyle(fontSize: 16)),
                                 ),
                               ],// The first item is the hint, set its value to null
                               isExpanded: true,
@@ -184,51 +172,6 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
 
                 ),
               ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey,),
-
-                    ),
-                    child: Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Icon(
-                            Icons.people, // Your desired icon
-                            color: kPrimaryColor, // Icon color
-                          ),
-                        ),
-                        Expanded(
-                          child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            hint: const Text("Select Therapist", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
-                            value: selectedTherapist,
-                            onChanged: (newValue) {
-                              setState(() {
-                                selectedTherapist = newValue!;
-                              });
-                            },
-                            items: users.map((UserModel user) {
-                              return DropdownMenuItem<String>(
-                                value: user.id,
-                                child: Text(user.name, style: TextStyle(fontSize: 16)
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                ),
-              ),
-              SizedBox(height: 10),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 10),
@@ -394,72 +337,141 @@ class _createBookingParentPageState extends State<CreateBookingParentPage> {
                 ),
               ),
 
-              ElevatedButton(
-                onPressed: () async {
-                  // Check therapist availability before proceeding with the payment
-                  bool isTherapistAvailable = await APIService.checkTherapistAvailability(
-                    selectedTherapist!,
-                    fromDate,
-                    toDate,
-                  );
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: SizedBox(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (selectedChild != null && service != null) {
+                        if (service == "Screening Session") {
+                          // If Screening Session, directly create the booking
+                          BookingModel model = BookingModel(
+                            userId: widget.userData.data!.id,
+                            service: service!,
+                            therapistId: null,
+                            childId: selectedChild!,
+                            fromDate: Utils.formatDateTimeToString(fromDate!),
+                            toDate: Utils.formatDateTimeToString(toDate!),
+                            paymentId: null,
+                            statusBooking: statusBooking,
+                          );
 
-                  if (!isTherapistAvailable) {
-                    // Display a snackbar for therapist not available
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Therapist is not available for the selected time.'),
-                        duration: Duration(seconds: 3),
-                      ),
-                    );
-                    return;
-                  }
+                          try {
+                            final bookingResponse = await APIService.createBooking(model);
+                            // Handle the booking response here
+                            if (bookingResponse != null) {
+                              // Booking created successfully
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Booking Successful'),
+                                    content: Text('Your booking has been created successfully.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(); // Close the dialog
+                                          Navigator.of(context).pop(); // Go back to the previous screen
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              // Booking creation failed
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Booking Failed'),
+                                    content: Text('Failed to create the booking. Please try again.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
+                          } catch (error) {
+                            print('Error creating booking: $error');
+                            // Handle the error
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Error'),
+                                  content: Text('An error occurred while creating the booking. Please try again.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        } else {
+                          // Navigate to the payment screen for other service types
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaymentPage(
+                                userData: widget.userData,
+                                service: service,
+                                selectedTherapist: selectedTherapist,
+                                selectedChild: selectedChild,
+                                fromDate: fromDate!,
+                                toDate: toDate!,
 
-                  // Show the reminder AlertDialog
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text(Config.appName),
-                        content: Text("REMINDER: Payment can only be made through Credit/Debit Card"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: Text("OK", style: TextStyle(color: kPrimaryColor),),
-                          ),
-                        ],
-                      );
+                              ),
+                            ),
+                          );
+                        }
+                      } else {
+                        // Show a message if required fields are not selected
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Incomplete Information'),
+                              content: Text('Please select a service and a child to proceed.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     },
-                  );
-
-                  // Navigate to the PaymentPage
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PaymentPage(
-                        userData: widget.userData,
-                        service: service,
-                        selectedTherapist: selectedTherapist,
-                        selectedChild: selectedChild,
-                        fromDate: fromDate!,
-                        toDate: toDate!,
+                    style: ElevatedButton.styleFrom(
+                      primary: kPrimaryColor,
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // BorderRadius
                       ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: kPrimaryColor,
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // BorderRadius
+                    child: Text('Book',
+                      style: TextStyle(fontSize: 16,
+                      color: Colors.white),
+                    ),
                   ),
                 ),
-                child: Text('Proceed with Payment',
-                  style: TextStyle(fontSize: 16),
-                ),
               ),
-
 
             ],
           ),

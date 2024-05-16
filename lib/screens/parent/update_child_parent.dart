@@ -251,19 +251,34 @@ class _updateChildParentPageState extends State<UpdateChildParentPage>{
                               value: null,
                               child: Text("Program",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
                             ),
-                            // Other role options
                             DropdownMenuItem<String>(
-                              value: "Early Intervention Program (EIP)",
-                              child: Text("Early Intervention Program (EIP)",style: TextStyle(fontSize: 16,),),
+                              value: "Occupational Therapy (OT)",
+                              child: Text("Occupational Therapy (OT)",style: TextStyle(fontSize: 16,),),
                             ),
                             DropdownMenuItem<String>(
-                              value: "Special Education Program (SPED)",
-                              child: Text("Special Education Program (SPED)",style: TextStyle(fontSize: 16,),),
+                              value: "Special Education (SPED)",
+                              child: Text("Special Education (SPED)",style: TextStyle(fontSize: 16,),),
                             ),
                             DropdownMenuItem<String>(
-                              value: "Special Clinic",
-                              child: Text("Special Clinic",style: TextStyle(fontSize: 16,),),
-                            )
+                              value: "Special Therapy (ST)",
+                              child: Text("Special Therapy (ST)",style: TextStyle(fontSize: 16,),),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: "Clinical Psychology (PSY)",
+                              child: Text("Clinical Psychology (PSY)",style: TextStyle(fontSize: 16,),),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: "Big Ones Playgroup",
+                              child: Text("Big Ones Playgroup",style: TextStyle(fontSize: 16,),),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: "Small Ones Playgroup",
+                              child: Text("Small Ones Playgroup",style: TextStyle(fontSize: 16,),),
+                            ),
+                            DropdownMenuItem<String>(
+                              value: "No program yet",
+                              child: Text("No program yet",style: TextStyle(fontSize: 16,),),
+                            ),
                           ],// The first item is the hint, set its value to null
                           isExpanded: true,
                           icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),

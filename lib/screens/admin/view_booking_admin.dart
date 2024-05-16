@@ -125,7 +125,7 @@ class _ViewBookingListPageState extends State<ViewBookingAdminPage> {
             SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
-                itemCount: bookings.length, // Display bookings for the next 7 days
+                itemCount: 30,
                 itemBuilder: (context, index) {
                   DateTime currentDate = DateTime.now().add(Duration(days: index));
                   List<BookingModel> filteredBookings = filterBookingsByDate(currentDate);
@@ -164,7 +164,7 @@ class _ViewBookingListPageState extends State<ViewBookingAdminPage> {
           UserModel therapistUser = users.firstWhere(
                 (user) => user.id == booking.therapistId,
             orElse: () => UserModel(id: '',
-                name: 'Unknown',
+                name: 'Not decided yet',
                 email: '',
                 password: '',
                 phone: '',
