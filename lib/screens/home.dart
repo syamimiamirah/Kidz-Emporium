@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kidz_emporium/Screens/admin/view_therapist_admin.dart';
 import 'package:kidz_emporium/Screens/admin/view_youtube_admin.dart';
 import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/Screens/parent/create_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/create_child_parent.dart';
+import 'package:kidz_emporium/Screens/parent/details_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_booking_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_child_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_reminder_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_report_parent.dart';
 import 'package:kidz_emporium/Screens/parent/view_therapist_parent.dart';
 import 'package:kidz_emporium/Screens/therapist/create_video_therapist.dart';
+import 'package:kidz_emporium/Screens/therapist/details_booking_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_booking_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_child_therapist.dart';
 import 'package:kidz_emporium/Screens/therapist/view_report_therapist.dart';
@@ -21,6 +24,7 @@ import 'package:kidz_emporium/Screens/login_page.dart';
 import 'package:kidz_emporium/components/side_menu.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/user_model.dart';
+import 'package:kidz_emporium/screens/parent/view_chat_parent.dart';
 import '../config.dart';
 import '../main.dart';
 import '../models/booking_model.dart';
@@ -30,6 +34,7 @@ import '../services/api_service.dart';
 import '../services/shared_service.dart';
 import 'admin/create_task_admin.dart';
 import 'admin/create_therapist_admin.dart';
+import 'admin/details_booking_admin.dart';
 import 'admin/view_booking_admin.dart';
 import 'admin/view_task_admin.dart';
 
@@ -42,7 +47,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _homePageState extends State<HomePage>{
-  List<BookingModel> bookings = [];
   //Creating static data in lists
   List catNames = [
     "Booking",
@@ -74,12 +78,45 @@ class _homePageState extends State<HomePage>{
     'Booking 1', 'Booking 2', 'Booking 3', 'Booking 4'
   ];
 
+  List<BookingModel> bookings = [];
+  List<ChildModel> children = [];
+  List<TherapistModel> therapists = [];
+  List<UserModel> users = []; // Add a list to store user details
+
   @override
   void initState() {
     super.initState();
+    _loadData(widget.userData.data!.id);
   }
 
-  Future <void> _loadBooking() async {
+
+  Future<void> _loadData(String userId) async {
+    try {
+      // Use Future.wait to wait for all API calls to complete
+      await Future.wait([
+        _loadBooking(userId),
+        _loadChildren(userId),
+        _loadTherapists(userId),
+        _loadUsers(), // Fetch user details
+      ]);
+    } catch (error) {
+      print('Error loading data: $error');
+    }
+  }
+
+  // Fetch user details
+  Future<void> _loadUsers() async {
+    try {
+      List<UserModel> loadedUsers = await APIService.getAllUsers();
+      setState(() {
+        users = loadedUsers;
+      });
+    } catch (error) {
+      print('Error loading users: $error');
+    }
+  }
+
+  Future<void> _loadBooking(String userId) async {
     try {
       List<BookingModel> loadedBooking = await APIService.getBooking(widget.userData.data!.id);
       setState(() {
@@ -87,6 +124,28 @@ class _homePageState extends State<HomePage>{
       });
     } catch (error) {
       print('Error loading bookings: $error');
+    }
+  }
+
+  Future<void> _loadChildren(String userId) async {
+    try {
+      List<ChildModel> loadedChildren = await APIService.getChild(widget.userData.data!.id);
+      setState(() {
+        children = loadedChildren;
+      });
+    } catch (error) {
+      print('Error loading children: $error');
+    }
+  }
+
+  Future<void> _loadTherapists(String userId) async {
+    try {
+      List<TherapistModel> loadedTherapists = await APIService.getAllTherapists();
+      setState(() {
+        therapists = loadedTherapists;
+      });
+    } catch (error) {
+      print('Error loading therapists: $error');
     }
   }
 
@@ -105,6 +164,15 @@ class _homePageState extends State<HomePage>{
             )
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+          context, MaterialPageRoute(builder: (context) => FAQPage())
+        );
+        },
+        child: Icon(Icons.chat, color: Colors.white),
+        backgroundColor: kPrimaryColor,
       ),
       body: ListView(
         children: [
@@ -206,6 +274,7 @@ class _homePageState extends State<HomePage>{
                         decoration: BoxDecoration(
                           color: catColors[index],
                           shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
                           child: catIcons[index],),
@@ -228,7 +297,7 @@ class _homePageState extends State<HomePage>{
                   Text(
                     "My Booking",
                     style: TextStyle(
-                      fontSize: 23,
+                      fontSize: 20,
                     ),
                   ),
                   GestureDetector(
@@ -252,7 +321,7 @@ class _homePageState extends State<HomePage>{
                 height: 10,
               ),
               GridView.builder(
-                itemCount: bookingList.length,
+                itemCount: bookings.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -262,7 +331,67 @@ class _homePageState extends State<HomePage>{
                 ),
                 itemBuilder: (context, index){
                   return InkWell(
-                    onTap:(){},
+                    onTap: () async {
+                      try {
+                        // Retrieve the booking
+                        BookingModel booking = bookings[index];
+
+                        // Retrieve the therapist corresponding to the booking
+                        TherapistModel therapist = therapists.firstWhere(
+                              (therapist) => therapist.id == booking.therapistId,
+                          orElse: () => TherapistModel(
+                            specialization: 'Unknown',
+                            hiringDate: '',
+                            aboutMe: '',
+                            therapistId: '',
+                            managedBy: '',
+                          ),
+                        );
+
+                        // Retrieve the child corresponding to the booking
+                        ChildModel child = children.firstWhere(
+                              (child) => child.id == booking.childId,
+                          orElse: () => ChildModel(
+                            childName: 'Unknown',
+                            birthDate: '',
+                            gender: '',
+                            program: '',
+                            userId: '',
+                          ),
+                        );
+
+                        // Retrieve the user details of the therapist
+                        UserModel therapistUser = users.firstWhere(
+                              (user) => user.id == booking.therapistId,
+                          orElse: () => UserModel(
+                            id: '',
+                            name: 'Unknown',
+                            email: '',
+                            password: '',
+                            phone: '',
+                            role: 'Therapist',
+                          ),
+                        );
+
+                        // Navigate to BookingDetailsPage with retrieved data
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingDetailsAdminPage(
+                              userData: widget.userData,
+                              booking: booking,
+                              therapist: therapist,
+                              child: child,
+                              therapistUser: therapistUser,
+                            ),
+                          ),
+                        );
+                      } catch (error) {
+                        print('Error navigating to BookingDetailsPage: $error');
+                        // Handle error gracefully, e.g., show a snackbar or display an error message
+                      }
+                    },
+
                     child: Container(
                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       decoration: BoxDecoration(
@@ -270,6 +399,7 @@ class _homePageState extends State<HomePage>{
                         color: kSecondaryColor.withOpacity(0.2),
                       ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(padding: EdgeInsets.all(10),
                             child: Icon(Icons.person, size: 50),
@@ -278,9 +408,9 @@ class _homePageState extends State<HomePage>{
                             height: 10,
                           ),
                           Text(
-                            bookingList[index],
+                            bookings[index].service,
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 20,
                               color: Colors.black,
                             ),
                           ),
@@ -288,9 +418,10 @@ class _homePageState extends State<HomePage>{
                             height: 10,
                           ),
                           Text(
-                            "On 22 Oct 2023",
+                            "On ${DateFormat('dd-MM-yyyy').format(
+                          DateTime.parse(bookings[index].fromDate))}" ,
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 16,
                               color: Colors.black,
                             ),
                           ),
@@ -319,8 +450,6 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _adminHomePageState extends State<AdminHomePage>{
-  List<BookingModel> bookings = [];
-  //Creating static data in lists
   List catNames = [
     "Booking",
     "Therapist",
@@ -350,20 +479,74 @@ class _adminHomePageState extends State<AdminHomePage>{
   List bookingList = [
     'Booking 1', 'Booking 2', 'Booking 3', 'Booking 4'
   ];
+  List<BookingModel> bookings = [];
+  List<ChildModel> children = [];
+  List<TherapistModel> therapists = [];
+  List<UserModel> users = []; // Add a list to store user details
 
   @override
   void initState() {
     super.initState();
+    _loadData(widget.userData.data!.id);
   }
 
-  Future <void> _loadBooking() async {
+
+  Future<void> _loadData(String userId) async {
     try {
-      List<BookingModel> loadedBookings = await APIService.getAllBookings();
+      // Use Future.wait to wait for all API calls to complete
+      await Future.wait([
+        _loadBooking(userId),
+        _loadChildren(userId),
+        _loadTherapists(userId),
+        _loadUsers(), // Fetch user details
+      ]);
+    } catch (error) {
+      print('Error loading data: $error');
+    }
+  }
+
+  // Fetch user details
+  Future<void> _loadUsers() async {
+    try {
+      List<UserModel> loadedUsers = await APIService.getAllUsers();
       setState(() {
-        bookings = loadedBookings;
+        users = loadedUsers;
+      });
+    } catch (error) {
+      print('Error loading users: $error');
+    }
+  }
+
+  Future<void> _loadBooking(String userId) async {
+    try {
+      List<BookingModel> loadedBooking = await APIService.getAllBookings();
+      setState(() {
+        bookings = loadedBooking;
       });
     } catch (error) {
       print('Error loading bookings: $error');
+    }
+  }
+
+  Future<void> _loadChildren(String userId) async {
+    try {
+      List<ChildModel> loadedChildren = await APIService.getChild(widget.userData.data!.id);
+      setState(() {
+        children = loadedChildren;
+      });
+    } catch (error) {
+      print('Error loading children: $error');
+    }
+  }
+
+  Future<void> _loadTherapists(String userId) async {
+    try {
+      List<TherapistModel> loadedTherapists = await APIService.getAllTherapists();
+      setState(() {
+        therapists = loadedTherapists;
+      });
+    } catch (error) {
+      print('Error loading therapists: $error');
     }
   }
 
@@ -480,6 +663,7 @@ class _adminHomePageState extends State<AdminHomePage>{
                             decoration: BoxDecoration(
                               color: catColors[index],
                               shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
                               child: catIcons[index],),
@@ -526,7 +710,7 @@ class _adminHomePageState extends State<AdminHomePage>{
                   height: 10,
                 ),
                 GridView.builder(
-                  itemCount: bookingList.length,
+                  itemCount: bookings.length,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -536,7 +720,66 @@ class _adminHomePageState extends State<AdminHomePage>{
                   ),
                   itemBuilder: (context, index){
                     return InkWell(
-                      onTap:(){},
+                      onTap: () async {
+                        try {
+                          // Retrieve the booking
+                          BookingModel booking = bookings[index];
+
+                          // Retrieve the therapist corresponding to the booking
+                          TherapistModel therapist = therapists.firstWhere(
+                                (therapist) => therapist.id == booking.therapistId,
+                            orElse: () => TherapistModel(
+                              specialization: 'Unknown',
+                              hiringDate: '',
+                              aboutMe: '',
+                              therapistId: '',
+                              managedBy: '',
+                            ),
+                          );
+
+                          // Retrieve the child corresponding to the booking
+                          ChildModel child = children.firstWhere(
+                                (child) => child.id == booking.childId,
+                            orElse: () => ChildModel(
+                              childName: 'Unknown',
+                              birthDate: '',
+                              gender: '',
+                              program: '',
+                              userId: '',
+                            ),
+                          );
+
+                          // Retrieve the user details of the therapist
+                          UserModel therapistUser = users.firstWhere(
+                                (user) => user.id == booking.therapistId,
+                            orElse: () => UserModel(
+                              id: '',
+                              name: 'Unknown',
+                              email: '',
+                              password: '',
+                              phone: '',
+                              role: 'Therapist',
+                            ),
+                          );
+
+                          // Navigate to BookingDetailsPage with retrieved data
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookingDetailsPage(
+                                userData: widget.userData,
+                                booking: booking,
+                                therapist: therapist,
+                                child: child,
+                                therapistUser: therapistUser,
+                              ),
+                            ),
+                          );
+                        } catch (error) {
+                          print('Error navigating to BookingDetailsPage: $error');
+                          // Handle error gracefully, e.g., show a snackbar or display an error message
+                        }
+                      },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         decoration: BoxDecoration(
@@ -544,6 +787,7 @@ class _adminHomePageState extends State<AdminHomePage>{
                           color: kSecondaryColor.withOpacity(0.2),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(padding: EdgeInsets.all(10),
                               child: Icon(Icons.person, size: 50),
@@ -552,9 +796,9 @@ class _adminHomePageState extends State<AdminHomePage>{
                               height: 10,
                             ),
                             Text(
-                              bookingList[index],
+                              bookings[index].service,
                               style: TextStyle(
-                                fontSize: 22,
+                                fontSize: 20,
                                 color: Colors.black,
                               ),
                             ),
@@ -562,9 +806,10 @@ class _adminHomePageState extends State<AdminHomePage>{
                               height: 10,
                             ),
                             Text(
-                              "On 22 Oct 2023",
+                              "On ${DateFormat('dd-MM-yyyy').format(
+                                  DateTime.parse(bookings[index].fromDate))}",
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 16,
                                 color: Colors.black,
                               ),
                             ),
@@ -593,8 +838,6 @@ class TherapistHomePage extends StatefulWidget {
 }
 
 class _therapistHomePageState extends State<TherapistHomePage>{
-  List<BookingModel> bookings = [];
-  //Creating static data in lists
   List catNames = [
     "Booking",
     "Therapist",
@@ -625,12 +868,45 @@ class _therapistHomePageState extends State<TherapistHomePage>{
     'Booking 1', 'Booking 2', 'Booking 3', 'Booking 4'
   ];
 
+  List<BookingModel> bookings = [];
+  List<ChildModel> children = [];
+  List<TherapistModel> therapists = [];
+  List<UserModel> users = []; // Add a list to store user details
+
   @override
   void initState() {
     super.initState();
+    _loadData(widget.userData.data!.id);
   }
 
-  Future <void> _loadBooking() async {
+
+  Future<void> _loadData(String userId) async {
+    try {
+      // Use Future.wait to wait for all API calls to complete
+      await Future.wait([
+        _loadBooking(userId),
+        _loadChildren(userId),
+        _loadTherapists(userId),
+        _loadUsers(), // Fetch user details
+      ]);
+    } catch (error) {
+      print('Error loading data: $error');
+    }
+  }
+
+  // Fetch user details
+  Future<void> _loadUsers() async {
+    try {
+      List<UserModel> loadedUsers = await APIService.getAllUsers();
+      setState(() {
+        users = loadedUsers;
+      });
+    } catch (error) {
+      print('Error loading users: $error');
+    }
+  }
+
+  Future<void> _loadBooking(String userId) async {
     try {
       List<BookingModel> loadedBookings = await APIService.getAllBookings();
       List<BookingModel> therapistBookings = loadedBookings.where((booking) => booking.therapistId == widget.userData.data?.id).toList();
@@ -639,6 +915,28 @@ class _therapistHomePageState extends State<TherapistHomePage>{
       });
     } catch (error) {
       print('Error loading bookings: $error');
+    }
+  }
+
+  Future<void> _loadChildren(String userId) async {
+    try {
+      List<ChildModel> loadedChildren = await APIService.getChild(widget.userData.data!.id);
+      setState(() {
+        children = loadedChildren;
+      });
+    } catch (error) {
+      print('Error loading children: $error');
+    }
+  }
+
+  Future<void> _loadTherapists(String userId) async {
+    try {
+      List<TherapistModel> loadedTherapists = await APIService.getAllTherapists();
+      setState(() {
+        therapists = loadedTherapists;
+      });
+    } catch (error) {
+      print('Error loading therapists: $error');
     }
   }
   @override
@@ -758,6 +1056,7 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                             decoration: BoxDecoration(
                               color: catColors[index],
                               shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
                               child: catIcons[index],),
@@ -804,7 +1103,7 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                   height: 10,
                 ),
                 GridView.builder(
-                  itemCount: bookingList.length,
+                  itemCount: bookings.length,
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -814,7 +1113,66 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                   ),
                   itemBuilder: (context, index){
                     return InkWell(
-                      onTap:(){},
+                      onTap: () async {
+                        try {
+                          // Retrieve the booking
+                          BookingModel booking = bookings[index];
+
+                          // Retrieve the therapist corresponding to the booking
+                          TherapistModel therapist = therapists.firstWhere(
+                                (therapist) => therapist.id == booking.therapistId,
+                            orElse: () => TherapistModel(
+                              specialization: 'Unknown',
+                              hiringDate: '',
+                              aboutMe: '',
+                              therapistId: '',
+                              managedBy: '',
+                            ),
+                          );
+
+                          // Retrieve the child corresponding to the booking
+                          ChildModel child = children.firstWhere(
+                                (child) => child.id == booking.childId,
+                            orElse: () => ChildModel(
+                              childName: 'Unknown',
+                              birthDate: '',
+                              gender: '',
+                              program: '',
+                              userId: '',
+                            ),
+                          );
+
+                          // Retrieve the user details of the therapist
+                          UserModel therapistUser = users.firstWhere(
+                                (user) => user.id == booking.therapistId,
+                            orElse: () => UserModel(
+                              id: '',
+                              name: 'Unknown',
+                              email: '',
+                              password: '',
+                              phone: '',
+                              role: 'Therapist',
+                            ),
+                          );
+
+                          // Navigate to BookingDetailsPage with retrieved data
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookingDetailsTherapistPage(
+                                userData: widget.userData,
+                                booking: booking,
+                                therapist: therapist,
+                                child: child,
+                                therapistUser: therapistUser,
+                              ),
+                            ),
+                          );
+                        } catch (error) {
+                          print('Error navigating to BookingDetailsPage: $error');
+                          // Handle error gracefully, e.g., show a snackbar or display an error message
+                        }
+                      },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         decoration: BoxDecoration(
@@ -822,6 +1180,7 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                           color: kSecondaryColor.withOpacity(0.2),
                         ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(padding: EdgeInsets.all(10),
                               child: Icon(Icons.person, size: 50),
@@ -830,9 +1189,9 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                               height: 10,
                             ),
                             Text(
-                              bookingList[index],
+                              bookings[index].service,
                               style: TextStyle(
-                                fontSize: 22,
+                                fontSize: 20,
                                 color: Colors.black,
                               ),
                             ),
@@ -840,9 +1199,10 @@ class _therapistHomePageState extends State<TherapistHomePage>{
                               height: 10,
                             ),
                             Text(
-                              "On 22 Oct 2023",
+                              "On ${DateFormat('dd-MM-yyyy').format(
+                                  DateTime.parse(bookings[index].fromDate))}",
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 16,
                                 color: Colors.black,
                               ),
                             ),

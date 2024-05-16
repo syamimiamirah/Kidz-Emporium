@@ -419,11 +419,12 @@ class _PaymentPageState extends State<PaymentPage> {
     BookingModel model = BookingModel(
       userId: widget.userData.data!.id,
       service: widget.service!,
-      therapistId: widget.selectedTherapist!,
+      therapistId: null,
       childId: widget.selectedChild!,
       fromDate: Utils.formatDateTimeToString(widget.fromDate!),
       toDate: Utils.formatDateTimeToString(widget.toDate!),
       paymentId: paymentId!,
+      statusBooking: "Pending",
     );
     APIService.createBooking(model).then((response) {
       if (response != null) {

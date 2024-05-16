@@ -388,6 +388,7 @@ class _updateTaskAdminPageState extends State<UpdateTaskAdminPage>{
                 ],
               ),
             ),
+            SizedBox(height: 20),
 
           ],
         )

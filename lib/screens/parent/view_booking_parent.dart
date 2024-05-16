@@ -173,7 +173,7 @@ class _ViewBookingListPageState extends State<ViewBookingParentPage> {
           UserModel therapistUser = users.firstWhere(
                 (user) => user.id == booking.therapistId,
             orElse: () => UserModel(id: '',
-                name: 'Unknown',
+                name: 'Not decided yet',
                 email: '',
                 password: '',
                 phone: '',

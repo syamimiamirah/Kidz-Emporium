@@ -1,12 +1,13 @@
 class BookingModel {
   late String userId;
   final String? id;
-  String therapistId;
+  String? therapistId;
   String childId;
   String service;
   late String fromDate;
   late String toDate;
   String? paymentId;
+  String statusBooking;
 
   BookingModel({
     required this.userId,
@@ -17,6 +18,7 @@ class BookingModel {
     required this.fromDate,
     required this.toDate,
     this.paymentId,
+    required this.statusBooking,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
@@ -24,11 +26,12 @@ class BookingModel {
       id: json['_id'],
       userId: json['userId'] ?? '',
       service: json['service'] ?? '',
-      therapistId: json['therapistId'] ?? '',
+      therapistId: json['therapistId'] ?? null,
       childId: json['childId'] ?? '',
       fromDate: json['fromDate'] ?? '', // Provide a default value or handle null
       toDate: json['toDate'] ?? '',  // Add null check and handle null case
-      paymentId: json['paymentId'],
+      paymentId: json['paymentId'] ?? null,
+      statusBooking: json['statusBooking'] ?? '',
     );
   }
 
@@ -42,6 +45,7 @@ class BookingModel {
       'toDate': toDate,
       //'status': status,
       'paymentId': paymentId,
+      'statusBooking': statusBooking,
     };
 
     if (id != null) {

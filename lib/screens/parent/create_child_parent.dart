@@ -235,19 +235,23 @@ class _createChildParentPageState extends State<CreateChildParentPage>{
                             value: null,
                             child: Text("Program",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold)),
                           ),
+                          DropdownMenuItem<String>(
+                            value: "No program yet",
+                            child: Text("No program yet",style: TextStyle(fontSize: 16)),
+                          ),
                           // Other role options
-                          DropdownMenuItem<String>(
-                            value: "Early Intervention Program (EIP)",
-                            child: Text("Early Intervention Program (EIP)",style: TextStyle(fontSize: 16)),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Special Education Program (SPED)",
-                            child: Text("Special Education Program (SPED)",style: TextStyle(fontSize: 16)),
-                          ),
-                          DropdownMenuItem<String>(
-                            value: "Special Clinic",
-                            child: Text("Special Clinic",style: TextStyle(fontSize: 16)),
-                          ),
+                          // DropdownMenuItem<String>(
+                          //   value: "Early Intervention Program (EIP)",
+                          //   child: Text("Early Intervention Program (EIP)",style: TextStyle(fontSize: 16)),
+                          // ),
+                          // DropdownMenuItem<String>(
+                          //   value: "Special Education Program (SPED)",
+                          //   child: Text("Special Education Program (SPED)",style: TextStyle(fontSize: 16)),
+                          // ),
+                          // DropdownMenuItem<String>(
+                          //   value: "Special Clinic",
+                          //   child: Text("Special Clinic",style: TextStyle(fontSize: 16)),
+                          // ),
                         ],// The first item is the hint, set its value to null
                         isExpanded: true,
                         icon: Icon(Icons.arrow_drop_down, color: kPrimaryColor),

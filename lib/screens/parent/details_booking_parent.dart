@@ -30,6 +30,24 @@ class BookingDetailsPage extends StatefulWidget {
 }
 
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
+  bool _isRescheduleDisabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkRescheduleEligibility();
+  }
+
+  void _checkRescheduleEligibility() {
+    final DateTime bookingDate = DateTime.parse(widget.booking.fromDate);
+    final DateTime currentDate = DateTime.now();
+    final Duration difference = bookingDate.difference(currentDate);
+
+    setState(() {
+      _isRescheduleDisabled = difference.inDays < 3;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,7 +84,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               ),
               _buildDetailItem(
                 label: 'Type of Services:',
-                value: widget.booking.service, // Use therapist's name from UserModel
+                value: widget.booking.service,
                 icon: Icons.school,
                 iconColor: kPrimaryColor,
               ),
@@ -85,7 +103,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               ),
               _buildDetailItem(
                 label: 'Therapist:',
-                value: widget.therapistUser.name, // Use therapist's name from UserModel
+                value: widget.therapistUser.name,
                 icon: Icons.person,
                 iconColor: kPrimaryColor,
               ),
@@ -94,7 +112,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isRescheduleDisabled ? null : () {
                     print('Booking ID: ${widget.booking.id}');
                     Navigator.push(
                       context,
@@ -114,6 +132,35 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                     'Reschedule',
                     style: TextStyle(fontSize: 16),
                   ),
+                ),
+              ),
+              SizedBox(height: 10),
+              Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.info, color: kPrimaryColor),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              "*You can reschedule your appointment at least 3 days before the session",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.black54,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 20),

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:kidz_emporium/config.dart';
 import 'package:kidz_emporium/models/booking_model.dart';
 import 'package:kidz_emporium/models/child_model.dart';
@@ -614,6 +615,36 @@ class APIService{
       return false;
     }
   }
+
+  static Future<List<TherapistModel>> getAvailableTherapists(DateTime fromDate, DateTime toDate) async {
+    try {
+      var url = Uri.http(Config.apiURL, Config.getAvailableTherapist, {
+        'fromDate': fromDate.toIso8601String(),
+        'toDate': toDate.toIso8601String(),
+      });
+
+      var response = await http.get(
+        url,
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        List<dynamic> therapistData = responseData['availableTherapists'];
+        List<TherapistModel> therapists = therapistData.map((data) => TherapistModel.fromJson(data)).toList();
+        return therapists;
+      } else {
+        // Handle the error response here
+        print('Failed to get available therapists. Status code: ${response.statusCode}');
+        throw Exception('Failed to get available therapists');
+      }
+    } catch (e) {
+      // Handle exceptions
+      print('Error getting available therapists: $e');
+      throw Exception('Error getting available therapists');
+    }
+  }
+
 
 
   //youtube videos

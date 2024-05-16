@@ -4,6 +4,7 @@ import 'package:kidz_emporium/models/booking_model.dart';
 import 'package:kidz_emporium/models/child_model.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
 import 'package:kidz_emporium/models/therapist_model.dart';
+import 'package:kidz_emporium/screens/admin/view_therapist_availability.dart';
 
 import '../../contants.dart';
 import '../../models/user_model.dart';
@@ -90,12 +91,39 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
               ),
               _buildDetailItem(
                 label: 'Payment Status:',
-                value: widget.booking.paymentId != null ? 'Paid' : 'Not Paid',
+                value: widget.booking.paymentId != null ? 'Paid' : 'No Payment Required',
                 icon: Icons.payment,
                 iconColor: kPrimaryColor,
               ),
               SizedBox(height: 20),
-              //_buildRules(),
+              Center(
+                child: ElevatedButton(
+                  onPressed:  () {
+                    print('Booking ID: ${widget.booking.id}');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ViewTherapistAvailabilityPage(
+                          fromDate: DateTime.parse(widget.booking.fromDate),
+                          toDate: DateTime.parse(widget.booking.toDate),
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: kPrimaryColor,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Assign Therapist',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
             ],
           ),
         ),
