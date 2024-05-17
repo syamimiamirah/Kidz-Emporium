@@ -30,7 +30,9 @@ class BookingDetailsAdminPage extends StatefulWidget {
   _BookingDetailsTherapistPageState createState() => _BookingDetailsTherapistPageState();
 }
 
+
 class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,6 +108,8 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
                         builder: (context) => ViewTherapistAvailabilityPage(
                           fromDate: DateTime.parse(widget.booking.fromDate),
                           toDate: DateTime.parse(widget.booking.toDate),
+                          bookingId: widget.booking.id!,
+                          userData: widget.userData,
                         ),
                       ),
                     );

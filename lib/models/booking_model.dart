@@ -1,5 +1,5 @@
 class BookingModel {
-  late String userId;
+  late String? userId;
   final String? id;
   String? therapistId;
   String childId;
@@ -10,7 +10,7 @@ class BookingModel {
   String statusBooking;
 
   BookingModel({
-    required this.userId,
+    this.userId,
     this.id,
     required this.service,
     required this.therapistId,
