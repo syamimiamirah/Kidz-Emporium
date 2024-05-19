@@ -114,6 +114,36 @@ class APIService{
       return [];
     }
   }
+  static Future<void> sendTokenToBackend(String token, String email) async {
+    try {
+      Map<String, String> requestHeaders = {
+        'Content-Type': 'application/json',
+      };
+
+      // Construct the URL for the backend API endpoint
+      var url = Uri.http(Config.apiURL, Config.sendTokenToBackend);
+      print("Token: $token");
+
+      // Convert the body data to JSON format
+      String jsonBody = jsonEncode({'email': email, 'fcmToken': token});
+
+      // Make an HTTP POST request to the backend API
+      var response = await client.post(
+        url,
+        headers: requestHeaders,
+        body: jsonBody, // Use the JSON-formatted body
+      );
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        print('FCM token registered successfully');
+      } else {
+        print('Failed to register FCM token: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error sending FCM token to backend: $error');
+    }
+  }
 
   static Future<ReminderModel?> createReminder(ReminderModel model) async {
     Map<String, String> requestHeaders = {

@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:kidz_emporium/models/login_response_model.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class SharedService{
   static Future<bool> isLoggedIn() async{
@@ -41,5 +41,17 @@ class SharedService{
         '/login',
             (route) => false,
     );
+  }
+
+  static FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  static Future<String?> getFCMToken() async {
+    try {
+      // Get the FCM token from the device
+      return await _firebaseMessaging.getToken();
+    } catch (error) {
+      print('Error getting FCM token: $error');
+      return null;
+    }
   }
 }
