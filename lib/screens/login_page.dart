@@ -29,13 +29,22 @@ class _loginPageState extends State<LoginPage>{
   String? email;
   String? password;
 
-
+  String? fcmToken;
 
   @override
   void initState() {
     super.initState();
     _initializeLoginStatus();
+    _getFCMToken();
   }
+
+  Future<void> _getFCMToken() async {
+    String? token = await SharedService.getFCMToken();
+    setState(() {
+      fcmToken = token;
+    });
+  }
+
 
   Future<void> _initializeLoginStatus() async {
     if (await SharedService.isLoggedIn()) {
@@ -170,6 +179,7 @@ class _loginPageState extends State<LoginPage>{
                         });
 
                         if(response){
+                          _sendFCMTokenToBackend();
                           FormHelper.showSimpleAlertDialog(
                               context,
                               Config.appName,
@@ -255,7 +265,16 @@ class _loginPageState extends State<LoginPage>{
       ),
     );
   }
-
+  Future<void> _sendFCMTokenToBackend() async {
+    String? token = await SharedService.getFCMToken();
+    if (token != null) {
+      try {
+        await APIService.sendTokenToBackend(token, email!);
+      } catch (error) {
+        print('Error sending FCM token to backend: $error');
+      }
+    }
+  }
 
 
   bool validateAndSave(){

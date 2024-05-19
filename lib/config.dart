@@ -1,9 +1,10 @@
 class Config{
   static const String appName = "Kidz Emporium";
-  static const String apiURL = "192.168.1.101:4000";
+  static const String apiURL = "192.168.1.100:4000";
   static const String registerAPI = "api/register";
   static const String loginAPI = "api/login";
   static const String getAllUsersAPI = "api/users";
+  static const String sendTokenToBackend = "api/register-fcm-token";
 
   //reminder
   static const String createReminderAPI = "api/reminder";
