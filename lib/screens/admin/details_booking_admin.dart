@@ -8,6 +8,7 @@ import 'package:kidz_emporium/screens/admin/view_therapist_availability.dart';
 
 import '../../contants.dart';
 import '../../models/user_model.dart';
+import 'create_notification_admin.dart';
 
 class BookingDetailsAdminPage extends StatefulWidget {
   final LoginResponseModel userData;
@@ -98,34 +99,74 @@ class _BookingDetailsTherapistPageState extends State<BookingDetailsAdminPage> {
                 iconColor: kPrimaryColor,
               ),
               SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed:  () {
-                    print('Booking ID: ${widget.booking.id}');
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ViewTherapistAvailabilityPage(
-                          fromDate: DateTime.parse(widget.booking.fromDate),
-                          toDate: DateTime.parse(widget.booking.toDate),
-                          bookingId: widget.booking.id!,
-                          userData: widget.userData,
+              Row(
+                children: [
+                  SizedBox(width: 10),
+                  Column(
+                    children: [
+                      Center(
+                        child: ElevatedButton(
+                          onPressed:  () {
+                            print('Booking ID: ${widget.booking.id}');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdminSendMessagePage(bookingId: widget.booking.id!, userData: widget.userData,
+
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: kPrimaryColor,
+                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Send Notification',
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: kPrimaryColor,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    ],
                   ),
-                  child: Text(
-                    'Assign Therapist',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
+                  SizedBox(width: 10),
+                  Column(
+                    children: [
+                      Center(
+                        child: ElevatedButton(
+                          onPressed:  () {
+                            print('Booking ID: ${widget.booking.id}');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewTherapistAvailabilityPage(
+                                  fromDate: DateTime.parse(widget.booking.fromDate),
+                                  toDate: DateTime.parse(widget.booking.toDate),
+                                  bookingId: widget.booking.id!,
+                                  userData: widget.userData,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: kPrimaryColor,
+                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            'Assign Therapist',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
               SizedBox(height: 20),
             ],

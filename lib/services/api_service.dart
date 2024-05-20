@@ -145,6 +145,42 @@ class APIService{
     }
   }
 
+  static Future<bool> sendNotification(String bookingId, String subject, String message) async {
+    try {
+      Map<String, String> requestHeaders = {
+        'Content-Type': 'application/json',
+      };
+
+      // Construct the URL for the backend API endpoint
+      var url = Uri.http(Config.apiURL, Config.createNotification);
+      //print("Token: $token");
+
+      // Convert the body data to JSON format
+      String jsonBody = jsonEncode({'bookingId': bookingId, 'title': subject, 'body': message});
+
+      // Make an HTTP POST request to the backend API
+      var response = await client.post(
+        url,
+        headers: requestHeaders,
+        body: jsonBody, // Use the JSON-formatted body
+      );
+
+      // Check the response status code
+      if (response.statusCode == 200) {
+        print('Notification sent successfully');
+        return true; // Return true indicating success
+      } else {
+        print('Failed to send notification: ${response.statusCode}');
+        return false; // Return false indicating failure
+      }
+    } catch (error) {
+      print('Error sending notification #: $error');
+      return false; // Return false indicating failure
+    }
+  }
+
+
+
   static Future<ReminderModel?> createReminder(ReminderModel model) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
